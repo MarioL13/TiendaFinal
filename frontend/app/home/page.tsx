@@ -1,5 +1,4 @@
-// frontend/app/home/page.tsx
-'use client'; // Esto marca el archivo como un componente del lado del cliente
+'use client';
 
 import { useEffect, useState } from 'react';
 
@@ -25,13 +24,13 @@ const Home = () => {
 
     return (
         <div>
-            <h1>Usuarios</h1>
-            <ul>
-                {users.map((user) => {
-                    return (
-                        <li key={user.id_usuario}>{user.email}</li>
-                    );
-                })}
+            <h1 className="text-xl font-bold mb-4">Usuarios</h1>
+            <ul className="list-disc pl-6">
+                {users.map((user) => (
+                    <li key={user.id_usuario} className="mb-2">
+                        <span className="font-semibold">{user.nombre}:</span> {user.email}
+                    </li>
+                ))}
             </ul>
         </div>
     );
