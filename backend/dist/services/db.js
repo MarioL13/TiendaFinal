@@ -13,7 +13,6 @@ const db = mysql2_1.default.createConnection({
     database: 'tiendaonline'
 });
 // Verificar si la conexión se establece correctamente
-// @ts-ignore
 db.connect((err) => {
     if (err) {
         console.error('Error al conectar a la base de datos: ', err);

@@ -14,9 +14,8 @@ router.get('/api/users', async (req: Request, res: Response) => {
     try {
         const users = await obtenerUsuarios();
         res.json(users);
-    } catch (err) {
+    } catch (err: any) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al obtener los usuarios', error: err.message });
     }
 });
@@ -31,9 +30,8 @@ router.get('/api/users/:id', async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'Usuario no encontrado' });
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al obtener el usuario', error: err.message });
     }
 });
@@ -44,9 +42,8 @@ router.post('/api/users', async (req: Request, res: Response) => {
     try {
         const result = await crearUsuario(usuario);
         res.status(201).json({ message: 'Usuario creado', id: result.insertId });
-    } catch (err) {
+    } catch (err: any) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al crear el usuario', error: err.message });
     }
 });
@@ -62,9 +59,8 @@ router.put('/api/users/:id', async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'Usuario no encontrado' });
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al actualizar el usuario', error: err.message });
     }
 });
@@ -79,9 +75,8 @@ router.delete('/api/users/:id', async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'Usuario no encontrado' });
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al eliminar el usuario', error: err.message });
     }
 });

@@ -10,8 +10,7 @@ const db = mysql.createConnection({
 });
 
 // Verificar si la conexión se establece correctamente
-// @ts-ignore
-db.connect((err: Error) => {
+db.connect((err: mysql.QueryError | null) => {
     if (err) {
         console.error('Error al conectar a la base de datos: ', err);
     } else {

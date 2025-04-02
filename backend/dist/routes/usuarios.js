@@ -20,7 +20,6 @@ router.get('/api/users', (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
     catch (err) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al obtener los usuarios', error: err.message });
     }
 }));
@@ -38,7 +37,6 @@ router.get('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
     catch (err) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al obtener el usuario', error: err.message });
     }
 }));
@@ -51,7 +49,6 @@ router.post('/api/users', (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
     catch (err) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al crear el usuario', error: err.message });
     }
 }));
@@ -70,7 +67,6 @@ router.put('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
     catch (err) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al actualizar el usuario', error: err.message });
     }
 }));
@@ -88,7 +84,6 @@ router.delete('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
     catch (err) {
         console.error(err);
-        // @ts-ignore
         res.status(500).json({ message: 'Error al eliminar el usuario', error: err.message });
     }
 }));

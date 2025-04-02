@@ -1,6 +1,7 @@
 import db from './db';  // Importa la conexión a la base de datos
+import { QueryError, FieldPacket } from 'mysql2';
 
-// Obtener todos los usuarios
+
 export const obtenerUsuarios = (): Promise<any[]> => {
     return new Promise((resolve, reject) => {
         db.query('SELECT * FROM usuarios', (err: Error, results: any[]) => {
@@ -16,8 +17,7 @@ export const obtenerUsuarios = (): Promise<any[]> => {
 // Obtener un usuario por ID
 export const obtenerUsuarioPorId = (id: number): Promise<any> => {
     return new Promise((resolve, reject) => {
-        // @ts-ignore
-        db.query('SELECT * FROM usuarios WHERE id_usuario = ?', [id], (err: Error, results: any[]) => {
+        db.query('SELECT * FROM usuarios WHERE id_usuario = ?', [id], (err: QueryError | null, results: any[], fields: FieldPacket[]) => {
             if (err) {
                 reject(err);
             } else {
@@ -31,41 +31,65 @@ export const obtenerUsuarioPorId = (id: number): Promise<any> => {
 export const crearUsuario = (usuario: any): Promise<any> => {
     const { nombre, FOTO, email, password, direccion, telefono } = usuario;
     return new Promise((resolve, reject) => {
-        // @ts-ignore
         db.query('INSERT INTO usuarios (nombre, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)',
             [nombre, FOTO, email, password, direccion, telefono],
-            (err: Error, results: any) => {
+            (err: QueryError | null, results: any) => { // Cambié Error por QueryError | null
                 if (err) {
                     reject(err);
                 } else {
                     resolve(results);
                 }
-            });
+            }
+        );
     });
 };
 
 // Actualizar un usuario
-export const actualizarUsuario = (id: number, usuario: any): Promise<any> => {
-    const { nombre, FOTO, email, password, direccion, telefono } = usuario;
-    return new Promise((resolve, reject) => {
-        // @ts-ignore
-        db.query('UPDATE usuarios SET nombre = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?',
-            [nombre, FOTO, email, password, direccion, telefono, id],
-            (err: Error, results: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(results);
+export const actualizarUsuario = async (id: number, usuario: any): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Obtener el usuario actual
+            const usuarioActual = await obtenerUsuarioPorId(id);
+            if (!usuarioActual) {
+                return reject(new Error('Usuario no encontrado'));
+            }
+
+            // Mezclar datos: lo que envía el usuario reemplaza lo que ya existía
+            const usuarioActualizado = {
+                ...usuarioActual,
+                ...usuario,
+            };
+
+            // Ejecutar la consulta de actualización
+            db.query(
+                'UPDATE usuarios SET nombre = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?',
+                [
+                    usuarioActualizado.nombre,
+                    usuarioActualizado.FOTO,
+                    usuarioActualizado.email,
+                    usuarioActualizado.password,
+                    usuarioActualizado.direccion,   
+                    usuarioActualizado.telefono,
+                    id,
+                ],
+                (err: QueryError | null, results: any) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(results);
+                    }
                 }
-            });
+            );
+        } catch (error) {
+            reject(error);
+        }
     });
 };
 
 // Eliminar un usuario
 export const eliminarUsuario = (id: number): Promise<any> => {
     return new Promise((resolve, reject) => {
-        // @ts-ignore
-        db.query('DELETE FROM usuarios WHERE id_usuario = ?', [id], (err: Error, results: any) => {
+        db.query('DELETE FROM usuarios WHERE id_usuario = ?', [id], (err: QueryError | null, results: any) => {
             if (err) {
                 reject(err);
             } else {

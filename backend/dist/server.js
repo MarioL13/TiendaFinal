@@ -6,12 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const usuarios_1 = __importDefault(require("./routes/usuarios")); // Importa las rutas
+const productos_1 = __importDefault(require("./routes/productos"));
+const categorias_1 = __importDefault(require("./routes/categorias"));
 const app = (0, express_1.default)();
 const port = 5000;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json()); // Para poder recibir datos JSON en el cuerpo de las solicitudes
 // Usar las rutas de usuarios
 app.use(usuarios_1.default);
+app.use(productos_1.default);
+app.use(categorias_1.default);
 app.get('/', (req, res) => {
     res.send('API funcionando');
 });
