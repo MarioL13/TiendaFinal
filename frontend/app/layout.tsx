@@ -23,9 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es">
       <body className="antialiased">
-        <Header/>
+        <Header />
         <main className="p-4">{children}</main>
-        <Footer/> 
+        <Footer />
       </body>
     </html>
   );

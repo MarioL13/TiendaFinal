@@ -6,7 +6,8 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'tiendaonline'
+    database: 'tiendaonline',
+    port: 3306,
 });
 
 // Verificar si la conexión se establece correctamente

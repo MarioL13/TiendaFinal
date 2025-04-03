@@ -12,7 +12,7 @@ interface User {
     fecha_registro: string;
 }
 
-const Home = () => {
+export default function Page() {
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
@@ -35,5 +35,3 @@ const Home = () => {
         </div>
     );
 };
-
-export default Home;
