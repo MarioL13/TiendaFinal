@@ -90,13 +90,14 @@ export const eliminarCategoria = (id: number): Promise<any> => {
 }
 
 export const obtenerIdCategoria =  (nombreCategoria: string): Promise<number> => {
+    console.log(nombreCategoria);
     return new Promise((resolve, reject) => {
         db.query('SELECT id_categoria FROM categorias WHERE nombre = ?', [nombreCategoria], (err: QueryError | null, results: any[]) => {
             if (err) {
                 return reject(err);
             }
 
-            if (results.length > 0) {
+            if (results.length === 0) {
                 return reject (new Error('Categoria no encontrado'));
             }
 

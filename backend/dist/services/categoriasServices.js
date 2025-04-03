@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarCategoria = exports.actualizarCategoria = exports.crearCategoria = exports.obtenerCategoriaPorId = exports.obtenerCategorias = void 0;
+exports.obtenerIdCategoria = exports.eliminarCategoria = exports.actualizarCategoria = exports.crearCategoria = exports.obtenerCategoriaPorId = exports.obtenerCategorias = void 0;
 const db_1 = __importDefault(require("./db"));
 const obtenerCategorias = () => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
@@ -94,3 +94,18 @@ const eliminarCategoria = (id) => {
     });
 };
 exports.eliminarCategoria = eliminarCategoria;
+const obtenerIdCategoria = (nombreCategoria) => {
+    console.log(nombreCategoria);
+    return new Promise((resolve, reject) => {
+        db_1.default.query('SELECT id_categoria FROM categorias WHERE nombre = ?', [nombreCategoria], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            if (results.length === 0) {
+                return reject(new Error('Categoria no encontrado'));
+            }
+            resolve(results[0].id_categoria);
+        });
+    });
+};
+exports.obtenerIdCategoria = obtenerIdCategoria;
