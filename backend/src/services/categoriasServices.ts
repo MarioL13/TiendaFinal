@@ -1,7 +1,8 @@
 import db from './db';
-import {QueryError, FieldPacket} from 'mysql2';
+import { QueryError, FieldPacket } from 'mysql2';
 
-export const obtenerCategorias = async () => {
+// Obtiene todas las categorías de la base de datos
+export const obtenerCategorias = async (): Promise<any[]> => {
     return new Promise((resolve, reject) => {
         db.query('SELECT * FROM categorias', (err: Error, results: any[]) => {
             if (err) {
@@ -9,24 +10,30 @@ export const obtenerCategorias = async () => {
             } else {
                 resolve(results);
             }
-        })
-    })
-}
+        });
+    });
+};
 
+// Obtiene una categoría por su ID
 export const obtenerCategoriaPorId = async (id: number): Promise<any> => {
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM categorias WHERE id_categoria = ?', [id], (err: QueryError | null, results: any[]) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(results[0]);
+        db.query(
+            'SELECT * FROM categorias WHERE id_categoria = ?',
+            [id],
+            (err: QueryError | null, results: any[]) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(results[0]); // Devuelve la primera categoría encontrada o undefined
+                }
             }
-        })
-    })
-}
+        );
+    });
+};
 
+// Crea una nueva categoría
 export const crearCategoria = (categoria: any): Promise<any> => {
-    const {nombre, descripcion} = categoria;
+    const { nombre, descripcion } = categoria;
     return new Promise((resolve, reject) => {
         db.query(
             'INSERT INTO categorias (nombre, descripcion) VALUES (?, ?)',
@@ -38,29 +45,29 @@ export const crearCategoria = (categoria: any): Promise<any> => {
                     resolve(results);
                 }
             }
-        )
-    })
-}
+        );
+    });
+};
 
+// Actualiza una categoría existente
 export const actualizarCategoria = async (id: number, categoria: any): Promise<any> => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
+            // Obtiene la categoría actual antes de actualizarla
             const categoriaActual = await obtenerCategoriaPorId(id);
-            if(!categoriaActual){
-                return reject(new Error('Categoria no encontrado'));
+            if (!categoriaActual) {
+                return reject(new Error('Categoría no encontrada'));
             }
 
+            // Fusiona los datos actuales con los nuevos valores
             const categoriaActualizada = {
                 ...categoriaActual,
                 ...categoria,
             };
+
             db.query(
                 'UPDATE categorias SET nombre = ?, descripcion = ? WHERE id_categoria = ?',
-                [
-                    categoriaActualizada.nombre,
-                    categoriaActualizada.descripcion,
-                    id,
-                ],
+                [categoriaActualizada.nombre, categoriaActualizada.descripcion, id],
                 (err: QueryError | null, results: any[]) => {
                     if (err) {
                         reject(err);
@@ -68,41 +75,48 @@ export const actualizarCategoria = async (id: number, categoria: any): Promise<a
                         resolve(results);
                     }
                 }
-            )
+            );
         } catch (error) {
             reject(error);
         }
     });
 };
 
+// Elimina una categoría por su ID
 export const eliminarCategoria = (id: number): Promise<any> => {
     return new Promise((resolve, reject) => {
-        db.query('DELETE FROM categorias WHERE id_categoria = ?',
-            [id], (err: QueryError | null, results: any[]) => {
+        db.query(
+            'DELETE FROM categorias WHERE id_categoria = ?',
+            [id],
+            (err: QueryError | null, results: any[]) => {
                 if (err) {
                     reject(err);
                 } else {
                     resolve(results);
                 }
             }
-        )
-    })
-}
+        );
+    });
+};
 
-export const obtenerIdCategoria =  (nombreCategoria: string): Promise<number> => {
+// Obtiene el ID de una categoría por su nombre
+export const obtenerIdCategoria = (nombreCategoria: string): Promise<number> => {
     console.log(nombreCategoria);
     return new Promise((resolve, reject) => {
-        db.query('SELECT id_categoria FROM categorias WHERE nombre = ?', [nombreCategoria], (err: QueryError | null, results: any[]) => {
-            if (err) {
-                return reject(err);
+        db.query(
+            'SELECT id_categoria FROM categorias WHERE nombre = ?',
+            [nombreCategoria],
+            (err: QueryError | null, results: any[]) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                if (results.length === 0) {
+                    return reject(new Error('Categoría no encontrada'));
+                }
+
+                resolve(results[0].id_categoria);
             }
-
-            if (results.length === 0) {
-                return reject (new Error('Categoria no encontrado'));
-            }
-
-            resolve(results[0].id_categoria);
-        })
-    })
-}
-
+        );
+    });
+};

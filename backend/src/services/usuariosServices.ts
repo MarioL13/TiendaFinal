@@ -1,12 +1,12 @@
 import db from './db';  // Importa la conexión a la base de datos
 import { QueryError, FieldPacket } from 'mysql2';
 
-
-export const obtenerUsuarios = (): Promise<any[]> => {
+// Obtener todos los usuarios
+export const obtenerUsuarios = async (): Promise<any[]> => {
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM usuarios', (err: Error, results: any[]) => {
+        db.query('SELECT * FROM usuarios', (err: QueryError | null, results: any[]) => {
             if (err) {
-                reject(err);
+                reject(new Error('Error al obtener los usuarios: ' + err.message));
             } else {
                 resolve(results);
             }
@@ -15,27 +15,33 @@ export const obtenerUsuarios = (): Promise<any[]> => {
 };
 
 // Obtener un usuario por ID
-export const obtenerUsuarioPorId = (id: number): Promise<any> => {
+export const obtenerUsuarioPorId = async (id: number): Promise<any | null> => {
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM usuarios WHERE id_usuario = ?', [id], (err: QueryError | null, results: any[], fields: FieldPacket[]) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(results[0]); // Solo un resultado
+        db.query(
+            'SELECT * FROM usuarios WHERE id_usuario = ?',
+            [id],
+            (err: QueryError | null, results: any[], fields: FieldPacket[]) => {
+                if (err) {
+                    reject(new Error('Error al obtener el usuario: ' + err.message));
+                } else {
+                    resolve(results.length > 0 ? results[0] : null);
+                }
             }
-        });
+        );
     });
 };
 
 // Crear un nuevo usuario
-export const crearUsuario = (usuario: any): Promise<any> => {
+export const crearUsuario = async (usuario: any): Promise<any> => {
     const { nombre, FOTO, email, password, direccion, telefono } = usuario;
+
     return new Promise((resolve, reject) => {
-        db.query('INSERT INTO usuarios (nombre, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)',
+        db.query(
+            'INSERT INTO usuarios (nombre, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)',
             [nombre, FOTO, email, password, direccion, telefono],
-            (err: QueryError | null, results: any) => { // Cambié Error por QueryError | null
+            (err: QueryError | null, results: any) => {
                 if (err) {
-                    reject(err);
+                    reject(new Error('Error al crear el usuario: ' + err.message));
                 } else {
                     resolve(results);
                 }
@@ -60,7 +66,6 @@ export const actualizarUsuario = async (id: number, usuario: any): Promise<any> 
                 ...usuario,
             };
 
-            // Ejecutar la consulta de actualización
             db.query(
                 'UPDATE usuarios SET nombre = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?',
                 [
@@ -68,13 +73,13 @@ export const actualizarUsuario = async (id: number, usuario: any): Promise<any> 
                     usuarioActualizado.FOTO,
                     usuarioActualizado.email,
                     usuarioActualizado.password,
-                    usuarioActualizado.direccion,   
+                    usuarioActualizado.direccion,
                     usuarioActualizado.telefono,
                     id,
                 ],
                 (err: QueryError | null, results: any) => {
                     if (err) {
-                        reject(err);
+                        reject(new Error('Error al actualizar el usuario: ' + err.message));
                     } else {
                         resolve(results);
                     }
@@ -87,14 +92,28 @@ export const actualizarUsuario = async (id: number, usuario: any): Promise<any> 
 };
 
 // Eliminar un usuario
-export const eliminarUsuario = (id: number): Promise<any> => {
-    return new Promise((resolve, reject) => {
-        db.query('DELETE FROM usuarios WHERE id_usuario = ?', [id], (err: QueryError | null, results: any) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(results);
+export const eliminarUsuario = async (id: number): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Verificar si el usuario existe antes de eliminarlo
+            const usuario = await obtenerUsuarioPorId(id);
+            if (!usuario) {
+                return reject(new Error('Usuario no encontrado'));
             }
-        });
+
+            db.query(
+                'DELETE FROM usuarios WHERE id_usuario = ?',
+                [id],
+                (err: QueryError | null, results: any) => {
+                    if (err) {
+                        reject(new Error('Error al eliminar el usuario: ' + err.message));
+                    } else {
+                        resolve(results);
+                    }
+                }
+            );
+        } catch (error) {
+            reject(error);
+        }
     });
 };
