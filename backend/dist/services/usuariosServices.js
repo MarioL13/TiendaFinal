@@ -14,47 +14,48 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.eliminarUsuario = exports.actualizarUsuario = exports.crearUsuario = exports.obtenerUsuarioPorId = exports.obtenerUsuarios = void 0;
 const db_1 = __importDefault(require("./db")); // Importa la conexión a la base de datos
-const obtenerUsuarios = () => {
+// Obtener todos los usuarios
+const obtenerUsuarios = () => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         db_1.default.query('SELECT * FROM usuarios', (err, results) => {
             if (err) {
-                reject(err);
+                reject(new Error('Error al obtener los usuarios: ' + err.message));
             }
             else {
                 resolve(results);
             }
         });
     });
-};
+});
 exports.obtenerUsuarios = obtenerUsuarios;
 // Obtener un usuario por ID
-const obtenerUsuarioPorId = (id) => {
+const obtenerUsuarioPorId = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         db_1.default.query('SELECT * FROM usuarios WHERE id_usuario = ?', [id], (err, results, fields) => {
             if (err) {
-                reject(err);
+                reject(new Error('Error al obtener el usuario: ' + err.message));
             }
             else {
-                resolve(results[0]); // Solo un resultado
+                resolve(results.length > 0 ? results[0] : null);
             }
         });
     });
-};
+});
 exports.obtenerUsuarioPorId = obtenerUsuarioPorId;
 // Crear un nuevo usuario
-const crearUsuario = (usuario) => {
+const crearUsuario = (usuario) => __awaiter(void 0, void 0, void 0, function* () {
     const { nombre, FOTO, email, password, direccion, telefono } = usuario;
     return new Promise((resolve, reject) => {
         db_1.default.query('INSERT INTO usuarios (nombre, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)', [nombre, FOTO, email, password, direccion, telefono], (err, results) => {
             if (err) {
-                reject(err);
+                reject(new Error('Error al crear el usuario: ' + err.message));
             }
             else {
                 resolve(results);
             }
         });
     });
-};
+});
 exports.crearUsuario = crearUsuario;
 // Actualizar un usuario
 const actualizarUsuario = (id, usuario) => __awaiter(void 0, void 0, void 0, function* () {
@@ -67,7 +68,6 @@ const actualizarUsuario = (id, usuario) => __awaiter(void 0, void 0, void 0, fun
             }
             // Mezclar datos: lo que envía el usuario reemplaza lo que ya existía
             const usuarioActualizado = Object.assign(Object.assign({}, usuarioActual), usuario);
-            // Ejecutar la consulta de actualización
             db_1.default.query('UPDATE usuarios SET nombre = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?', [
                 usuarioActualizado.nombre,
                 usuarioActualizado.FOTO,
@@ -78,7 +78,7 @@ const actualizarUsuario = (id, usuario) => __awaiter(void 0, void 0, void 0, fun
                 id,
             ], (err, results) => {
                 if (err) {
-                    reject(err);
+                    reject(new Error('Error al actualizar el usuario: ' + err.message));
                 }
                 else {
                     resolve(results);
@@ -92,16 +92,26 @@ const actualizarUsuario = (id, usuario) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.actualizarUsuario = actualizarUsuario;
 // Eliminar un usuario
-const eliminarUsuario = (id) => {
-    return new Promise((resolve, reject) => {
-        db_1.default.query('DELETE FROM usuarios WHERE id_usuario = ?', [id], (err, results) => {
-            if (err) {
-                reject(err);
+const eliminarUsuario = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            // Verificar si el usuario existe antes de eliminarlo
+            const usuario = yield (0, exports.obtenerUsuarioPorId)(id);
+            if (!usuario) {
+                return reject(new Error('Usuario no encontrado'));
             }
-            else {
-                resolve(results);
-            }
-        });
-    });
-};
+            db_1.default.query('DELETE FROM usuarios WHERE id_usuario = ?', [id], (err, results) => {
+                if (err) {
+                    reject(new Error('Error al eliminar el usuario: ' + err.message));
+                }
+                else {
+                    resolve(results);
+                }
+            });
+        }
+        catch (error) {
+            reject(error);
+        }
+    }));
+});
 exports.eliminarUsuario = eliminarUsuario;

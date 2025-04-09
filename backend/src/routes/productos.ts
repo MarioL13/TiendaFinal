@@ -24,15 +24,31 @@ router.get('/api/products', async (req: Request, res: Response) => {
 // Ruta para obtener un producto por su ID
 router.get('/api/products/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id); // Convierte el parámetro ID a número
+
+    if (isNaN(id)) {
+        return res.status(400).json({ error: 'ID de producto inválido' });
+    }
+
     try {
         const producto = await obtenerProductoPorId(id); // Busca el producto en la base de datos
+        console.log('Producto qwrqr:', producto); // Muestra el producto en la consola
         if (producto) {
-            res.json(producto); // Devuelve el producto si se encuentra
+            console.log("hola");
+            let imagenBase64 = null;
+
+            if (producto.imagen) {
+                imagenBase64 = producto.imagen.toString('base64');
+            }
+
+            res.json({
+                ...producto,
+                imagen: imagenBase64 ? `data:image/jpeg;base64,${imagenBase64}` : null,
+            });
         } else {
-            res.status(404).json({ message: 'Producto no encontrado' }); // Si no se encuentra, devuelve un error 404
+            res.status(404).json({ error: 'Producto no encontrado' });
         }
     } catch (err: any) {
-        console.log(err);
+        console.error('Error al obtener el producto:', err.message);
         res.status(500).json({ message: 'Error al obtener el producto', error: err.message });
     }
 });

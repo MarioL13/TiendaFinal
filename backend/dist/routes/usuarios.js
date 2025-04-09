@@ -10,29 +10,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const usuariosServices_1 = require("../services/usuariosServices"); // Importa las funciones del servicio
+const usuariosServices_1 = require("../services/usuariosServices"); // Importa las funciones del servicio que maneja los usuarios
 const router = (0, express_1.Router)();
 // Obtener todos los usuarios
 router.get('/api/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield (0, usuariosServices_1.obtenerUsuarios)();
-        res.json(users);
+        const users = yield (0, usuariosServices_1.obtenerUsuarios)(); // Llama a la función para obtener los usuarios
+        res.json(users); // Devuelve los usuarios en formato JSON
     }
     catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error al obtener los usuarios', error: err.message });
     }
 }));
-// Obtener un usuario por ID
+// Obtener un usuario por su ID
 router.get('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id); // Convierte el ID de la URL en número
     try {
-        const user = yield (0, usuariosServices_1.obtenerUsuarioPorId)(id);
+        const user = yield (0, usuariosServices_1.obtenerUsuarioPorId)(id); // Llama a la función para obtener un usuario por ID
         if (user) {
-            res.json(user);
+            res.json(user); // Devuelve el usuario si existe
         }
         else {
-            res.status(404).json({ message: 'Usuario no encontrado' });
+            res.status(404).json({ message: 'Usuario no encontrado' }); // Devuelve un error si el usuario no existe
         }
     }
     catch (err) {
@@ -42,27 +42,27 @@ router.get('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
 }));
 // Crear un nuevo usuario
 router.post('/api/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const usuario = req.body;
+    const usuario = req.body; // Obtiene los datos del usuario desde el cuerpo de la solicitud
     try {
-        const result = yield (0, usuariosServices_1.crearUsuario)(usuario);
-        res.status(201).json({ message: 'Usuario creado', id: result.insertId });
+        const result = yield (0, usuariosServices_1.crearUsuario)(usuario); // Llama a la función para crear un usuario
+        res.status(201).json({ message: 'Usuario creado', id: result.insertId }); // Responde con el ID del usuario creado
     }
     catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error al crear el usuario', error: err.message });
     }
 }));
-// Actualizar un usuario
+// Actualizar un usuario existente
 router.put('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = parseInt(req.params.id);
-    const usuario = req.body;
+    const id = parseInt(req.params.id); // Convierte el ID de la URL en número
+    const usuario = req.body; // Obtiene los nuevos datos del usuario
     try {
-        const result = yield (0, usuariosServices_1.actualizarUsuario)(id, usuario);
+        const result = yield (0, usuariosServices_1.actualizarUsuario)(id, usuario); // Llama a la función para actualizar el usuario
         if (result.affectedRows > 0) {
-            res.json({ message: 'Usuario actualizado' });
+            res.json({ message: 'Usuario actualizado' }); // Responde si se actualizó correctamente
         }
         else {
-            res.status(404).json({ message: 'Usuario no encontrado' });
+            res.status(404).json({ message: 'Usuario no encontrado' }); // Devuelve error si el usuario no existe
         }
     }
     catch (err) {
@@ -70,16 +70,16 @@ router.put('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.status(500).json({ message: 'Error al actualizar el usuario', error: err.message });
     }
 }));
-// Eliminar un usuario
+// Eliminar un usuario por su ID
 router.delete('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id); // Convierte el ID de la URL en número
     try {
-        const result = yield (0, usuariosServices_1.eliminarUsuario)(id);
+        const result = yield (0, usuariosServices_1.eliminarUsuario)(id); // Llama a la función para eliminar un usuario
         if (result.affectedRows > 0) {
-            res.json({ message: 'Usuario eliminado' });
+            res.json({ message: 'Usuario eliminado' }); // Confirma la eliminación del usuario
         }
         else {
-            res.status(404).json({ message: 'Usuario no encontrado' });
+            res.status(404).json({ message: 'Usuario no encontrado' }); // Devuelve error si el usuario no existe
         }
     }
     catch (err) {
@@ -87,4 +87,5 @@ router.delete('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
         res.status(500).json({ message: 'Error al eliminar el usuario', error: err.message });
     }
 }));
+// Exporta el enrutador para ser utilizado en la aplicación principal
 exports.default = router;

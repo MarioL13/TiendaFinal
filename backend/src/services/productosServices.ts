@@ -15,38 +15,42 @@ export const obtenerProductos = (): Promise<any[]> => {
     });
 };
 
-// Función para obtener un producto por su ID
+// Función para obtener un producto por su ID y su categoría asociada
 export const obtenerProductoPorId = (id: number): Promise<any> => {
     return new Promise((resolve, reject) => {
+        // Consulta principal: buscar el producto
+        console.log('ID de producto:', id); // Muestra el ID del producto en la consola
         db.query(
             'SELECT * FROM productos WHERE id_producto = ?',
             [id],
             (err: QueryError | null, results: any[], fields: FieldPacket[]) => {
                 if (err) {
-                    reject(err);
-                } else {
-                    const producto = results[0]; // Obtiene el primer resultado
-                    if (producto) {
-                        // Si el producto existe, obtiene también su categoría
-                        db.query(
-                            'SELECT * FROM categorias WHERE id_categoria = ?',
-                            [producto.id_categoria],
-                            (err: QueryError | null, categoriaResults: any[], fields: FieldPacket[]) => {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    const categoria = categoriaResults[0];
-                                    if (categoria) {
-                                        producto.categoria = categoria; // Agrega la categoría al producto
-                                    }
-                                    resolve(producto);
-                                }
-                            }
-                        );
-                    } else {
-                        resolve(null); // Si no existe el producto, devuelve null
-                    }
+                    return reject(new Error(`Error al consultar el producto: ${err.message}`));
                 }
+
+                const producto = results[0]; // Obtiene el primer resultado
+                console.log('ProductoPoke:', producto); // Muestra el producto en la consola
+                if (!producto) {
+                    console.log('Producto no encontrado'); // Mensaje de error
+                    return resolve(null); // Producto no encontrado
+                }
+
+                // Si el producto existe, buscar la categoría asociada
+                db.query(
+                    'SELECT * FROM categorias WHERE id_categoria = ?',
+                    [producto.id_categoria],
+                    (err: QueryError | null, categoriaResults: any[], fields: FieldPacket[]) => {
+                        if (err) {
+                            return reject(new Error(`Error al consultar la categoría: ${err.message}`));
+                        }
+
+                        const categoria = categoriaResults[0]; // Primera categoría encontrada
+                        if (categoria) {
+                            producto.categoria = categoria; // Agrega la categoría al producto
+                        }
+                        resolve(producto); // Devuelve el producto con la categoría asociada
+                    }
+                );
             }
         );
     });
