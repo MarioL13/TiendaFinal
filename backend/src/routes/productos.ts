@@ -31,9 +31,7 @@ router.get('/api/products/:id', async (req: Request, res: Response) => {
 
     try {
         const producto = await obtenerProductoPorId(id); // Busca el producto en la base de datos
-        console.log('Producto qwrqr:', producto); // Muestra el producto en la consola
         if (producto) {
-            console.log("hola");
             let imagenBase64 = null;
 
             if (producto.imagen) {

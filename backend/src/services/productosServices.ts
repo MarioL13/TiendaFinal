@@ -1,15 +1,48 @@
 import db from '../services/db';
-import { QueryError, FieldPacket } from "mysql2";
-import { obtenerIdCategoria } from "./categoriasServices";
+import {QueryError, FieldPacket} from "mysql2";
+import {obtenerCategoriaPorId, obtenerIdCategoria} from "./categoriasServices";
 
 // Función para obtener todos los productos de la base de datos
 export const obtenerProductos = (): Promise<any[]> => {
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM productos', (err: Error, results: any[]) => {
+        db.query('SELECT * FROM productos', async (err: Error, results: any[]) => {
             if (err) {
-                reject(err); // Rechaza la promesa en caso de error
+                reject(err);
             } else {
-                resolve(results); // Devuelve los productos obtenidos
+                const productosCategoria: any[] = [];
+
+                for (let producto of results) {
+                    try {
+                        const categorias = await new Promise<string[]>((res, rej) =>
+                            db.query(
+                                'SELECT c.nombre FROM categorias c JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria WHERE pc.id_producto = ?',
+                                [producto.id_producto],
+                                (err: QueryError | null, categoriaResults: any[]) => {
+                                    if (err) {
+                                        rej(err); // <-- cuidado, aquí usabas reject del scope de fuera
+                                    } else {
+                                        const nombres: string[] = [];
+                                        for (const c of categoriaResults) {
+                                            nombres.push(c.nombre);
+                                        }
+                                        res(nombres);
+                                    }
+                                }
+                            )
+                        );
+
+                        // Asignamos las categorías al producto
+                        producto.categorias = categorias;
+
+                        // Lo añadimos al array final
+                        productosCategoria.push(producto);
+                    } catch (error) {
+                        reject(error);
+                        return;
+                    }
+                }
+
+                resolve(productosCategoria);
             }
         });
     });
@@ -18,37 +51,34 @@ export const obtenerProductos = (): Promise<any[]> => {
 // Función para obtener un producto por su ID y su categoría asociada
 export const obtenerProductoPorId = (id: number): Promise<any> => {
     return new Promise((resolve, reject) => {
-        // Consulta principal: buscar el producto
-        console.log('ID de producto:', id); // Muestra el ID del producto en la consola
         db.query(
             'SELECT * FROM productos WHERE id_producto = ?',
             [id],
             (err: QueryError | null, results: any[], fields: FieldPacket[]) => {
-                if (err) {
-                    return reject(new Error(`Error al consultar el producto: ${err.message}`));
-                }
+                if (err) return reject(new Error(`Error al consultar el producto: ${err.message}`));
 
-                const producto = results[0]; // Obtiene el primer resultado
-                console.log('ProductoPoke:', producto); // Muestra el producto en la consola
-                if (!producto) {
-                    console.log('Producto no encontrado'); // Mensaje de error
-                    return resolve(null); // Producto no encontrado
-                }
+                const producto = results[0];
+                if (!producto) return resolve(null);
 
-                // Si el producto existe, buscar la categoría asociada
+                // Obtener las categorías asociadas
                 db.query(
-                    'SELECT * FROM categorias WHERE id_categoria = ?',
-                    [producto.id_categoria],
-                    (err: QueryError | null, categoriaResults: any[], fields: FieldPacket[]) => {
-                        if (err) {
-                            return reject(new Error(`Error al consultar la categoría: ${err.message}`));
+                    `SELECT c.nombre
+                     FROM categorias c
+                              INNER JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria
+                     WHERE pc.id_producto = ?`,
+                    [id],
+                    (err: QueryError | null, categoriasResults: any[], fields: FieldPacket[]) => {
+                        if (err) return reject(new Error(`Error al consultar las categorías: ${err.message}`));
+
+                        const categorias: string[] = [];
+
+                        for (const c of categoriasResults) {
+                            categorias.push(c.nombre);
                         }
 
-                        const categoria = categoriaResults[0]; // Primera categoría encontrada
-                        if (categoria) {
-                            producto.categoria = categoria; // Agrega la categoría al producto
-                        }
-                        resolve(producto); // Devuelve el producto con la categoría asociada
+                        producto.categorias = categorias;
+
+                        resolve(producto);
                     }
                 );
             }
@@ -58,21 +88,27 @@ export const obtenerProductoPorId = (id: number): Promise<any> => {
 
 // Función para crear un nuevo producto en la base de datos
 export const crearProducto = async (producto: any): Promise<any> => {
-    const { nombre, descripcion, precio, stock, nombre_categoria, imagen } = producto;
+    const {nombre, descripcion, precio, stock, categorias, imagen} = producto;
     try {
-        // Obtiene el ID de la categoría basada en su nombre
-        const id_categoria = await obtenerIdCategoria(nombre_categoria);
-
         return new Promise((resolve, reject) => {
             db.query(
-                'INSERT INTO productos (nombre, descripcion, precio, stock, id_categoria, imagen) VALUES (?, ?, ?, ?, ?, ?)',
-                [nombre, descripcion, precio, stock, id_categoria, imagen],
-                (err: QueryError | null, results: any) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(results);
+                'INSERT INTO productos (nombre, descripcion, precio, stock, imagen) VALUES (?, ?, ?, ?, ?)',
+                [nombre, descripcion, precio, stock, imagen],
+                async (err: QueryError | null, results: any) => {
+                    if (err) return reject(err);
+                    const id_producto = results.insertId;
+
+                    for (const nombre_categoria of categorias) {
+                        const id_categoria = await obtenerIdCategoria(nombre_categoria);
+                        await new Promise((resolve, reject) => {
+                            db.query(
+                                'INSERT INTO ProductoCategoria (id_producto, id_categoria) VALUES (?, ?)',
+                                [id_producto, id_categoria],
+                                (err) => err ? reject(err) : resolve(true),
+                            )
+                        })
                     }
+                    resolve(results);
                 }
             );
         });

@@ -32,9 +32,7 @@ router.get('/api/products/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
     try {
         const producto = yield (0, productosServices_1.obtenerProductoPorId)(id); // Busca el producto en la base de datos
-        console.log('Producto qwrqr:', producto); // Muestra el producto en la consola
         if (producto) {
-            console.log("hola");
             let imagenBase64 = null;
             if (producto.imagen) {
                 imagenBase64 = producto.imagen.toString('base64');

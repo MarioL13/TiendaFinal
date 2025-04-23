@@ -29,49 +29,42 @@ CREATE TABLE Cartas (
     stock INT NOT NULL
 );
 
--- Tabla de Productos
+-- Tabla de Productos (sin id_categoria)
 CREATE TABLE Productos (
     id_producto INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
     descripcion TEXT,
     precio DECIMAL(10,2) NOT NULL,
     stock INT NOT NULL,
-    id_categoria INT,
-    imagen LONGBLOB,
-    FOREIGN KEY (id_categoria) REFERENCES Categorias(id_categoria)
+    imagen LONGBLOB
 );
 
--- Tabla de Pedidos
+-- Tabla intermedia: productos pueden tener múltiples categorías
+CREATE TABLE ProductoCategoria (
+    id_producto INT,
+    id_categoria INT,
+    PRIMARY KEY (id_producto, id_categoria),
+    FOREIGN KEY (id_producto) REFERENCES Productos(id_producto) ON DELETE CASCADE,
+    FOREIGN KEY (id_categoria) REFERENCES Categorias(id_categoria) ON DELETE CASCADE
+);
+
+-- Tabla de Pedidos (sin id_cartas)
 CREATE TABLE Pedidos (
     id_pedido INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT,
-    id_cartas INT,
     fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10,2) NOT NULL,
     estado ENUM('Pendiente', 'Enviado', 'Entregado', 'Cancelado') DEFAULT 'Pendiente',
-    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
-    FOREIGN KEY (id_cartas) REFERENCES Cartas(id_cartas)
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
 );
 
--- Tabla de Detalles de Pedido
-CREATE TABLE DetallesPedido (
+-- Tabla unificada de Detalles de Pedido (productos y cartas)
+CREATE TABLE DetallePedido (
     id_detalle INT AUTO_INCREMENT PRIMARY KEY,
     id_pedido INT,
-    id_producto INT,
+    tipo_item ENUM('producto', 'carta') NOT NULL,
+    id_item INT NOT NULL,
     cantidad INT NOT NULL,
     precio DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido),
-    FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
+    FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido)
 );
-
--- Tabla de Detalles de Cartas
-CREATE TABLE DetallesPedidoCartas (
-    id_detalle INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT,
-    id_cartas INT,
-    cantidad INT NOT NULL,
-    precio DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido),
-    FOREIGN KEY (id_cartas) REFERENCES Cartas(id_cartas)
-);
-
