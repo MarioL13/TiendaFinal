@@ -52,11 +52,14 @@ export default function Page() {
   if (!producto) return <p>Producto no encontrado.</p>;
 
   return (
-    <ProductCard
-    title={producto.nombre}
-    descripcion={producto.descripcion}
-    price={`${producto.precio}€`}
-    image={producto.imagen}
-    />
+    <>
+      <ProductCard
+        title={producto.nombre}
+        descripcion={producto.descripcion}
+        price={`${producto.precio}€`}
+        image={producto.imagen}
+      />
+      <button className="button">Comprar</button>
+    </>   
   );
-}
+}  

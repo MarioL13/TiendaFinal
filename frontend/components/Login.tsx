@@ -1,4 +1,9 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
+
 const Login = () => {   
+  const router = useRouter()
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="max-w-[720px] mx-auto">
@@ -9,7 +14,6 @@ const Login = () => {
             href="https://www.material-tailwind.com/docs/html/card"
             className="block w-full px-4 py-2 text-center text-slate-700 transition-all"
           >
-            More components on <b>Material Tailwind</b>.
           </a>
         </div>
 
@@ -39,7 +43,7 @@ const Login = () => {
             </button>
             <p className="flex justify-center mt-6 text-sm">
               Don't have an account?
-              <a href="#signup" className="ml-1 font-bold text-gray-900">
+              <a href="#" onClick={() => router.push('/Registrarte')} className="ml-1 font-bold text-gray-900 cursor-poiter">
                 Sign up
               </a>
             </p>
