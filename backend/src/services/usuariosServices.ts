@@ -33,7 +33,11 @@ export const obtenerUsuarioPorId = async (id: number): Promise<any | null> => {
 
 // Crear un nuevo usuario
 export const crearUsuario = async (usuario: any): Promise<any> => {
-    const { nombre, FOTO, email, password, direccion, telefono } = usuario;
+    let { nombre, FOTO, email, password, direccion, telefono } = usuario;
+
+    if (!FOTO || FOTO === '' || typeof FOTO !== 'object') {
+        FOTO = null;
+    }
 
     return new Promise((resolve, reject) => {
         db.query(
