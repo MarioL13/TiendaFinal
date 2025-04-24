@@ -93,6 +93,10 @@ router.post('/api/login', async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
+        // Imprimir contraseñas para depuración
+        console.log('Contraseña ingresada:', password);
+        console.log('Contraseña almacenada:', user.password);
+
         if (user.password !== password) {
             return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
@@ -110,6 +114,7 @@ router.post('/api/login', async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error al intentar hacer login', error: err.message });
     }
 });
+
 
 // Exporta el enrutador para ser utilizado en la aplicación principal
 export default router;
