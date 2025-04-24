@@ -121,3 +121,19 @@ export const eliminarUsuario = async (id: number): Promise<any> => {
         }
     });
 };
+
+export const obtenerUsuarioPorEmail = async (email: string): Promise<any | null> => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            'SELECT * FROM usuarios WHERE email = ?',
+            [email],
+            (err: QueryError | null, results: any[]) => {
+                if (err) {
+                    reject(new Error('Error al buscar el usuario: ' + err.message));
+                } else {
+                    resolve(results.length > 0 ? results[0] : null);
+                }
+            }
+        );
+    });
+};

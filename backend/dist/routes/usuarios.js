@@ -87,5 +87,29 @@ router.delete('/api/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
         res.status(500).json({ message: 'Error al eliminar el usuario', error: err.message });
     }
 }));
+// Endpoint de login
+router.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.body;
+    try {
+        const user = yield (0, usuariosServices_1.obtenerUsuarioPorEmail)(email);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        if (user.password !== password) {
+            return res.status(401).json({ message: 'Contraseña incorrecta' });
+        }
+        // Si quieres devolver sólo algunos campos:
+        const usuarioFiltrado = {
+            id: user.id_usuario,
+            nombre: user.nombre,
+            email: user.email,
+        };
+        res.json({ message: 'Login correcto', usuario: usuarioFiltrado });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error al intentar hacer login', error: err.message });
+    }
+}));
 // Exporta el enrutador para ser utilizado en la aplicación principal
 exports.default = router;
