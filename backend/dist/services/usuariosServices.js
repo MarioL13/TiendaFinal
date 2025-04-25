@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarUsuario = exports.actualizarUsuario = exports.crearUsuario = exports.obtenerUsuarioPorId = exports.obtenerUsuarios = void 0;
+exports.obtenerUsuarioPorEmail = exports.eliminarUsuario = exports.actualizarUsuario = exports.crearUsuario = exports.obtenerUsuarioPorId = exports.obtenerUsuarios = void 0;
 const db_1 = __importDefault(require("./db")); // Importa la conexión a la base de datos
 // Obtener todos los usuarios
 const obtenerUsuarios = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,7 +44,10 @@ const obtenerUsuarioPorId = (id) => __awaiter(void 0, void 0, void 0, function* 
 exports.obtenerUsuarioPorId = obtenerUsuarioPorId;
 // Crear un nuevo usuario
 const crearUsuario = (usuario) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nombre, FOTO, email, password, direccion, telefono } = usuario;
+    let { nombre, FOTO, email, password, direccion, telefono } = usuario;
+    if (!FOTO || FOTO === '' || typeof FOTO !== 'object') {
+        FOTO = null;
+    }
     return new Promise((resolve, reject) => {
         db_1.default.query('INSERT INTO usuarios (nombre, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)', [nombre, FOTO, email, password, direccion, telefono], (err, results) => {
             if (err) {
@@ -115,3 +118,16 @@ const eliminarUsuario = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }));
 });
 exports.eliminarUsuario = eliminarUsuario;
+const obtenerUsuarioPorEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => {
+        db_1.default.query('SELECT * FROM usuarios WHERE email = ?', [email], (err, results) => {
+            if (err) {
+                reject(new Error('Error al buscar el usuario: ' + err.message));
+            }
+            else {
+                resolve(results.length > 0 ? results[0] : null);
+            }
+        });
+    });
+});
+exports.obtenerUsuarioPorEmail = obtenerUsuarioPorEmail;
