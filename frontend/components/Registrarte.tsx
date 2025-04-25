@@ -88,6 +88,24 @@ const SignUpComponent = () => {
                 name="password"
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Direcccion
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+              />
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Telefono
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+              />
             </div>
             <div>
               <button

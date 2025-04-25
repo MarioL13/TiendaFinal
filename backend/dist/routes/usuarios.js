@@ -95,6 +95,9 @@ router.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, functi
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
+        // Imprimir contraseñas para depuración
+        console.log('Contraseña ingresada:', password);
+        console.log('Contraseña almacenada:', user.password);
         if (user.password !== password) {
             return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
