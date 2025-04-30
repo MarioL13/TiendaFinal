@@ -3,6 +3,8 @@ import cors from 'cors';
 import usersRouter from './routes/usuarios'; // Importa las rutas
 import productsRouter from './routes/productos';
 import categoriasRouter from './routes/categorias';
+import deseadosRouter from './routes/deseados';
+import cartasRouter from './routes/cartas';
 import path from 'path';
 
 
@@ -20,6 +22,8 @@ app.use(productsRouter);
 app.use(usersRouter);
 app.use(productsRouter);
 app.use(categoriasRouter);
+app.use(cartasRouter);
+app.use(deseadosRouter);
 
 app.get('/', (req: Request, res: Response) => {
     res.send('API funcionando');

@@ -8,6 +8,8 @@ const cors_1 = __importDefault(require("cors"));
 const usuarios_1 = __importDefault(require("./routes/usuarios")); // Importa las rutas
 const productos_1 = __importDefault(require("./routes/productos"));
 const categorias_1 = __importDefault(require("./routes/categorias"));
+const deseados_1 = __importDefault(require("./routes/deseados"));
+const cartas_1 = __importDefault(require("./routes/cartas"));
 const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 const port = 5000;
@@ -20,6 +22,8 @@ app.use(productos_1.default);
 app.use(usuarios_1.default);
 app.use(productos_1.default);
 app.use(categorias_1.default);
+app.use(cartas_1.default);
+app.use(deseados_1.default);
 app.get('/', (req, res) => {
     res.send('API funcionando');
 });
