@@ -4,7 +4,8 @@ import {
     obtenerProductoPorId,
     crearProducto,
     actualizarProducto,
-    eliminarProducto
+    eliminarProducto,
+    obtenerDestacados
 } from '../services/productosServices';
 
 // Se crea una instancia del enrutador de Express
@@ -21,10 +22,19 @@ router.get('/api/products', async (req: Request, res: Response) => {
     }
 });
 
+router.get('/api/products/destacados', async (req: Request, res: Response) => {
+    try{
+        const productos = await obtenerDestacados();
+        res.json(productos);
+    }catch(err: any) {
+        console.error(err);
+        res.status(500).json({ message: 'Error al obtener los productos', error: err.message });
+    }
+})
+
 // Ruta para obtener un producto por su ID
 router.get('/api/products/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id); // Convierte el parámetro ID a número
-
     if (isNaN(id)) {
         return res.status(400).json({ error: 'ID de producto inválido' });
     }

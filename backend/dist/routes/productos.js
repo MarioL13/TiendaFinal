@@ -24,6 +24,16 @@ router.get('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(500).json({ message: 'Error al obtener los productos', error: err.message });
     }
 }));
+router.get('/api/products/destacados', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const productos = yield (0, productosServices_1.obtenerDestacados)();
+        res.json(productos);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error al obtener los productos', error: err.message });
+    }
+}));
 // Ruta para obtener un producto por su ID
 router.get('/api/products/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = parseInt(req.params.id); // Convierte el parámetro ID a número

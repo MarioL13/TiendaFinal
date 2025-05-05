@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarProducto = exports.actualizarProducto = exports.crearProducto = exports.obtenerProductoPorId = exports.obtenerProductos = void 0;
+exports.obtenerDestacados = exports.eliminarProducto = exports.actualizarProducto = exports.crearProducto = exports.obtenerProductoPorId = exports.obtenerProductos = void 0;
 const db_1 = __importDefault(require("../services/db"));
 const categoriasServices_1 = require("./categoriasServices");
 // Función para obtener todos los productos de la base de datos
@@ -153,3 +153,45 @@ const eliminarProducto = (producto) => __awaiter(void 0, void 0, void 0, functio
     }));
 });
 exports.eliminarProducto = eliminarProducto;
+const obtenerDestacados = () => {
+    return new Promise((resolve, reject) => {
+        db_1.default.query(`SELECT p.*, SUM(dp.cantidad) AS total_vendidos
+             FROM detallepedido dp
+             JOIN productos p ON dp.id_item = p.id_producto
+             WHERE dp.tipo_item = 'producto'
+             GROUP BY dp.id_item
+             ORDER BY total_vendidos DESC
+             LIMIT 4`, (err, results) => __awaiter(void 0, void 0, void 0, function* () {
+            if (err) {
+                reject(err);
+            }
+            else {
+                const productosTop = [];
+                for (let producto of results) {
+                    try {
+                        const categorias = yield new Promise((res, rej) => db_1.default.query(`SELECT c.nombre
+                                     FROM categorias c
+                                     JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria
+                                     WHERE pc.id_producto = ?`, [producto.id_producto], (err, categoriaResults) => {
+                            if (err) {
+                                rej(err);
+                            }
+                            else {
+                                const nombres = categoriaResults.map(c => c.nombre);
+                                res(nombres);
+                            }
+                        }));
+                        producto.categorias = categorias;
+                        productosTop.push(producto);
+                    }
+                    catch (error) {
+                        reject(error);
+                        return;
+                    }
+                }
+                resolve(productosTop);
+            }
+        }));
+    });
+};
+exports.obtenerDestacados = obtenerDestacados;
