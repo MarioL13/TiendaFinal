@@ -36,7 +36,7 @@ const Login = () => {
       setMessage(`Bienvenido ${data.usuario.nombre}`);
       localStorage.setItem('user', JSON.stringify(data.usuario));
 
-      router.push('/dashboard');
+      router.push('/main');
     } catch (error: any) {
       console.error('Error al iniciar sesión:', error); // Depuración de errores
       setMessage(`Error: ${error.message}`);
@@ -49,11 +49,10 @@ const Login = () => {
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="max-w-[720px] mx-auto">
         <div className="relative flex flex-col text-gray-900 bg-white shadow-md w-96 rounded-xl p-6">
-          <div className="relative grid mx-4 mb-4 -mt-6 overflow-hidden text-white shadow-lg h-28 place-items-center rounded-xl bg-gradient-to-tr from-gray-900 to-gray-800">
-            <h3 className="block font-sans text-3xl font-semibold text-white">Sign In</h3>
-          </div>
-
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="relative flex justify-center items-center mx-2 mb-2 -mt-2 overflow-hidden text-white h-16 bg-transparent">
+                <h3 className="block font-sans text-4xl font-semibold text-black">Sign In</h3>
+            </div>
             <div className="relative h-11 w-full">
               <input
                 name="email"
@@ -96,7 +95,7 @@ const Login = () => {
                 <a
                   href="#"
                   onClick={() => router.push('/Registrarte')}
-                  className="ml-1 font-bold text-gray-900 cursor-pointer"
+                  className="ml-1 font-bold text-gray-900 cursor-pointer hover:underline"
                 >
                   Sign up
                 </a>
