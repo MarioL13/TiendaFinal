@@ -85,3 +85,14 @@ CREATE TABLE Deseados (
     FOREIGN KEY (id_carta) REFERENCES Cartas(id_cartas) ON DELETE SET NULL,
     FOREIGN KEY (id_producto) REFERENCES Productos(id_producto) ON DELETE SET NULL
 );
+
+CREATE TABLE Carrito (
+  id_carrito INT AUTO_INCREMENT PRIMARY KEY,
+  id_usuario INT NOT NULL,
+  tipo_item ENUM('producto', 'carta') NOT NULL,
+  id_item INT NOT NULL,
+  cantidad INT NOT NULL,
+  fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
+);
+
