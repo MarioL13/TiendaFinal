@@ -1,22 +1,31 @@
 import db from './db';  // Importa la conexión a la base de datos
 import {QueryError} from "mysql2";
 
-export const obtenerCarritoUsuario = (id_usuario: number): Promise<any[]> => {
+export const obtenerCarritoCompletoUsuario = (id_usuario: number): Promise<any[]> => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `SELECT c.id_carrito, c.id_producto, c.cantidad, p.nombre, p.precio, p.imagen
-             FROM carrito c
-             JOIN productos p ON c.id_producto = p.id_producto
-             WHERE c.id_usuario = ?`,
-            [id_usuario],
-            (err: QueryError | null, results: any[]) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(results);
-                }
+        const query = `
+            SELECT c.id_carrito, c.tipo_item, c.id_item, c.cantidad,
+                   CASE
+                       WHEN c.tipo_item = 'producto' THEN p.nombre
+                       ELSE ca.nombre
+                   END AS nombre,
+                   CASE
+                       WHEN c.tipo_item = 'producto' THEN p.precio
+                       ELSE ca.precio
+                   END AS precio
+            FROM Carrito c
+            LEFT JOIN Productos p ON c.tipo_item = 'producto' AND c.id_item = p.id_producto
+            LEFT JOIN Cartas ca ON c.tipo_item = 'carta' AND c.id_item = ca.id_cartas
+            WHERE c.id_usuario = ?
+        `;
+
+        db.query(query, [id_usuario], (err: QueryError | null, results: any[]) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(results);
             }
-        );
+        });
     });
 };
 

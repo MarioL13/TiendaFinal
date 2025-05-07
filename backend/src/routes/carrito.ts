@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import {
     agregarAlCarrito,
-    obtenerCarritoUsuario,
+    obtenerCarritoCompletoUsuario,
     actualizarCantidadCarrito,
     eliminarItemCarrito,
     vaciarCarrito
@@ -13,7 +13,7 @@ const router = Router();
 router.get('/api/carrito/:id_usuario', async (req: Request, res: Response) => {
     const id_usuario = parseInt(req.params.id_usuario);
     try {
-        const carrito = await obtenerCarritoUsuario(id_usuario);
+        const carrito = await obtenerCarritoCompletoUsuario(id_usuario);
         res.json(carrito);
     } catch (err: any) {
         console.error(err);
