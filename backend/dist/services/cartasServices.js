@@ -41,9 +41,10 @@ const obtenerCartaPorId = (id) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.obtenerCartaPorId = obtenerCartaPorId;
 const crearCarta = (carta) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nombre, stock, precio } = carta;
+    const { nombre, stock, precio, scryfall_id, set_code, collector_number } = carta;
     return new Promise((resolve, reject) => {
-        db_1.default.query('INSERT INTO cartas (nombre, stock, precio) VALUES (?, ?, ?)', [nombre, stock, precio], (err, results) => {
+        db_1.default.query(`INSERT INTO cartas (nombre, stock, precio, scryfall_id, set_code, collector_number)
+             VALUES (?, ?, ?, ?, ?, ?)`, [nombre, stock, precio, scryfall_id, set_code, collector_number], (err, results) => {
             if (err) {
                 reject(new Error('Error al crear la carta: ' + err.message));
             }

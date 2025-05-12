@@ -36,16 +36,95 @@ router.get('/api/cartas/:id', async (req: Request, res: Response) => {
 });
 
 router.post('/api/cartas', async (req: Request, res: Response) => {
-    const carta = req.body;
+    const { nombre, set_code, stock, precio } = req.body;
 
-    try{
-        const result = await crearCarta(carta);
-        res.status(201).json({ message: 'Carta creada', id: result.insertId});
+    if (!nombre || !set_code || stock === undefined || precio === undefined) {
+        return res.status(400).json({ message: 'Faltan campos obligatorios: nombre, set_code, stock, precio' });
+    }
+
+    try {
+        const scryfallUrl = `https://api.scryfall.com/cards/search?q=!"${encodeURIComponent(nombre)}"+set:${set_code}`;
+        const response = await fetch(scryfallUrl);
+        const data = await response.json();
+
+        const carta = data.data?.[0];
+
+        if (!carta) {
+            return res.status(404).json({ message: `Carta "${nombre}" no encontrada en el set ${set_code}` });
+        }
+
+        const cartaNueva = {
+            nombre: carta.name,
+            stock,
+            precio,
+            scryfall_id: carta.id,
+            set_code: carta.set,
+            collector_number: carta.collector_number,
+            imagen: carta.image_uris?.normal || ''
+        };
+
+        const resultado = await crearCarta(cartaNueva);
+        res.status(201).json({ message: 'Carta creada desde Scryfall', id: resultado.insertId });
+
     } catch (err: any) {
         console.error(err);
-        res.status(500).json({ message: 'Error al crear carta', error: err.message})
+        res.status(500).json({ message: 'Error al crear carta', error: err.message });
     }
-})
+});
+
+router.post('/api/cartas/lote', async (req: Request, res: Response) => {
+    const cartas = req.body;
+
+    if (!Array.isArray(cartas) || cartas.length === 0) {
+        return res.status(400).json({ message: 'Debes enviar un array de cartas' });
+    }
+
+    const resultados: any[] = [];
+    const errores: any[] = [];
+
+    for (const carta of cartas) {
+        const { nombre, set_code, stock, precio } = carta;
+
+        if (!nombre || !set_code || stock === undefined || precio === undefined) {
+            errores.push({ nombre, set_code, error: 'Faltan campos obligatorios' });
+            continue;
+        }
+
+        try {
+            const url = `https://api.scryfall.com/cards/search?q=!"${encodeURIComponent(nombre)}"+set:${set_code}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            const resultado = data.data?.[0];
+
+            if (!resultado) {
+                errores.push({ nombre, set_code, error: 'Carta no encontrada en Scryfall' });
+                continue;
+            }
+
+            const cartaNueva = {
+                nombre: resultado.name,
+                stock,
+                precio,
+                scryfall_id: resultado.id,
+                set_code: resultado.set,
+                collector_number: resultado.collector_number
+            };
+
+            const insert = await crearCarta(cartaNueva);
+            resultados.push({ nombre, id: insert.insertId });
+
+        } catch (err: any) {
+            errores.push({ nombre, set_code, error: err.message });
+        }
+    }
+
+    res.status(201).json({
+        message: 'Proceso de inserción finalizado',
+        creadas: resultados,
+        errores
+    });
+});
+
 
 router.put('/api/cartas/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);

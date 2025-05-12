@@ -30,12 +30,13 @@ export const obtenerCartaPorId = async (id: number): Promise<any |null> => {
 }
 
 export const crearCarta = async (carta: any): Promise<any> => {
-    const   {nombre, stock, precio} = carta;
+    const { nombre, stock, precio, scryfall_id, set_code, collector_number } = carta;
 
     return new Promise((resolve, reject) => {
         db.query(
-            'INSERT INTO cartas (nombre, stock, precio) VALUES (?, ?, ?)',
-            [nombre, stock, precio],
+            `INSERT INTO cartas (nombre, stock, precio, scryfall_id, set_code, collector_number)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [nombre, stock, precio, scryfall_id, set_code, collector_number],
             (err: QueryError | null, results: any[]) => {
                 if (err) {
                     reject(new Error('Error al crear la carta: ' + err.message));
@@ -43,9 +44,10 @@ export const crearCarta = async (carta: any): Promise<any> => {
                     resolve(results);
                 }
             }
-        )
-    })
-}
+        );
+    });
+};
+
 
 export const actualizarCarta = async (id:number, carta: any): Promise<any> => {
     return new Promise(async (resolve, reject) => {
