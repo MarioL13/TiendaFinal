@@ -36,11 +36,12 @@ router.get('/api/cartas/:id', async (req: Request, res: Response) => {
 });
 
 router.post('/api/cartas', async (req: Request, res: Response) => {
-    const { nombre, set_code, stock, precio } = req.body;
-
-    if (!nombre || !set_code || stock === undefined || precio === undefined) {
-        return res.status(400).json({ message: 'Faltan campos obligatorios: nombre, set_code, stock, precio' });
+    const error = validarCarta(req.body);
+    if (error) {
+        return res.status(400).json({ message: error });
     }
+
+    const { nombre, set_code, stock, precio } = req.body;
 
     try {
         const scryfallUrl = `https://api.scryfall.com/cards/search?q=!"${encodeURIComponent(nombre)}"+set:${set_code}`;
@@ -83,12 +84,14 @@ router.post('/api/cartas/lote', async (req: Request, res: Response) => {
     const errores: any[] = [];
 
     for (const carta of cartas) {
-        const { nombre, set_code, stock, precio } = carta;
+        const error = validarCarta(carta);
 
-        if (!nombre || !set_code || stock === undefined || precio === undefined) {
-            errores.push({ nombre, set_code, error: 'Faltan campos obligatorios' });
+        if (error) {
+            errores.push({ ...carta, error });
             continue;
         }
+
+        const { nombre, set_code, stock, precio } = carta;
 
         try {
             const url = `https://api.scryfall.com/cards/search?q=!"${encodeURIComponent(nombre)}"+set:${set_code}`;
@@ -129,18 +132,25 @@ router.post('/api/cartas/lote', async (req: Request, res: Response) => {
 router.put('/api/cartas/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const carta = req.body;
-    try{
+
+    // Validación de los campos
+    const error = validarCarta(carta);
+    if (error) {
+        return res.status(400).json({ message: error });
+    }
+
+    try {
         const result = await actualizarCarta(id, carta);
         if (result.affectedRows > 0) {
-            res.json({ message: 'Carta actualizada'})
-        }else {
-            res.status(404).json({ message: 'Carta no encontrada'})
+            res.json({ message: 'Carta actualizada' });
+        } else {
+            res.status(404).json({ message: 'Carta no encontrada' });
         }
     } catch (err: any) {
         console.error(err);
-        res.status(500).json({ message: 'Error al actualizar carta', error: err.message})
+        res.status(500).json({ message: 'Error al actualizar carta', error: err.message });
     }
-})
+});
 
 router.delete('/api/cartas/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
@@ -158,3 +168,19 @@ router.delete('/api/cartas/:id', async (req: Request, res: Response) => {
 })
 
 export default router;
+
+function validarCarta({ nombre, set_code, stock, precio }: any) {
+    if (!nombre || !set_code) {
+        return 'Faltan campos obligatorios: nombre o set_code';
+    }
+
+    if (stock === undefined || isNaN(stock) || stock < 0 || !Number.isInteger(stock)) {
+        return 'Stock debe ser un número entero mayor o igual a 0';
+    }
+
+    if (precio === undefined || isNaN(precio) || precio < 0) {
+        return 'Precio debe ser un número mayor o igual a 0';
+    }
+
+    return null; // todo bien
+}

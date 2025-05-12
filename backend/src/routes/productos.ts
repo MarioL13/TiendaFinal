@@ -64,6 +64,13 @@ router.get('/api/products/:id', async (req: Request, res: Response) => {
 // Ruta para crear un nuevo producto
 router.post('/api/products', async (req: Request, res: Response) => {
     const producto = req.body; // Obtiene los datos del producto desde el cuerpo de la solicitud
+
+    // Validación de los campos
+    const error = validarProducto(producto);
+    if (error) {
+        return res.status(400).json({ message: error });
+    }
+
     try {
         const result = await crearProducto(producto); // Llama a la función para crear el producto
         res.status(201).json({ message: 'Producto creado', id: result.insertId }); // Devuelve el ID del producto creado
@@ -74,19 +81,26 @@ router.post('/api/products', async (req: Request, res: Response) => {
 });
 
 // Ruta para actualizar un producto existente por su ID
-router.put('/api/products/:id', async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id); // Convierte el ID de la URL a número
-    const producto = req.body; // Obtiene los nuevos datos del producto
+router.put('/api/productos/:id', async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id);
+    const producto = req.body;
+
+    // Validación de los campos
+    const error = validarProducto(producto);
+    if (error) {
+        return res.status(400).json({ message: error });
+    }
+
     try {
-        const result = await actualizarProducto(id, producto); // Llama a la función para actualizar el producto
+        const result = await actualizarProducto(id, producto);
         if (result.affectedRows > 0) {
-            res.json({ message: 'Producto actualizado correctamente', id: result.insertId });
+            res.json({ message: 'Producto actualizado' });
         } else {
-            res.status(404).json({ message: 'Producto no encontrado' }); // Si no se encuentra, devuelve un error 404
+            res.status(404).json({ message: 'Producto no encontrado' });
         }
     } catch (err: any) {
         console.error(err);
-        res.status(500).json({ message: 'Error al actualizar el producto', error: err.message });
+        res.status(500).json({ message: 'Error al actualizar producto', error: err.message });
     }
 });
 
@@ -108,3 +122,17 @@ router.delete('/api/products/:id', async (req: Request, res: Response) => {
 
 // Exporta el enrutador para ser utilizado en la aplicación principal
 export default router;
+
+// Función de validación para productos
+const validarProducto = (producto: any): string | null => {
+    if (!producto.nombre || typeof producto.nombre !== 'string') {
+        return 'El nombre del producto es obligatorio y debe ser un texto';
+    }
+    if (producto.stock === undefined || isNaN(producto.stock) || producto.stock < 0) {
+        return 'El stock debe ser un número mayor o igual a 0';
+    }
+    if (producto.precio === undefined || isNaN(producto.precio) || producto.precio < 0) {
+        return 'El precio debe ser un número mayor o igual a 0';
+    }
+    return null;  // Si pasa todas las validaciones
+}

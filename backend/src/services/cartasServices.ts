@@ -16,13 +16,13 @@ export const obtenerCartas = async (): Promise<any[]> => {
 export const obtenerCartaPorId = async (id: number): Promise<any |null> => {
     return new Promise((resolve, reject) => {
         db.query(
-            'SELECT * FROM cartas WHERE id_carta= =',
+            'SELECT * FROM cartas WHERE id_carta = ?',
             [id],
             (err: QueryError | null, results: any[]) => {
                 if (err) {
                     reject(new Error('Error al obtener la carta: ' + err.message));
                 } else {
-                    resolve(results);
+                    resolve(results[0] || null);
                 }
             }
         )
@@ -30,12 +30,12 @@ export const obtenerCartaPorId = async (id: number): Promise<any |null> => {
 }
 
 export const crearCarta = async (carta: any): Promise<any> => {
-    const { nombre, stock, precio, scryfall_id, set_code, collector_number } = carta;
+    const { nombre, stock, precio, scryfall_id, set_code, collector_number, imagen } = carta;
 
     return new Promise((resolve, reject) => {
         db.query(
-            `INSERT INTO cartas (nombre, stock, precio, scryfall_id, set_code, collector_number)
-             VALUES (?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO cartas (nombre, stock, precio, scryfall_id, set_code, collector_number, imagen)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [nombre, stock, precio, scryfall_id, set_code, collector_number],
             (err: QueryError | null, results: any[]) => {
                 if (err) {
