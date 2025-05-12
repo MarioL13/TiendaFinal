@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarDeseado = exports.agregarProducto = exports.obtenerDeseados = void 0;
+exports.existeDeseado = exports.eliminarDeseado = exports.agregarProducto = exports.obtenerDeseados = void 0;
 const db_1 = __importDefault(require("./db"));
 const obtenerDeseados = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
@@ -28,7 +28,7 @@ const obtenerDeseados = (id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.obtenerDeseados = obtenerDeseados;
 const agregarProducto = (deseado) => __awaiter(void 0, void 0, void 0, function* () {
-    let { id_carta, id_producto, id_usuario } = deseado;
+    const { id_carta, id_producto, id_usuario } = deseado;
     return new Promise((resolve, reject) => {
         db_1.default.query('INSERT INTO deseados (id_carta, id_producto, id_usuario) VALUES (?, ?, ?)', [id_carta, id_producto, id_usuario], (err, results) => {
             if (err) {
@@ -54,3 +54,16 @@ const eliminarDeseado = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.eliminarDeseado = eliminarDeseado;
+const existeDeseado = (id_usuario, id_producto, id_carta) => __awaiter(void 0, void 0, void 0, function* () {
+    const campo = id_producto ? 'id_producto' : 'id_carta';
+    const valor = id_producto || id_carta;
+    return new Promise((resolve, reject) => {
+        db_1.default.query(`SELECT COUNT(*) as total FROM deseados WHERE id_usuario = ? AND ${campo} = ?`, [id_usuario, valor], (err, results) => {
+            if (err)
+                return reject(err);
+            const rows = results;
+            resolve(rows[0].total > 0);
+        });
+    });
+});
+exports.existeDeseado = existeDeseado;

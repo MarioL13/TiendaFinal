@@ -115,7 +115,7 @@ const actualizarProducto = (producto, producto1) => __awaiter(void 0, void 0, vo
                 return reject(new Error('Producto no encontrado'));
             }
             // Combina los datos actuales con los nuevos valores
-            const productoActualizado = Object.assign(Object.assign({}, productoActual), producto);
+            const productoActualizado = Object.assign(Object.assign({}, productoActual), producto1);
             db_1.default.query('UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, id_categoria = ?, imagen = ? WHERE id_producto = ?', [
                 productoActualizado.nombre,
                 productoActualizado.descripcion,

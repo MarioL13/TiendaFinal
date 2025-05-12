@@ -2,7 +2,8 @@ import { Router, Request, Response } from 'express';
 import {
     obtenerDeseados,
     agregarProducto,
-    eliminarDeseado
+    eliminarDeseado,
+    existeDeseado
 } from '../services/deseadosServices';
 
 const router = Router();
@@ -24,6 +25,20 @@ router.get('/api/wishlist/:id', async (req: Request, res: Response) => {
 
 router.post('/api/wishlist', async (req: Request, res: Response) => {
     const deseado = req.body;
+
+    if (!deseado.id_usuario || typeof deseado.id_usuario !== 'number') {
+        return res.status(400).json({ message: 'El id_usuario es obligatorio y debe ser un número.' });
+    }
+
+    if ((deseado.id_producto && typeof deseado.id_producto !== 'number') ||
+        (deseado.id_carta && typeof deseado.id_carta !== 'number')) {
+        return res.status(400).json({ message: 'id_producto o id_carta deben ser números.' });
+    }
+
+    const yaExiste = await existeDeseado(deseado.id_usuario, deseado.id_producto, deseado.id_carta);
+    if (yaExiste) {
+        return res.status(409).json({ message: 'Este producto ya está en la lista de deseos.' });
+    }
 
     if ((!deseado.id_producto && !deseado.id_carta) || (deseado.id_producto && deseado.id_carta)) {
         return res.status(400).json({ message: 'Debes enviar solo id_producto o id_carta, no ambos ni ninguno.' });

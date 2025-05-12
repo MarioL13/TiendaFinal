@@ -4,7 +4,7 @@ import {
     obtenerCarritoCompletoUsuario,
     actualizarCantidadCarrito,
     eliminarItemCarrito,
-    vaciarCarrito
+    vaciarCarrito, existeItem
 } from '../services/carritoServices';
 
 const router = Router();
@@ -24,9 +24,19 @@ router.get('/api/carrito/:id_usuario', async (req: Request, res: Response) => {
 // Añadir al carrito
 router.post('/api/carrito', async (req: Request, res: Response) => {
     const { id_usuario, tipo_item, id_item, cantidad } = req.body;
+
     try {
+        const existe = await existeItem(tipo_item, id_item);
+        if (!existe) {
+            return res.status(400).json({ message: `${tipo_item} no encontrado` });
+        }
+
+        if (cantidad <= 0) {
+            return res.status(400).json({ message: 'Cantidad inválida' });
+        }
+
         const result = await agregarAlCarrito(id_usuario, tipo_item, id_item, cantidad);
-        res.status(201).json({ message: 'Ítem añadido al carrito', id: result.insertId });
+        res.status(201).json({ message: 'Ítem añadido en el carrito' });
     } catch (err: any) {
         console.error(err);
         res.status(500).json({ message: 'Error al añadir al carrito', error: err.message });

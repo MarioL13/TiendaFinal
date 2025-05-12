@@ -182,5 +182,5 @@ function validarCarta({ nombre, set_code, stock, precio }: any) {
         return 'Precio debe ser un número mayor o igual a 0';
     }
 
-    return null; // todo bien
+    return null; //bien
 }

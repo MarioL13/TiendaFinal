@@ -29,22 +29,22 @@ const obtenerCartas = () => __awaiter(void 0, void 0, void 0, function* () {
 exports.obtenerCartas = obtenerCartas;
 const obtenerCartaPorId = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
-        db_1.default.query('SELECT * FROM cartas WHERE id_carta= =', [id], (err, results) => {
+        db_1.default.query('SELECT * FROM cartas WHERE id_carta = ?', [id], (err, results) => {
             if (err) {
                 reject(new Error('Error al obtener la carta: ' + err.message));
             }
             else {
-                resolve(results);
+                resolve(results[0] || null);
             }
         });
     });
 });
 exports.obtenerCartaPorId = obtenerCartaPorId;
 const crearCarta = (carta) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nombre, stock, precio, scryfall_id, set_code, collector_number } = carta;
+    const { nombre, stock, precio, scryfall_id, set_code, collector_number, imagen } = carta;
     return new Promise((resolve, reject) => {
-        db_1.default.query(`INSERT INTO cartas (nombre, stock, precio, scryfall_id, set_code, collector_number)
-             VALUES (?, ?, ?, ?, ?, ?)`, [nombre, stock, precio, scryfall_id, set_code, collector_number], (err, results) => {
+        db_1.default.query(`INSERT INTO cartas (nombre, stock, precio, scryfall_id, set_code, collector_number, imagen)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`, [nombre, stock, precio, scryfall_id, set_code, collector_number], (err, results) => {
             if (err) {
                 reject(new Error('Error al crear la carta: ' + err.message));
             }
