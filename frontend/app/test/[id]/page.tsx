@@ -1,26 +1,22 @@
 "use client";
-import ProductoVista from "@/components/ProductoVista";
-import { useParams, useRouter } from "next/navigation";
+
+import ProductCard from "@/components/ProductCard";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Producto {
-  id: number;
   nombre: string;
   descripcion: string;
   precio: number;
   imagen: string;
-  categoria?: {
-    nombre: string;
-  };
+  categorias?: string[];
 }
 
 export default function Page() {
-  const router = useRouter();
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
-  console.log("ID de producto:", id);
 
   useEffect(() => {
     if (!id || isNaN(Number(id))) {
@@ -32,7 +28,6 @@ export default function Page() {
     const fetchProducto = async () => {
       try {
         const response = await fetch(`http://localhost:5000/api/products/${id}`);
-        console.log("Respuesta del servidor:", response);
         if (!response.ok) {
           throw new Error("Producto no encontrado o error en el servidor.");
         }
@@ -53,9 +48,9 @@ export default function Page() {
   if (!producto) return <p>Producto no encontrado.</p>;
 
   return (
-    <>
-      <ProductoVista
-        productId={producto.id}
+    <div className="p-4">
+      <ProductCard
+        productId={Number(id)}
         productData={{
           name: producto.nombre,
           description: producto.descripcion,
@@ -63,7 +58,9 @@ export default function Page() {
           image: producto.imagen,
         }}
       />
-      <button className="button">Comprar</button>
-    </>
+      <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        Comprar
+      </button>
+    </div>
   );
 }
