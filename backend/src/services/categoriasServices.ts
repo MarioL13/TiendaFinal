@@ -50,37 +50,19 @@ export const crearCategoria = (categoria: any): Promise<any> => {
 };
 
 // Actualiza una categoría existente
-export const actualizarCategoria = async (id: number, categoria: any): Promise<any> => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            // Obtiene la categoría actual antes de actualizarla
-            const categoriaActual = await obtenerCategoriaPorId(id);
-            if (!categoriaActual) {
-                return reject(new Error('Categoría no encontrada'));
+export const actualizarCategoria = (id: number, categoria: any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            'UPDATE categorias SET nombre = ?, descripcion = ? WHERE id_categoria = ?',
+            [categoria.nombre, categoria.descripcion, id],
+            (err, results) => {
+                if (err) reject(err);
+                else resolve(results);
             }
-
-            // Fusiona los datos actuales con los nuevos valores
-            const categoriaActualizada = {
-                ...categoriaActual,
-                ...categoria,
-            };
-
-            db.query(
-                'UPDATE categorias SET nombre = ?, descripcion = ? WHERE id_categoria = ?',
-                [categoriaActualizada.nombre, categoriaActualizada.descripcion, id],
-                (err: QueryError | null, results: any[]) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(results);
-                    }
-                }
-            );
-        } catch (error) {
-            reject(error);
-        }
+        );
     });
 };
+
 
 // Elimina una categoría por su ID
 export const eliminarCategoria = (id: number): Promise<any> => {
