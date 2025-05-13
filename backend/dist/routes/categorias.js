@@ -43,6 +43,9 @@ router.get('/api/categorias/:id', (req, res) => __awaiter(void 0, void 0, void 0
 // Crear una nueva categoría
 router.post('/api/categorias', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoria = req.body;
+    if (!categoria.nombre || typeof categoria.nombre !== 'string') {
+        return res.status(400).json({ message: 'Nombre de categoría inválido' });
+    }
     try {
         const result = yield (0, categoriasServices_1.crearCategoria)(categoria);
         res.status(201).json({ message: 'Categoría creada', id: result.insertId });
@@ -56,6 +59,9 @@ router.post('/api/categorias', (req, res) => __awaiter(void 0, void 0, void 0, f
 router.put('/api/categorias/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = parseInt(req.params.id);
     const categoria = req.body;
+    if (!categoria.nombre || typeof categoria.nombre !== 'string') {
+        return res.status(400).json({ message: 'Nombre de categoría inválido' });
+    }
     try {
         const result = yield (0, categoriasServices_1.actualizarCategoria)(id, categoria);
         if (result.affectedRows > 0) {

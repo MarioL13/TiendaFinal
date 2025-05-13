@@ -1,5 +1,7 @@
 import db from './db';  // Importa la conexión a la base de datos
 import { QueryError, FieldPacket } from 'mysql2';
+import bcrypt from 'bcrypt';
+import validator from 'validator';
 
 // Obtener todos los usuarios
 export const obtenerUsuarios = async (): Promise<any[]> => {
@@ -31,18 +33,51 @@ export const obtenerUsuarioPorId = async (id: number): Promise<any | null> => {
     });
 };
 
+const validarUsuario = (usuario: any): string | null => {
+    const { nombre, email, password, telefono } = usuario;
+
+    if (!nombre || nombre.trim().length < 2) {
+        return 'Nombre inválido.';
+    }
+
+    if (!email || !validator.isEmail(email)) {
+        return 'Email inválido.';
+    }
+
+    if (!password || !validarPassword(password)) {
+        return 'La contraseña debe tener mínimo 8 caracteres, incluir una mayúscula, un número y un símbolo.';
+    }
+
+    if (telefono && !validator.isMobilePhone(telefono, 'es-ES')) {
+        return 'Teléfono inválido.';
+    }
+
+    return null; // Si
+};
+
+// Función para validar la contraseña (8 caracteres, al menos una mayúscula, un número y un símbolo)
+const validarPassword = (password: string): boolean => {
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(password);
+};
+
 // Crear un nuevo usuario
 export const crearUsuario = async (usuario: any): Promise<any> => {
     let { nombre, FOTO, email, password, direccion, telefono } = usuario;
+
+    const error = validarUsuario(usuario);  // Validamos los datos
+    if (error) throw new Error(error); // Si hay error, lanzamos una excepción
 
     if (!FOTO || FOTO === '' || typeof FOTO !== 'object') {
         FOTO = null;
     }
 
+    const hash = await bcrypt.hash(password, 10);  // Encriptamos la contraseña
+
     return new Promise((resolve, reject) => {
         db.query(
             'INSERT INTO usuarios (nombre, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)',
-            [nombre, FOTO, email, password, direccion, telefono],
+            [nombre, FOTO, email, hash, direccion, telefono],
             (err: QueryError | null, results: any) => {
                 if (err) {
                     reject(new Error('Error al crear el usuario: ' + err.message));
@@ -64,11 +99,20 @@ export const actualizarUsuario = async (id: number, usuario: any): Promise<any> 
                 return reject(new Error('Usuario no encontrado'));
             }
 
+            // Validar los nuevos datos
+            const error = validarUsuario(usuario);  // Validamos los datos
+            if (error) return reject(new Error(error)); // Si hay error, lanzamos una excepción
+
             // Mezclar datos: lo que envía el usuario reemplaza lo que ya existía
             const usuarioActualizado = {
                 ...usuarioActual,
                 ...usuario,
             };
+
+            // Si la contraseña ha cambiado, encriptarla
+            if (usuario.password && usuario.password !== usuarioActual.password) {
+                usuarioActualizado.password = await bcrypt.hash(usuario.password, 10);
+            }
 
             db.query(
                 'UPDATE usuarios SET nombre = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?',

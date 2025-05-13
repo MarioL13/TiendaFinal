@@ -13,8 +13,9 @@ router.post('/confirmar', async (req, res) => {
 
     try {
         const resultado = await confirmarCompra(id_usuario, tipoPago);
-        res.status(200).json(resultado);
+        res.status(201).json(resultado); // 201: Created
     } catch (error: any) {
+        console.error('Error al confirmar pedido:', error);
         res.status(500).json({ error: error.message });
     }
 });

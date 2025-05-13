@@ -39,9 +39,17 @@ router.get('/api/categorias/:id', async (req: Request, res: Response) => {
 // Crear una nueva categoría
 router.post('/api/categorias', async (req: Request, res: Response) => {
     const categoria = req.body;
+
+    if (!categoria.nombre || typeof categoria.nombre !== 'string') {
+        return res.status(400).json({ message: 'Nombre de categoría inválido' });
+    }
+
     try {
         const result = await crearCategoria(categoria);
-        res.status(201).json({ message: 'Categoría creada', id: result.insertId });
+        res.status(201).json({
+            message: 'Categoría creada',
+            categoria: { id: result.insertId, ...categoria }
+        });
     } catch (err: any) {
         console.error('Error al crear la categoría:', err);
         res.status(500).json({ message: 'Error al crear la categoría', error: err.message });
@@ -52,6 +60,11 @@ router.post('/api/categorias', async (req: Request, res: Response) => {
 router.put('/api/categorias/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const categoria = req.body;
+
+    if (!categoria.nombre || typeof categoria.nombre !== 'string') {
+        return res.status(400).json({ message: 'Nombre de categoría inválido' });
+    }
+
     try {
         const result = await actualizarCategoria(id, categoria);
         if (result.affectedRows > 0) {
