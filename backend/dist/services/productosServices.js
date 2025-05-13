@@ -153,6 +153,7 @@ const eliminarProducto = (producto) => __awaiter(void 0, void 0, void 0, functio
     }));
 });
 exports.eliminarProducto = eliminarProducto;
+// Función para obtener los productos Destacados
 const obtenerDestacados = () => {
     return new Promise((resolve, reject) => {
         db_1.default.query(`SELECT p.*, SUM(dp.cantidad) AS total_vendidos

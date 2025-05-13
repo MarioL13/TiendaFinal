@@ -21,7 +21,7 @@ router.get('/api/products', async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error al obtener los productos', error: err.message });
     }
 });
-
+// Ruta para obtener todos los productos destacados
 router.get('/api/products/destacados', async (req: Request, res: Response) => {
     try{
         const productos = await obtenerDestacados();

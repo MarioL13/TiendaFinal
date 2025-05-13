@@ -174,55 +174,31 @@ export const eliminarProducto = async (producto: any): Promise<any> => {
         );
     });
 };
-
-export const obtenerDestacados = (): Promise<any[]> => {
+// Función para obtener los productos Destacados
+const obtenerDestacados = (): Promise<any[]> => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT p.*, SUM(dp.cantidad) AS total_vendidos
-             FROM detallepedido dp
-             JOIN productos p ON dp.id_item = p.id_producto
-             WHERE dp.tipo_item = 'producto'
-             GROUP BY dp.id_item
-             ORDER BY total_vendidos DESC
+            `SELECT p.*, 
+             SUM(dp.cantidad) AS total_vendidos 
+             FROM detallepedido dp 
+             JOIN productos p ON dp.id_item = p.id_producto 
+             WHERE dp.tipo_item = 'producto' 
+             GROUP BY dp.id_item 
+             ORDER BY total_vendidos DESC 
              LIMIT 4`,
-            async (err: Error, results: any[]) => {
+            (err, results) => {
                 if (err) {
                     reject(err);
                 } else {
-                    const productosTop: any[] = [];
-
-                    for (let producto of results) {
-                        try {
-                            const categorias = await new Promise<string[]>((res, rej) =>
-                                db.query(
-                                    `SELECT c.nombre
-                                     FROM categorias c
-                                     JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria
-                                     WHERE pc.id_producto = ?`,
-                                    [producto.id_producto],
-                                    (err: Error | null, categoriaResults: any[]) => {
-                                        if (err) {
-                                            rej(err);
-                                        } else {
-                                            const nombres = categoriaResults.map(c => c.nombre);
-                                            res(nombres);
-                                        }
-                                    }
-                                )
-                            );
-
-                            producto.categorias = categorias;
-                            productosTop.push(producto);
-                        } catch (error) {
-                            reject(error);
-                            return;
+                    const productosTop = results.map((producto: any) => {
+                        if (producto.imagen) {
+                            producto.imagen = `data:image/jpeg;base64,${Buffer.from(producto.imagen).toString('base64')}`;
                         }
-                    }
-
+                        return producto;
+                    });
                     resolve(productosTop);
                 }
             }
         );
     });
 };
-

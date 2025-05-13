@@ -24,6 +24,7 @@ router.get('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(500).json({ message: 'Error al obtener los productos', error: err.message });
     }
 }));
+// Ruta para obtener todos los productos destacados
 router.get('/api/products/destacados', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productos = yield (0, productosServices_1.obtenerDestacados)();
