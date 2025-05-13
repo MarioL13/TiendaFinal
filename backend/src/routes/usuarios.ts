@@ -6,7 +6,8 @@ import {
     actualizarUsuario,
     eliminarUsuario,
     obtenerUsuarioPorEmail
-} from '../services/usuariosServices'; // Importa las funciones del servicio que maneja los usuarios
+} from '../services/usuariosServices';
+import bcrypt from "bcrypt"; // Importa las funciones del servicio que maneja los usuarios
 
 const router = Router();
 
@@ -92,16 +93,14 @@ router.post('/api/login', async (req: Request, res: Response) => {
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
-        console.log('Usuario encontrado:', user); // Depuración de usuario encontrado
-        // Imprimir contraseñas para depuración
-        console.log('Contraseña ingresada:', password);
-        console.log('Contraseña almacenada:', user.password);
 
-        if (user.password !== password) {
+        // Comparar la contraseña ingresada con la almacenada
+        const passwordCorrecta = await bcrypt.compare(password, user.password);
+
+        if (!passwordCorrecta) {
             return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
 
-        // Si quieres devolver sólo algunos campos:
         const usuarioFiltrado = {
             id: user.id_usuario,
             nombre: user.nombre,

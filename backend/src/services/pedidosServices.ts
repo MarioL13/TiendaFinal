@@ -10,6 +10,10 @@ export const confirmarCompra = (
         db.beginTransaction(async err => {
             if (err) return reject(err);
 
+            if (!['tienda', 'online'].includes(tipoPago)) {
+                return db.rollback(() => reject(new Error('Tipo de pago inválido.')));
+            }
+
             try {
                 const carrito = await obtenerCarritoCompletoUsuario(id_usuario);
 
