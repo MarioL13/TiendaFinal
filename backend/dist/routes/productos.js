@@ -61,6 +61,11 @@ router.get('/api/products/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
 // Ruta para crear un nuevo producto
 router.post('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const producto = req.body; // Obtiene los datos del producto desde el cuerpo de la solicitud
+    // Validación de los campos
+    const error = validarProducto(producto);
+    if (error) {
+        return res.status(400).json({ message: error });
+    }
     try {
         const result = yield (0, productosServices_1.crearProducto)(producto); // Llama a la función para crear el producto
         res.status(201).json({ message: 'Producto creado', id: result.insertId }); // Devuelve el ID del producto creado
@@ -71,21 +76,26 @@ router.post('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 }));
 // Ruta para actualizar un producto existente por su ID
-router.put('/api/products/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = parseInt(req.params.id); // Convierte el ID de la URL a número
-    const producto = req.body; // Obtiene los nuevos datos del producto
+router.put('/api/productos/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = parseInt(req.params.id);
+    const producto = req.body;
+    // Validación de los campos
+    const error = validarProducto(producto);
+    if (error) {
+        return res.status(400).json({ message: error });
+    }
     try {
-        const result = yield (0, productosServices_1.actualizarProducto)(id, producto); // Llama a la función para actualizar el producto
+        const result = yield (0, productosServices_1.actualizarProducto)(id, producto);
         if (result.affectedRows > 0) {
-            res.json({ message: 'Producto actualizado correctamente', id: result.insertId });
+            res.json({ message: 'Producto actualizado' });
         }
         else {
-            res.status(404).json({ message: 'Producto no encontrado' }); // Si no se encuentra, devuelve un error 404
+            res.status(404).json({ message: 'Producto no encontrado' });
         }
     }
     catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Error al actualizar el producto', error: err.message });
+        res.status(500).json({ message: 'Error al actualizar producto', error: err.message });
     }
 }));
 // Ruta para eliminar un producto por su ID
@@ -107,3 +117,16 @@ router.delete('/api/products/:id', (req, res) => __awaiter(void 0, void 0, void 
 }));
 // Exporta el enrutador para ser utilizado en la aplicación principal
 exports.default = router;
+// Función de validación para productos
+const validarProducto = (producto) => {
+    if (!producto.nombre || typeof producto.nombre !== 'string') {
+        return 'El nombre del producto es obligatorio y debe ser un texto';
+    }
+    if (producto.stock === undefined || isNaN(producto.stock) || producto.stock < 0) {
+        return 'El stock debe ser un número mayor o igual a 0';
+    }
+    if (producto.precio === undefined || isNaN(producto.precio) || producto.precio < 0) {
+        return 'El precio debe ser un número mayor o igual a 0';
+    }
+    return null; // Si pasa todas las validaciones
+};

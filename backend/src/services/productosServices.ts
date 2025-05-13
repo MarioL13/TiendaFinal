@@ -130,7 +130,7 @@ export const actualizarProducto = async (producto: any, producto1: any): Promise
             // Combina los datos actuales con los nuevos valores
             const productoActualizado = {
                 ...productoActual,
-                ...producto,
+                ...producto1,
             };
 
             db.query(

@@ -21,15 +21,17 @@ CREATE TABLE Categorias (
 );
 
 -- Tabla de Cartas
-CREATE TABLE Cartas (
-    id_cartas INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion VARCHAR(100) NOT NULL,
-    precio DECIMAL(10,2) NOT NULL,
-    stock INT NOT NULL
+CREATE TABLE cartas (
+    id_carta INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(255),
+    stock INT,
+    precio DECIMAL(10,2),
+    scryfall_id VARCHAR(255),
+    set_code VARCHAR(10),
+    collector_number VARCHAR(20)
 );
 
--- Tabla de Productos (sin id_categoria)
+-- Tabla de Productos (sin id_categoria directamente)
 CREATE TABLE Productos (
     id_producto INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -39,7 +41,7 @@ CREATE TABLE Productos (
     imagen LONGBLOB
 );
 
--- Tabla intermedia: productos pueden tener múltiples categorías
+-- Tabla intermedia: muchos a muchos entre productos y categorías
 CREATE TABLE ProductoCategoria (
     id_producto INT,
     id_categoria INT,
@@ -48,17 +50,17 @@ CREATE TABLE ProductoCategoria (
     FOREIGN KEY (id_categoria) REFERENCES Categorias(id_categoria) ON DELETE CASCADE
 );
 
--- Tabla de Pedidos (sin id_cartas)
+-- Tabla de Pedidos
 CREATE TABLE Pedidos (
     id_pedido INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT,
     fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10,2) NOT NULL,
     estado ENUM('Pendiente', 'Pagado', 'Entregado', 'Cancelado') DEFAULT 'Pendiente',
-    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
 );
 
--- Tabla unificada de Detalles de Pedido (productos y cartas)
+-- Tabla de Detalles de Pedido (para cartas y productos)
 CREATE TABLE DetallePedido (
     id_detalle INT AUTO_INCREMENT PRIMARY KEY,
     id_pedido INT,
@@ -66,7 +68,7 @@ CREATE TABLE DetallePedido (
     id_item INT NOT NULL,
     cantidad INT NOT NULL,
     precio DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido)
+    FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido) ON DELETE CASCADE
 );
 
 -- Tabla de Deseados (wishlist)
@@ -76,23 +78,23 @@ CREATE TABLE Deseados (
     id_carta INT DEFAULT NULL,
     id_producto INT DEFAULT NULL,
 
-    -- Restricciones para evitar duplicados (opcional pero útil)
+    -- Restricciones para evitar duplicados
     UNIQUE (id_usuario, id_carta),
     UNIQUE (id_usuario, id_producto),
 
     -- Relaciones
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_carta) REFERENCES Cartas(id_cartas) ON DELETE SET NULL,
+    FOREIGN KEY (id_carta) REFERENCES cartas(id_carta) ON DELETE SET NULL,
     FOREIGN KEY (id_producto) REFERENCES Productos(id_producto) ON DELETE SET NULL
 );
 
+-- Tabla de Carrito
 CREATE TABLE Carrito (
-  id_carrito INT AUTO_INCREMENT PRIMARY KEY,
-  id_usuario INT NOT NULL,
-  tipo_item ENUM('producto', 'carta') NOT NULL,
-  id_item INT NOT NULL,
-  cantidad INT NOT NULL,
-  fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
+    id_carrito INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    tipo_item ENUM('producto', 'carta') NOT NULL,
+    id_item INT NOT NULL,
+    cantidad INT NOT NULL,
+    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
 );
-

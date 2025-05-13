@@ -30,6 +30,17 @@ router.get('/api/wishlist/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 router.post('/api/wishlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const deseado = req.body;
+    if (!deseado.id_usuario || typeof deseado.id_usuario !== 'number') {
+        return res.status(400).json({ message: 'El id_usuario es obligatorio y debe ser un número.' });
+    }
+    if ((deseado.id_producto && typeof deseado.id_producto !== 'number') ||
+        (deseado.id_carta && typeof deseado.id_carta !== 'number')) {
+        return res.status(400).json({ message: 'id_producto o id_carta deben ser números.' });
+    }
+    const yaExiste = yield (0, deseadosServices_1.existeDeseado)(deseado.id_usuario, deseado.id_producto, deseado.id_carta);
+    if (yaExiste) {
+        return res.status(409).json({ message: 'Este producto ya está en la lista de deseos.' });
+    }
     if ((!deseado.id_producto && !deseado.id_carta) || (deseado.id_producto && deseado.id_carta)) {
         return res.status(400).json({ message: 'Debes enviar solo id_producto o id_carta, no ambos ni ninguno.' });
     }

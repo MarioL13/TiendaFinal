@@ -1,5 +1,5 @@
 import db from './db';  // Importa la conexión a la base de datos
-import {QueryError} from "mysql2";
+import {QueryError, RowDataPacket} from "mysql2";
 
 export const obtenerCarritoCompletoUsuario = (id_usuario: number): Promise<any[]> => {
     return new Promise((resolve, reject) => {
@@ -89,6 +89,23 @@ export const vaciarCarrito = (id_usuario: number): Promise<any> => {
                 } else {
                     resolve(result);
                 }
+            }
+        );
+    });
+};
+
+export const existeItem = (tipo_item: 'producto' | 'carta', id_item: number): Promise<boolean> => {
+    const tabla = tipo_item === 'producto' ? 'Productos' : 'Cartas';
+    const campo = tipo_item === 'producto' ? 'id_producto' : 'id_cartas';
+
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT COUNT(*) as total FROM ${tabla} WHERE ${campo} = ?`,
+            [id_item],
+            (err, results) => {
+                if (err) return reject(err);
+                const rows = results as RowDataPacket[];
+                resolve(rows[0].total > 0);
             }
         );
     });
