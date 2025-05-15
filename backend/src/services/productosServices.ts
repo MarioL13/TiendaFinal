@@ -1,5 +1,5 @@
 import db from '../services/db';
-import {QueryError, FieldPacket} from "mysql2";
+import {QueryError, FieldPacket, RowDataPacket} from "mysql2";
 import {obtenerCategoriaPorId, obtenerIdCategoria} from "./categoriasServices";
 
 // Función para obtener todos los productos de la base de datos
@@ -174,23 +174,22 @@ export const eliminarProducto = async (producto: any): Promise<any> => {
         );
     });
 };
-// Función para obtener los productos Destacados
-const obtenerDestacados = (): Promise<any[]> => {
+export const obtenerDestacados = (): Promise<any[]> => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT p.*, 
-             SUM(dp.cantidad) AS total_vendidos 
-             FROM detallepedido dp 
-             JOIN productos p ON dp.id_item = p.id_producto 
-             WHERE dp.tipo_item = 'producto' 
-             GROUP BY dp.id_item 
-             ORDER BY total_vendidos DESC 
-             LIMIT 4`,
+            `SELECT p.*,
+                    SUM(dp.cantidad) AS total_vendidos
+             FROM detallepedido dp
+                      JOIN productos p ON dp.id_item = p.id_producto
+             WHERE dp.tipo_item = 'producto'
+             GROUP BY dp.id_item
+             ORDER BY total_vendidos DESC
+                 LIMIT 4`,
             (err, results) => {
                 if (err) {
                     reject(err);
                 } else {
-                    const productosTop = results.map((producto: any) => {
+                    const productosTop = (results as RowDataPacket[]).map((producto: any) => {
                         if (producto.imagen) {
                             producto.imagen = `data:image/jpeg;base64,${Buffer.from(producto.imagen).toString('base64')}`;
                         }

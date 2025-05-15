@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.obtenerUsuarioPorEmail = exports.eliminarUsuario = exports.actualizarUsuario = exports.crearUsuario = exports.obtenerUsuarioPorId = exports.obtenerUsuarios = void 0;
 const db_1 = __importDefault(require("./db")); // Importa la conexión a la base de datos
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const validator_1 = __importDefault(require("validator"));
 // Obtener todos los usuarios
 const obtenerUsuarios = () => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
@@ -42,14 +44,39 @@ const obtenerUsuarioPorId = (id) => __awaiter(void 0, void 0, void 0, function* 
     });
 });
 exports.obtenerUsuarioPorId = obtenerUsuarioPorId;
+const validarUsuario = (usuario) => {
+    const { nombre, email, password, telefono } = usuario;
+    if (!nombre || nombre.trim().length < 2) {
+        return 'Nombre inválido.';
+    }
+    if (!email || !validator_1.default.isEmail(email)) {
+        return 'Email inválido.';
+    }
+    if (!password || !validarPassword(password)) {
+        return 'La contraseña debe tener mínimo 8 caracteres, incluir una mayúscula, un número y un símbolo.';
+    }
+    if (telefono && !validator_1.default.isMobilePhone(telefono, 'es-ES')) {
+        return 'Teléfono inválido.';
+    }
+    return null; // Si
+};
+// Función para validar la contraseña (8 caracteres, al menos una mayúscula, un número y un símbolo)
+const validarPassword = (password) => {
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(password);
+};
 // Crear un nuevo usuario
 const crearUsuario = (usuario) => __awaiter(void 0, void 0, void 0, function* () {
     let { nombre, FOTO, email, password, direccion, telefono } = usuario;
+    const error = validarUsuario(usuario); // Validamos los datos
+    if (error)
+        throw new Error(error); // Si hay error, lanzamos una excepción
     if (!FOTO || FOTO === '' || typeof FOTO !== 'object') {
         FOTO = null;
     }
+    const hash = yield bcrypt_1.default.hash(password, 10); // Encriptamos la contraseña
     return new Promise((resolve, reject) => {
-        db_1.default.query('INSERT INTO usuarios (nombre, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)', [nombre, FOTO, email, password, direccion, telefono], (err, results) => {
+        db_1.default.query('INSERT INTO usuarios (nombre, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)', [nombre, FOTO, email, hash, direccion, telefono], (err, results) => {
             if (err) {
                 reject(new Error('Error al crear el usuario: ' + err.message));
             }
@@ -69,8 +96,16 @@ const actualizarUsuario = (id, usuario) => __awaiter(void 0, void 0, void 0, fun
             if (!usuarioActual) {
                 return reject(new Error('Usuario no encontrado'));
             }
+            // Validar los nuevos datos
+            const error = validarUsuario(usuario); // Validamos los datos
+            if (error)
+                return reject(new Error(error)); // Si hay error, lanzamos una excepción
             // Mezclar datos: lo que envía el usuario reemplaza lo que ya existía
             const usuarioActualizado = Object.assign(Object.assign({}, usuarioActual), usuario);
+            // Si la contraseña ha cambiado, encriptarla
+            if (usuario.password && usuario.password !== usuarioActual.password) {
+                usuarioActualizado.password = yield bcrypt_1.default.hash(usuario.password, 10);
+            }
             db_1.default.query('UPDATE usuarios SET nombre = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?', [
                 usuarioActualizado.nombre,
                 usuarioActualizado.FOTO,

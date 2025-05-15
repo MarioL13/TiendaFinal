@@ -8,9 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const usuariosServices_1 = require("../services/usuariosServices"); // Importa las funciones del servicio que maneja los usuarios
+const usuariosServices_1 = require("../services/usuariosServices");
+const bcrypt_1 = __importDefault(require("bcrypt")); // Importa las funciones del servicio que maneja los usuarios
 const router = (0, express_1.Router)();
 // Obtener todos los usuarios
 router.get('/api/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -95,14 +99,11 @@ router.post('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, functi
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
-        console.log('Usuario encontrado:', user); // Depuración de usuario encontrado
-        // Imprimir contraseñas para depuración
-        console.log('Contraseña ingresada:', password);
-        console.log('Contraseña almacenada:', user.password);
-        if (user.password !== password) {
+        // Comparar la contraseña ingresada con la almacenada
+        const passwordCorrecta = yield bcrypt_1.default.compare(password, user.password);
+        if (!passwordCorrecta) {
             return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
-        // Si quieres devolver sólo algunos campos:
         const usuarioFiltrado = {
             id: user.id_usuario,
             nombre: user.nombre,

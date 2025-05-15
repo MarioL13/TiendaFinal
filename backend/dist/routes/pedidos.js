@@ -23,9 +23,10 @@ router.post('/confirmar', (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
     try {
         const resultado = yield (0, pedidosServices_1.confirmarCompra)(id_usuario, tipoPago);
-        res.status(200).json(resultado);
+        res.status(201).json(resultado); // 201: Created
     }
     catch (error) {
+        console.error('Error al confirmar pedido:', error);
         res.status(500).json({ error: error.message });
     }
 }));

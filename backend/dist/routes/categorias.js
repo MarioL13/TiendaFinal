@@ -48,7 +48,10 @@ router.post('/api/categorias', (req, res) => __awaiter(void 0, void 0, void 0, f
     }
     try {
         const result = yield (0, categoriasServices_1.crearCategoria)(categoria);
-        res.status(201).json({ message: 'Categoría creada', id: result.insertId });
+        res.status(201).json({
+            message: 'Categoría creada',
+            categoria: Object.assign({ id: result.insertId }, categoria)
+        });
     }
     catch (err) {
         console.error('Error al crear la categoría:', err);

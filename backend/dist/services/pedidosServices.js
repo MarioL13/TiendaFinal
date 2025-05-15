@@ -20,6 +20,9 @@ const confirmarCompra = (id_usuario, tipoPago) => {
         db_1.default.beginTransaction((err) => __awaiter(void 0, void 0, void 0, function* () {
             if (err)
                 return reject(err);
+            if (!['tienda', 'online'].includes(tipoPago)) {
+                return db_1.default.rollback(() => reject(new Error('Tipo de pago inválido.')));
+            }
             try {
                 const carrito = yield (0, carritoServices_1.obtenerCarritoCompletoUsuario)(id_usuario);
                 if (carrito.length === 0) {

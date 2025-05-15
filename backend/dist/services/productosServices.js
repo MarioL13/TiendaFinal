@@ -153,46 +153,29 @@ const eliminarProducto = (producto) => __awaiter(void 0, void 0, void 0, functio
     }));
 });
 exports.eliminarProducto = eliminarProducto;
-// Función para obtener los productos Destacados
 const obtenerDestacados = () => {
     return new Promise((resolve, reject) => {
-        db_1.default.query(`SELECT p.*, SUM(dp.cantidad) AS total_vendidos
+        db_1.default.query(`SELECT p.*,
+                    SUM(dp.cantidad) AS total_vendidos
              FROM detallepedido dp
-             JOIN productos p ON dp.id_item = p.id_producto
+                      JOIN productos p ON dp.id_item = p.id_producto
              WHERE dp.tipo_item = 'producto'
              GROUP BY dp.id_item
              ORDER BY total_vendidos DESC
-             LIMIT 4`, (err, results) => __awaiter(void 0, void 0, void 0, function* () {
+                 LIMIT 4`, (err, results) => {
             if (err) {
                 reject(err);
             }
             else {
-                const productosTop = [];
-                for (let producto of results) {
-                    try {
-                        const categorias = yield new Promise((res, rej) => db_1.default.query(`SELECT c.nombre
-                                     FROM categorias c
-                                     JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria
-                                     WHERE pc.id_producto = ?`, [producto.id_producto], (err, categoriaResults) => {
-                            if (err) {
-                                rej(err);
-                            }
-                            else {
-                                const nombres = categoriaResults.map(c => c.nombre);
-                                res(nombres);
-                            }
-                        }));
-                        producto.categorias = categorias;
-                        productosTop.push(producto);
+                const productosTop = results.map((producto) => {
+                    if (producto.imagen) {
+                        producto.imagen = `data:image/jpeg;base64,${Buffer.from(producto.imagen).toString('base64')}`;
                     }
-                    catch (error) {
-                        reject(error);
-                        return;
-                    }
-                }
+                    return producto;
+                });
                 resolve(productosTop);
             }
-        }));
+        });
     });
 };
 exports.obtenerDestacados = obtenerDestacados;
