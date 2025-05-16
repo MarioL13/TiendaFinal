@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-// Define the Producto interface
 interface Producto {
   id_producto: number;
   nombre: string;
@@ -18,7 +17,7 @@ const Destacados: React.FC = () => {
         const fetchDestacados = async () => {
             try {
                 const response = await axios.get<Producto[]>('http://localhost:5000/api/products/destacados');
-                console.log('Productos recibidos:', response.data); // Depuración
+                console.log('Productos recibidos:', response.data);
                 setProductos(response.data);
             } catch (error) {
                 console.error('Error al obtener productos destacados:', error);

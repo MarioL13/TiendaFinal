@@ -22,9 +22,9 @@ const StoreLayout = () => {
                 <img src="/logo.jpg" alt="Logo" className="w-12 h-12 rounded-lg" />
                 </div>
             <nav className="flex space-x-4">
-              <a href="#" className="text-gray-700 hover:text-gray-900">Home</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Shop</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">About</a>
+              <a href="/main" className="text-gray-700 hover:text-gray-900">Portada</a>
+              <a href="#" className="text-gray-700 hover:text-gray-900">Tienda</a>
+              <a href="#" className="text-gray-700 hover:text-gray-900">Sobre Nostros</a>
             </nav>
             <div className="flex space-x-4 items-center">
               <a href="#" className="text-gray-700 hover:text-gray-900">Account</a>
