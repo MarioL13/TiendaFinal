@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.obtenerDestacados = exports.eliminarProducto = exports.actualizarProducto = exports.crearProducto = exports.obtenerProductoPorId = exports.obtenerProductos = void 0;
+exports.actualizarCategoriasProducto = exports.obtenerDestacados = exports.eliminarProducto = exports.actualizarProducto = exports.crearProducto = exports.obtenerProductoPorId = exports.obtenerProductos = void 0;
 const db_1 = __importDefault(require("../services/db"));
 const categoriasServices_1 = require("./categoriasServices");
 // Función para obtener todos los productos de la base de datos
@@ -83,13 +83,14 @@ const obtenerProductoPorId = (id) => {
 exports.obtenerProductoPorId = obtenerProductoPorId;
 // Función para crear un nuevo producto en la base de datos
 const crearProducto = (producto) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nombre, descripcion, precio, stock, categorias, imagen } = producto;
+    const { nombre, descripcion, precio, stock, categorias, imagenes } = producto;
     try {
         return new Promise((resolve, reject) => {
-            db_1.default.query('INSERT INTO productos (nombre, descripcion, precio, stock, imagen) VALUES (?, ?, ?, ?, ?)', [nombre, descripcion, precio, stock, imagen], (err, results) => __awaiter(void 0, void 0, void 0, function* () {
+            db_1.default.query('INSERT INTO productos (nombre, descripcion, precio, stock, imagenes) VALUES (?, ?, ?, ?, ?)', [nombre, descripcion, precio, stock, JSON.stringify(imagenes)], (err, results) => __awaiter(void 0, void 0, void 0, function* () {
                 if (err)
                     return reject(err);
                 const id_producto = results.insertId;
+                // Insertar categorías relacionadas
                 for (const nombre_categoria of categorias) {
                     const id_categoria = yield (0, categoriasServices_1.obtenerIdCategoria)(nombre_categoria);
                     yield new Promise((resolve, reject) => {
@@ -106,24 +107,25 @@ const crearProducto = (producto) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.crearProducto = crearProducto;
 // Función para actualizar un producto existente
-const actualizarProducto = (producto, producto1) => __awaiter(void 0, void 0, void 0, function* () {
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            // Obtiene el producto actual antes de actualizarlo
-            const productoActual = yield (0, exports.obtenerProductoPorId)(producto);
-            if (!productoActual) {
-                return reject(new Error('Producto no encontrado'));
-            }
-            // Combina los datos actuales con los nuevos valores
-            const productoActualizado = Object.assign(Object.assign({}, productoActual), producto1);
-            db_1.default.query('UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, id_categoria = ?, imagen = ? WHERE id_producto = ?', [
+const actualizarProducto = (id, nuevosDatos) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const productoActual = yield (0, exports.obtenerProductoPorId)(id);
+        if (!productoActual) {
+            throw new Error('Producto no encontrado');
+        }
+        // Combinamos los datos antiguos con los nuevos
+        const productoActualizado = Object.assign(Object.assign({}, productoActual), nuevosDatos);
+        // Convertimos las imágenes a JSON string si es un array
+        const imagenesJson = JSON.stringify(productoActualizado.imagenes || []);
+        // Actualizamos el producto (sin id_categoria porque se gestiona en tabla intermedia)
+        yield new Promise((resolve, reject) => {
+            db_1.default.query('UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, imagenes = ? WHERE id_producto = ?', [
                 productoActualizado.nombre,
                 productoActualizado.descripcion,
                 productoActualizado.precio,
                 productoActualizado.stock,
-                productoActualizado.id_categoria,
-                productoActualizado.imagen,
-                productoActualizado.id_producto // Se agrega el ID del producto en la consulta
+                imagenesJson,
+                id
             ], (err, results) => {
                 if (err) {
                     reject(err);
@@ -132,11 +134,16 @@ const actualizarProducto = (producto, producto1) => __awaiter(void 0, void 0, vo
                     resolve(results);
                 }
             });
+        });
+        // Actualizar categorías si vienen en la petición
+        if (Array.isArray(nuevosDatos.categorias)) {
+            yield (0, exports.actualizarCategoriasProducto)(id, nuevosDatos.categorias);
         }
-        catch (error) {
-            reject(error);
-        }
-    }));
+        return { message: 'Producto actualizado correctamente' };
+    }
+    catch (error) {
+        throw error;
+    }
 });
 exports.actualizarProducto = actualizarProducto;
 // Función para eliminar un producto por su ID
@@ -179,3 +186,26 @@ const obtenerDestacados = () => {
     });
 };
 exports.obtenerDestacados = obtenerDestacados;
+const actualizarCategoriasProducto = (id_producto, nuevasCategorias) => __awaiter(void 0, void 0, void 0, function* () {
+    // Elimina las categorías actuales
+    yield new Promise((resolve, reject) => {
+        db_1.default.query('DELETE FROM ProductoCategoria WHERE id_producto = ?', [id_producto], (err) => {
+            if (err)
+                reject(err);
+            else
+                resolve(null);
+        });
+    });
+    // Inserta las nuevas
+    for (const id_categoria of nuevasCategorias) {
+        yield new Promise((resolve, reject) => {
+            db_1.default.query('INSERT INTO ProductoCategoria (id_producto, id_categoria) VALUES (?, ?)', [id_producto, id_categoria], (err) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(null);
+            });
+        });
+    }
+});
+exports.actualizarCategoriasProducto = actualizarCategoriasProducto;

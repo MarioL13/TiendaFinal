@@ -8,8 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const cloudinary_1 = require("cloudinary");
+const dotenv_1 = __importDefault(require("dotenv"));
+const multer_1 = __importDefault(require("multer"));
+const upload = (0, multer_1.default)({ dest: 'uploads/' });
 const productosServices_1 = require("../services/productosServices");
 // Se crea una instancia del enrutador de Express
 const router = (0, express_1.Router)();
@@ -42,13 +49,9 @@ router.get('/api/products/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
         return res.status(400).json({ error: 'ID de producto inválido' });
     }
     try {
-        const producto = yield (0, productosServices_1.obtenerProductoPorId)(id); // Busca el producto en la base de datos
+        const producto = yield (0, productosServices_1.obtenerProductoPorId)(id);
         if (producto) {
-            let imagenBase64 = null;
-            if (producto.imagen) {
-                imagenBase64 = producto.imagen.toString('base64');
-            }
-            res.json(Object.assign(Object.assign({}, producto), { imagen: imagenBase64 ? `data:image/jpeg;base64,${imagenBase64}` : null }));
+            res.json(Object.assign(Object.assign({}, producto), { imagenes: JSON.parse(producto.imagenes) }));
         }
         else {
             res.status(404).json({ error: 'Producto no encontrado' });
@@ -60,16 +63,35 @@ router.get('/api/products/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 }));
 // Ruta para crear un nuevo producto
-router.post('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const producto = req.body; // Obtiene los datos del producto desde el cuerpo de la solicitud
-    // Validación de los campos
-    const error = validarProducto(producto);
+router.post('/api/products', upload.array('imagenes'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let producto = req.body; // Obtiene los datos del producto
+    if (!req.files || !Array.isArray(req.files)) {
+        return res.status(400).json({ error: 'No se han subido imágenes' });
+    }
+    // Subir imágenes a Cloudinary o similar
+    const imagenesUrls = yield Promise.all(req.files.map((file) => subirImagen(file)));
+    // Aquí parseamos el campo categorias si viene como string (form-data)
+    if (typeof producto.categorias === 'string') {
+        try {
+            producto.categorias = JSON.parse(producto.categorias);
+        }
+        catch (e) {
+            return res.status(400).json({ error: 'El campo categorias debe ser un array JSON válido' });
+        }
+    }
+    // Aseguramos que categorias es un array
+    if (!Array.isArray(producto.categorias)) {
+        return res.status(400).json({ error: 'El campo categorias debe ser un array' });
+    }
+    const productoConImagenes = Object.assign(Object.assign({}, producto), { imagenes: imagenesUrls });
+    // Validación de los campos (puede usar la que ya tienes)
+    const error = validarProducto(productoConImagenes);
     if (error) {
         return res.status(400).json({ message: error });
     }
     try {
-        const result = yield (0, productosServices_1.crearProducto)(producto); // Llama a la función para crear el producto
-        res.status(201).json({ message: 'Producto creado', id: result.insertId }); // Devuelve el ID del producto creado
+        const result = yield (0, productosServices_1.crearProducto)(productoConImagenes);
+        res.status(201).json({ message: 'Producto creado', id: result.insertId });
     }
     catch (err) {
         console.error(err);
@@ -77,7 +99,7 @@ router.post('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 }));
 // Ruta para actualizar un producto existente por su ID
-router.put('/api/productos/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put('/api/products/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = parseInt(req.params.id);
     const producto = req.body;
     // Validación de los campos
@@ -130,4 +152,20 @@ const validarProducto = (producto) => {
         return 'El precio debe ser un número mayor o igual a 0';
     }
     return null; // Si pasa todas las validaciones
+};
+dotenv_1.default.config();
+cloudinary_1.v2.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+const subirImagen = (imagen) => {
+    return new Promise((resolve, reject) => {
+        cloudinary_1.v2.uploader.upload(imagen.path, (error, result) => {
+            if (error || !result) {
+                return reject(error || new Error('No se pudo subir la imagen'));
+            }
+            resolve(result.secure_url); // Devuelve el enlace seguro de la imagen
+        });
+    });
 };
