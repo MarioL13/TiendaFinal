@@ -201,8 +201,14 @@ export const obtenerDestacados = (): Promise<any[]> => {
                     reject(err);
                 } else {
                     const productosTop = (results as RowDataPacket[]).map((producto: any) => {
-                        if (producto.imagen) {
-                            producto.imagen = `data:image/jpeg;base64,${Buffer.from(producto.imagen).toString('base64')}`;
+                        if (producto.imagenes) {
+                            try {
+                                producto.imagenes = JSON.parse(producto.imagenes);
+                            } catch (e) {
+                                producto.imagenes = [];
+                            }
+                        } else {
+                            producto.imagenes = [];
                         }
                         return producto;
                     });
