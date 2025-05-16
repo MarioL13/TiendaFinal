@@ -88,16 +88,18 @@ export const obtenerProductoPorId = (id: number): Promise<any> => {
 
 // Función para crear un nuevo producto en la base de datos
 export const crearProducto = async (producto: any): Promise<any> => {
-    const {nombre, descripcion, precio, stock, categorias, imagen} = producto;
+    const { nombre, descripcion, precio, stock, categorias, imagenes } = producto;
+
     try {
         return new Promise((resolve, reject) => {
             db.query(
-                'INSERT INTO productos (nombre, descripcion, precio, stock, imagen) VALUES (?, ?, ?, ?, ?)',
-                [nombre, descripcion, precio, stock, imagen],
+                'INSERT INTO productos (nombre, descripcion, precio, stock, imagenes) VALUES (?, ?, ?, ?, ?)',
+                [nombre, descripcion, precio, stock, JSON.stringify(imagenes)],
                 async (err: QueryError | null, results: any) => {
                     if (err) return reject(err);
                     const id_producto = results.insertId;
 
+                    // Insertar categorías relacionadas
                     for (const nombre_categoria of categorias) {
                         const id_categoria = await obtenerIdCategoria(nombre_categoria);
                         await new Promise((resolve, reject) => {
@@ -105,8 +107,8 @@ export const crearProducto = async (producto: any): Promise<any> => {
                                 'INSERT INTO ProductoCategoria (id_producto, id_categoria) VALUES (?, ?)',
                                 [id_producto, id_categoria],
                                 (err) => err ? reject(err) : resolve(true),
-                            )
-                        })
+                            );
+                        });
                     }
                     resolve(results);
                 }
@@ -118,31 +120,33 @@ export const crearProducto = async (producto: any): Promise<any> => {
 };
 
 // Función para actualizar un producto existente
-export const actualizarProducto = async (producto: any, producto1: any): Promise<any> => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            // Obtiene el producto actual antes de actualizarlo
-            const productoActual = await obtenerProductoPorId(producto);
-            if (!productoActual) {
-                return reject(new Error('Producto no encontrado'));
-            }
+export const actualizarProducto = async (id: number, nuevosDatos: any): Promise<any> => {
+    try {
+        const productoActual = await obtenerProductoPorId(id);
+        if (!productoActual) {
+            throw new Error('Producto no encontrado');
+        }
 
-            // Combina los datos actuales con los nuevos valores
-            const productoActualizado = {
-                ...productoActual,
-                ...producto1,
-            };
+        // Combinamos los datos antiguos con los nuevos
+        const productoActualizado = {
+            ...productoActual,
+            ...nuevosDatos
+        };
 
+        // Convertimos las imágenes a JSON string si es un array
+        const imagenesJson = JSON.stringify(productoActualizado.imagenes || []);
+
+        // Actualizamos el producto (sin id_categoria porque se gestiona en tabla intermedia)
+        await new Promise((resolve, reject) => {
             db.query(
-                'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, id_categoria = ?, imagen = ? WHERE id_producto = ?',
+                'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, imagenes = ? WHERE id_producto = ?',
                 [
                     productoActualizado.nombre,
                     productoActualizado.descripcion,
                     productoActualizado.precio,
                     productoActualizado.stock,
-                    productoActualizado.id_categoria,
-                    productoActualizado.imagen,
-                    productoActualizado.id_producto // Se agrega el ID del producto en la consulta
+                    imagenesJson,
+                    id
                 ],
                 (err: QueryError | null, results: any) => {
                     if (err) {
@@ -152,10 +156,17 @@ export const actualizarProducto = async (producto: any, producto1: any): Promise
                     }
                 }
             );
-        } catch (error) {
-            reject(error);
+        });
+
+        // Actualizar categorías si vienen en la petición
+        if (Array.isArray(nuevosDatos.categorias)) {
+            await actualizarCategoriasProducto(id, nuevosDatos.categorias);
         }
-    });
+
+        return { message: 'Producto actualizado correctamente' };
+    } catch (error) {
+        throw error;
+    }
 };
 
 // Función para eliminar un producto por su ID
@@ -200,4 +211,24 @@ export const obtenerDestacados = (): Promise<any[]> => {
             }
         );
     });
+};
+
+export const actualizarCategoriasProducto = async (id_producto: number, nuevasCategorias: number[]) => {
+    // Elimina las categorías actuales
+    await new Promise((resolve, reject) => {
+        db.query('DELETE FROM ProductoCategoria WHERE id_producto = ?', [id_producto], (err) => {
+            if (err) reject(err);
+            else resolve(null);
+        });
+    });
+
+    // Inserta las nuevas
+    for (const id_categoria of nuevasCategorias) {
+        await new Promise((resolve, reject) => {
+            db.query('INSERT INTO ProductoCategoria (id_producto, id_categoria) VALUES (?, ?)', [id_producto, id_categoria], (err) => {
+                if (err) reject(err);
+                else resolve(null);
+            });
+        });
+    }
 };

@@ -1,4 +1,9 @@
 import { Router, Request, Response } from 'express';
+import { v2 as cloudinary } from 'cloudinary';
+import dotenv from 'dotenv';
+import multer, { Multer } from 'multer';
+const upload: Multer = multer({ dest: 'uploads/' });
+
 import {
     obtenerProductos,
     obtenerProductoPorId,
@@ -40,17 +45,11 @@ router.get('/api/products/:id', async (req: Request, res: Response) => {
     }
 
     try {
-        const producto = await obtenerProductoPorId(id); // Busca el producto en la base de datos
+        const producto = await obtenerProductoPorId(id);
         if (producto) {
-            let imagenBase64 = null;
-
-            if (producto.imagen) {
-                imagenBase64 = producto.imagen.toString('base64');
-            }
-
             res.json({
                 ...producto,
-                imagen: imagenBase64 ? `data:image/jpeg;base64,${imagenBase64}` : null,
+                imagenes: JSON.parse(producto.imagenes), // Recupera las URLs almacenadas como JSON
             });
         } else {
             res.status(404).json({ error: 'Producto no encontrado' });
@@ -62,18 +61,46 @@ router.get('/api/products/:id', async (req: Request, res: Response) => {
 });
 
 // Ruta para crear un nuevo producto
-router.post('/api/products', async (req: Request, res: Response) => {
-    const producto = req.body; // Obtiene los datos del producto desde el cuerpo de la solicitud
+router.post('/api/products', upload.array('imagenes'), async (req: Request, res: Response) => {
+    let producto = req.body; // Obtiene los datos del producto
 
-    // Validación de los campos
-    const error = validarProducto(producto);
+    if (!req.files || !Array.isArray(req.files)) {
+        return res.status(400).json({ error: 'No se han subido imágenes' });
+    }
+
+    // Subir imágenes a Cloudinary o similar
+    const imagenesUrls = await Promise.all(
+        (req.files as Express.Multer.File[]).map((file) => subirImagen(file))
+    );
+
+    // Aquí parseamos el campo categorias si viene como string (form-data)
+    if (typeof producto.categorias === 'string') {
+        try {
+            producto.categorias = JSON.parse(producto.categorias);
+        } catch (e) {
+            return res.status(400).json({ error: 'El campo categorias debe ser un array JSON válido' });
+        }
+    }
+
+    // Aseguramos que categorias es un array
+    if (!Array.isArray(producto.categorias)) {
+        return res.status(400).json({ error: 'El campo categorias debe ser un array' });
+    }
+
+    const productoConImagenes = {
+        ...producto,
+        imagenes: imagenesUrls, // Almacena un array de enlaces
+    };
+
+    // Validación de los campos (puede usar la que ya tienes)
+    const error = validarProducto(productoConImagenes);
     if (error) {
         return res.status(400).json({ message: error });
     }
 
     try {
-        const result = await crearProducto(producto); // Llama a la función para crear el producto
-        res.status(201).json({ message: 'Producto creado', id: result.insertId }); // Devuelve el ID del producto creado
+        const result = await crearProducto(productoConImagenes);
+        res.status(201).json({ message: 'Producto creado', id: result.insertId });
     } catch (err: any) {
         console.error(err);
         res.status(500).json({ message: 'Error al crear los productos', error: err.message });
@@ -81,7 +108,7 @@ router.post('/api/products', async (req: Request, res: Response) => {
 });
 
 // Ruta para actualizar un producto existente por su ID
-router.put('/api/productos/:id', async (req: Request, res: Response) => {
+router.put('/api/products/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const producto = req.body;
 
@@ -136,3 +163,21 @@ const validarProducto = (producto: any): string | null => {
     }
     return null;  // Si pasa todas las validaciones
 }
+
+dotenv.config();
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const subirImagen = (imagen: Express.Multer.File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload(imagen.path, (error, result) => {
+            if (error || !result) {
+                return reject(error || new Error('No se pudo subir la imagen'));
+            }
+            resolve(result.secure_url); // Devuelve el enlace seguro de la imagen
+        });
+    });
+};
