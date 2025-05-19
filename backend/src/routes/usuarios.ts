@@ -28,10 +28,6 @@ router.get('/api/users', verificarToken, verificarAdmin, async (req: Request, re
 
 router.get('/api/users/me', verificarToken, async (req: Request, res: Response) => {
     const usuarioLogeado = (req as any).usuario; // Aquí accedes al usuario del token
-    /*fetch('http://localhost:3000/api/users/me', {
-        method: 'GET',
-        credentials: 'include' // <-- Importante para enviar cookies
-    })*/
     try {
         const user = await obtenerUsuarioPorId(usuarioLogeado.id);
         if (user) {
@@ -68,7 +64,7 @@ router.get('/api/users/:id', verificarToken, async (req: Request, res: Response)
 });
 
 // Crear un nuevo usuario
-router.post('/api/users', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
+router.post('/api/users', verificarToken, async (req: Request, res: Response) => {
     const usuario = req.body; // Obtiene los datos del usuario desde el cuerpo de la solicitud
     try {
         const result = await crearUsuario(usuario); // Llama a la función para crear un usuario
@@ -120,7 +116,7 @@ router.delete('/api/users/:id', verificarToken, async (req: Request, res: Respon
 
 // Endpoint de login
 router.post('/api/login', async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password, mantenerSesion } = req.body;
     const secret = process.env.JWT_SECRET;
 
     try {
@@ -139,20 +135,19 @@ router.post('/api/login', async (req: Request, res: Response) => {
             throw new Error('JWT_SECRET no está definido');
         }
 
-        const options: SignOptions = {
-            expiresIn: '2h'
-        };
+        const duracion = mantenerSesion ? 1000 * 60 * 60 * 24 : 1000 * 60 * 60 * 2; // 24h o 2h
+        const expiracionJWT = mantenerSesion ? '24h' : '2h';
 
         const token = jwt.sign(
             { id: user.id_usuario, email: user.email, rol: user.rol },
             secret,
-            options
+            { expiresIn: expiracionJWT }
         );
 
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 1000 * 60 * 60 * 2, // 2 horas
+            maxAge: duracion,
             sameSite: 'strict',
         });
 
@@ -172,6 +167,11 @@ router.post('/api/login', async (req: Request, res: Response) => {
 router.post('/api/logout', verificarToken, (req: Request, res: Response) => {
     res.clearCookie('token');
     res.json({ message: 'Sesión cerrada correctamente' });
+});
+
+router.get('/api/check-auth', verificarToken, (req: Request, res: Response) => {
+    const usuario = (req as any).usuario;
+    res.json({ autenticado: true, rol: usuario.rol, id: usuario.id });
 });
 
 

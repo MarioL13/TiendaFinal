@@ -95,8 +95,8 @@ export const vaciarCarrito = (id_usuario: number): Promise<any> => {
 };
 
 export const existeItem = (tipo_item: 'producto' | 'carta', id_item: number): Promise<boolean> => {
-    const tabla = tipo_item === 'producto' ? 'Productos' : 'Cartas';
-    const campo = tipo_item === 'producto' ? 'id_producto' : 'id_cartas';
+    const tabla = tipo_item === 'producto' ? 'Productos' : 'cartas';
+    const campo = tipo_item === 'producto' ? 'id_producto' : 'id_carta';
 
     return new Promise((resolve, reject) => {
         db.query(
