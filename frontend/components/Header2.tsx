@@ -23,7 +23,7 @@ const StoreLayout = () => {
                 </div>
             <nav className="flex space-x-4">
               <a href="/main" className="text-gray-700 hover:text-gray-900">Portada</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Tienda</a>
+              <a href="/tienda" className="text-gray-700 hover:text-gray-900">Tienda</a>
               <a href="#" className="text-gray-700 hover:text-gray-900">Sobre Nostros</a>
             </nav>
             <div className="flex space-x-4 items-center">

@@ -80,7 +80,7 @@ const Card: React.FC<CardProps> = ({ title, description, imageSrc, rating }) => 
           className="block w-full select-none rounded-lg bg-gray-900 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20"
           type="button"
         >
-          Reserve
+          Apuntarse
         </button>
       </div>
     </div>

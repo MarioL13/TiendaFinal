@@ -38,6 +38,7 @@ const Destacados: React.FC = () => {
     };
 
     fetchDestacados();
+
   }, []);
 
   if (loading) {
@@ -57,12 +58,12 @@ const Destacados: React.FC = () => {
               alt={producto.nombre}
               className="w-full h-52 object-cover"
             />
-            {/* Mostrar categorías si existen */}
+            {/* Mostrar categorías si existen
             {producto.categorias && producto.categorias.length > 0 && (
               <span className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                 {producto.categorias.join(', ')}
               </span>
-            )}
+            )} */}
           </div>
 
           <div className="p-5 space-y-4">
@@ -70,7 +71,13 @@ const Destacados: React.FC = () => {
               <h3 className="text-xl font-bold text-gray-900">{producto.nombre}</h3>
               <p className="text-gray-500 mt-1">{producto.descripcion}</p>
             </div>
-
+            <div className="">
+            {producto.categorias && producto.categorias.length > 0 && (
+              <span className=" top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                {producto.categorias.join(', ')}
+              </span>
+            )}
+            </div>
             <div className="flex justify-between items-center">
               <div className="space-y-1">
                 <p className="text-sm text-gray-500">${producto.precio}</p>

@@ -4,7 +4,7 @@ import Carousel from "@/components/Carousel";
 import Destacados from "@/components/descados";
 import Eventos from "@/components/Eventos";
 
-export default function CarouselP() { 
+export default function Main() { 
   return (
     <div className="space-y-10">
       {/* Carrusel de imágenes */}

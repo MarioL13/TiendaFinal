@@ -1,44 +1,107 @@
-'use client';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+interface Producto {
+  id_producto: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  imagen: string[];
+  categorias?: string[]; // Puede ser opcional si no viene
+  total_vendidos: number;
+}
 
-export default function ProductCard() {
+const Destacados: React.FC = () => {
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDestacados = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/products');
+        // Adaptar los datos recibidos al formato esperado
+        const data = response.data as any[];
+        const productosAdaptados: Producto[] = data.map((item: any) => ({
+          id_producto: item.id_producto,
+          nombre: item.nombre,
+          descripcion: item.descripcion,
+          precio: parseFloat(item.precio),
+          imagen: item.imagenes
+            ? JSON.parse(item.imagenes)
+            : ["https://via.placeholder.com/300x200?text=Sin+Imagen"], // Imagen por defecto si es null
+          categorias: item.categorias || [],
+          total_vendidos: item.total_vendidos ? parseInt(item.total_vendidos, 10) : 0,
+        }));
+        setProductos(productosAdaptados);
+      } catch (error) {
+        console.error('Error al obtener productos destacados:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDestacados();
+
+  }, []);
+
+  if (loading) {
+    return <p className="text-center text-gray-500">Cargando productos destacados...</p>;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="max-w-sm w-full bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
-        <div className="relative">
-          <img
-            src="https://placehold.co/400x300"
-            alt="Product"
-            className="w-full h-52 object-cover"
-          />
-          <span className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-            Sale
-          </span>
-        </div>
-
-        <div className="p-5 space-y-4">
-          <div>
-            <h3 className="text-xl font-bold text-gray-900">Classic T-Shirt</h3>
-            <p className="text-gray-500 mt-1">Premium cotton blend</p>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      {productos.map((producto) => (
+        <div
+          key={producto.id_producto}
+          className="max-w-sm w-full bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all"
+        >
+          <div className="relative">
+            <img
+              src={producto.imagen[0]}
+              alt={producto.nombre}
+              className="w-full h-52 object-cover"
+            />
+            {/* Mostrar categorías si existen
+            {producto.categorias && producto.categorias.length > 0 && (
+              <span className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                {producto.categorias.join(', ')}
+              </span>
+            )} */}
           </div>
 
-          <div className="flex justify-between items-center">
-            <div className="space-y-1">
-              <p className="text-2xl font-bold text-gray-900">$49.99</p>
-              <p className="text-sm text-gray-500 line-through">$69.99</p>
+          <div className="p-5 space-y-4">
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">{producto.nombre}</h3>
+              <p className="text-gray-500 mt-1">{producto.descripcion}</p>
+            </div>
+            <div className="">
+            {producto.categorias && producto.categorias.length > 0 && (
+              <span className=" top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                {producto.categorias.join(', ')}
+              </span>
+            )}
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">${producto.precio}</p>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="text-yellow-400">★★★★</div>
+                <div className="text-gray-300">★</div>
+                <span className="text-sm text-gray-600 ml-1">({producto.total_vendidos})</span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-1">
-              <div className="text-yellow-400">★★★★</div>
-              <div className="text-gray-300">★</div>
-              <span className="text-sm text-gray-600 ml-1">(42)</span>
-            </div>
+            <button
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors"
+              onClick={() => window.location.href = `/test/${producto.id_producto}`}
+            >
+              Add to Cart
+            </button>
           </div>
-
-          <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors">
-            Add to Cart
-          </button>
         </div>
-      </div>
+      ))}
     </div>
   );
-}
+};
+
+export default Destacados;
