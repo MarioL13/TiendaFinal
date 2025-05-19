@@ -5,6 +5,8 @@ import productsRouter from './routes/productos';
 import categoriasRouter from './routes/categorias';
 import deseadosRouter from './routes/deseados';
 import cartasRouter from './routes/cartas';
+import carritoRouter from './routes/carrito';
+
 import path from 'path';
 import cookieParser from 'cookie-parser';
 
@@ -26,6 +28,7 @@ app.use(productsRouter);
 app.use(categoriasRouter);
 app.use(cartasRouter);
 app.use(deseadosRouter);
+app.use(carritoRouter);
 
 app.get('/', (req: Request, res: Response) => {
     res.send('API funcionando');

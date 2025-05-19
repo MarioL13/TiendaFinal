@@ -8,14 +8,14 @@ export const obtenerCarritoCompletoUsuario = (id_usuario: number): Promise<any[]
                    CASE
                        WHEN c.tipo_item = 'producto' THEN p.nombre
                        ELSE ca.nombre
-                   END AS nombre,
+                       END AS nombre,
                    CASE
                        WHEN c.tipo_item = 'producto' THEN p.precio
                        ELSE ca.precio
-                   END AS precio
+                       END AS precio
             FROM Carrito c
-            LEFT JOIN Productos p ON c.tipo_item = 'producto' AND c.id_item = p.id_producto
-            LEFT JOIN Cartas ca ON c.tipo_item = 'carta' AND c.id_item = ca.id_cartas
+                     LEFT JOIN Productos p ON c.tipo_item = 'producto' AND c.id_item = p.id_producto
+                     LEFT JOIN cartas ca ON c.tipo_item = 'carta' AND c.id_item = ca.id_carta
             WHERE c.id_usuario = ?
         `;
 

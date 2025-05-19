@@ -26,6 +26,25 @@ router.get('/api/users', verificarToken, verificarAdmin, async (req: Request, re
     }
 });
 
+router.get('/api/users/me', verificarToken, async (req: Request, res: Response) => {
+    const usuarioLogeado = (req as any).usuario; // Aquí accedes al usuario del token
+    /*fetch('http://localhost:3000/api/users/me', {
+        method: 'GET',
+        credentials: 'include' // <-- Importante para enviar cookies
+    })*/
+    try {
+        const user = await obtenerUsuarioPorId(usuarioLogeado.id);
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+    } catch (err: any) {
+        console.error(err);
+        res.status(500).json({ message: 'Error al obtener el usuario', error: err.message });
+    }
+});
+
 // Obtener un usuario por su ID
 router.get('/api/users/:id', verificarToken, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
