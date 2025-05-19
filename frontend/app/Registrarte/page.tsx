@@ -33,7 +33,8 @@ const SignUpComponent = () => {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Error desconocido');
+      console.log(data);
+      if (!response.ok) throw new Error(data);
 
       setMessage('Usuario registrado exitosamente');
       setFormData({
