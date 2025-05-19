@@ -1,17 +1,23 @@
 import { Router, Request, Response } from 'express';
 import {
+    verificarToken,
+} from '../middlewares/authMiddleware';
+import {
     agregarAlCarrito,
     obtenerCarritoCompletoUsuario,
     actualizarCantidadCarrito,
-    eliminarItemCarrito,
-    vaciarCarrito, existeItem
+    eliminarItemCarritoSeguro,
+    vaciarCarrito,
+    existeItem
 } from '../services/carritoServices';
 
 const router = Router();
 
-// Obtener el carrito de un usuario
-router.get('/api/carrito/:id_usuario', async (req: Request, res: Response) => {
-    const id_usuario = parseInt(req.params.id_usuario);
+// Obtener el carrito del usuario logueado
+router.get('/api/carrito', verificarToken, async (req: Request, res: Response) => {
+    const usuarioLogeado = (req as any).usuario;
+    const id_usuario = usuarioLogeado.id;
+
     try {
         const carrito = await obtenerCarritoCompletoUsuario(id_usuario);
         res.json(carrito);
@@ -21,9 +27,11 @@ router.get('/api/carrito/:id_usuario', async (req: Request, res: Response) => {
     }
 });
 
-// Añadir al carrito
-router.post('/api/carrito', async (req: Request, res: Response) => {
-    const { id_usuario, tipo_item, id_item, cantidad } = req.body;
+// Añadir al carrito del usuario logueado
+router.post('/api/carrito', verificarToken, async (req: Request, res: Response) => {
+    const usuarioLogeado = (req as any).usuario;
+    const id_usuario = usuarioLogeado.id;
+    const { tipo_item, id_item, cantidad } = req.body;
 
     try {
         const existe = await existeItem(tipo_item, id_item);
@@ -43,16 +51,17 @@ router.post('/api/carrito', async (req: Request, res: Response) => {
     }
 });
 
-// Actualizar cantidad de un ítem
-router.put('/api/carrito/:id_carrito', async (req: Request, res: Response) => {
-    const id_carrito = parseInt(req.params.id_carrito);
+// Actualizar cantidad de un ítem (verifica propietario más adelante si es necesario)
+router.put('/api/carrito/:id_carrito', verificarToken, async (req: Request, res: Response) => {
     const { cantidad } = req.body;
+    const id_carrito = parseInt(req.params.id_carrito);
+
     try {
         const result = await actualizarCantidadCarrito(id_carrito, cantidad);
         if (result.affectedRows > 0) {
             res.json({ message: 'Cantidad actualizada' });
         } else {
-            res.status(404).json({ message: 'Ítem no encontrado' });
+            res.status(404).json({ message: 'Ítem no encontrado o no pertenece al usuario' });
         }
     } catch (err: any) {
         console.error(err);
@@ -61,14 +70,20 @@ router.put('/api/carrito/:id_carrito', async (req: Request, res: Response) => {
 });
 
 // Eliminar ítem del carrito
-router.delete('/api/carrito/:id_carrito', async (req: Request, res: Response) => {
-    const id_carrito = parseInt(req.params.id_carrito);
+router.delete('/api/carrito/item', verificarToken, async (req, res) => {
+    const { tipo_item, id_item } = req.body;
+    const id_usuario = (req as any).usuario.id;
+
+    if (!tipo_item || !id_item) {
+        return res.status(400).json({ message: 'Faltan datos: tipo_item o id_item' });
+    }
+
     try {
-        const result = await eliminarItemCarrito(id_carrito);
+        const result = await eliminarItemCarritoSeguro(id_usuario, tipo_item, id_item);
         if (result.affectedRows > 0) {
             res.json({ message: 'Ítem eliminado del carrito' });
         } else {
-            res.status(404).json({ message: 'Ítem no encontrado' });
+            res.status(404).json({ message: 'Ítem no encontrado en tu carrito' });
         }
     } catch (err: any) {
         console.error(err);
@@ -76,9 +91,11 @@ router.delete('/api/carrito/:id_carrito', async (req: Request, res: Response) =>
     }
 });
 
-// Vaciar carrito (opcional)
-router.delete('/api/carrito/usuario/:id_usuario', async (req: Request, res: Response) => {
-    const id_usuario = parseInt(req.params.id_usuario);
+// Vaciar carrito del usuario logueado
+router.delete('/api/carrito/todo', verificarToken, async (req, res) => {
+    const usuarioLogeado = (req as any).usuario;
+    const id_usuario = usuarioLogeado.id;
+
     try {
         await vaciarCarrito(id_usuario);
         res.json({ message: 'Carrito vaciado' });

@@ -10,7 +10,7 @@ yarn-error.log*
 backend/.env
 
 # Compilación de TypeScript
-dist/
+backend/dist/
 build/
 *.tsbuildinfo
 
@@ -28,4 +28,4 @@ tmp/
 
 *.local
 
-node_modules/
+backend/node_modules/

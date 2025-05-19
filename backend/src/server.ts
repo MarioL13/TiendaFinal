@@ -6,9 +6,11 @@ import categoriasRouter from './routes/categorias';
 import deseadosRouter from './routes/deseados';
 import cartasRouter from './routes/cartas';
 import path from 'path';
+import cookieParser from 'cookie-parser';
 
 
 const app = express();
+app.use(cookieParser());
 const port = 5000;
 
 app.use(cors());

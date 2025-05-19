@@ -62,11 +62,11 @@ export const actualizarCantidadCarrito = (id_carrito: number, cantidad: number):
     });
 };
 
-export const eliminarItemCarrito = (id_carrito: number): Promise<any> => {
+export const eliminarItemCarritoSeguro = (id_usuario: number, tipo_item: string, id_item: number): Promise<any> => {
     return new Promise((resolve, reject) => {
         db.query(
-            `DELETE FROM carrito WHERE id_carrito = ?`,
-            [id_carrito],
+            `DELETE FROM carrito WHERE id_usuario = ? AND tipo_item = ? AND id_item = ?`,
+            [id_usuario, tipo_item, id_item],
             (err: QueryError | null, result: any) => {
                 if (err) {
                     reject(err);

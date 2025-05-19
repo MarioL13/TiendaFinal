@@ -10,8 +10,10 @@ CREATE TABLE Usuarios (
     password VARCHAR(255) NOT NULL,
     direccion VARCHAR(255) NOT NULL,
     telefono VARCHAR(255) NOT NULL,
-    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    rol ENUM('user', 'admin') NOT NULL DEFAULT 'user'
 );
+
 
 -- Tabla de Categorías
 CREATE TABLE Categorias (

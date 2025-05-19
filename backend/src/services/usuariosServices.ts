@@ -57,7 +57,7 @@ const validarUsuario = (usuario: any): string | null => {
 
 // Función para validar la contraseña (8 caracteres, al menos una mayúscula, un número y un símbolo)
 const validarPassword = (password: string): boolean => {
-    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{8,}$/;
     return regex.test(password);
 };
 
