@@ -64,7 +64,7 @@ router.get('/api/users/:id', verificarToken, async (req: Request, res: Response)
 });
 
 // Crear un nuevo usuario
-router.post('/api/users', verificarToken, async (req: Request, res: Response) => {
+router.post('/api/users', async (req: Request, res: Response) => {
     const usuario = req.body; // Obtiene los datos del usuario desde el cuerpo de la solicitud
     try {
         const result = await crearUsuario(usuario); // Llama a la función para crear un usuario

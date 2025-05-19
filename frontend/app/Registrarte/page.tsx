@@ -24,9 +24,29 @@ const SignUpComponent = () => {
     setLoading(true);
     setMessage(null);
 
-    // Aquí puedes agregar la lógica para enviar los datos al backend
-    // Por ahora solo simula el registro exitoso
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Error desconocido');
+
+      setMessage('Usuario registrado exitosamente');
+      setFormData({
+        nombre: '',
+        email: '',
+        password: '',
+        direccion: '',
+        telefono: '',
+      }); // Limpiar formulario
+    } catch (error: any) {
+      setMessage(`Error: ${error.message}`);
+    } finally {
       setLoading(false);
       setMessage("Usuario registrado exitosamente");
       setFormData({
