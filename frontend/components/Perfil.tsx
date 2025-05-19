@@ -58,8 +58,8 @@ export default function ProfileManager({ user }: { user: User }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-50 flex items-center justify-center mt-8">
-      <div className="max-w-4xl w-full p-8 bg-white shadow-lg rounded-3xl mt-20 mb-10">
+    <div className="w-screen h-screen flex items-center justify-center mt-20 mb-20">
+      <div className="max-w-4xl w-full p-8 shadow-lg rounded-3xl">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
           <div className="relative">
             <img
@@ -99,7 +99,8 @@ export default function ProfileManager({ user }: { user: User }) {
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-700"
+                          placeholder="Nombre"
                         />
                       </div>
                       <div className="flex-1">
@@ -111,7 +112,8 @@ export default function ProfileManager({ user }: { user: User }) {
                           name="surname"
                           value={formData.surname}
                           onChange={handleInputChange}
-                          className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-700"
+                          placeholder="Apellido"
                         />
                       </div>
                     </div>

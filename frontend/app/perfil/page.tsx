@@ -1,6 +1,7 @@
 // pages/profile.jsx
 import ProfileCard from "@/components/Perfil";
 export default function ProfilePage() {
+  
   const user = {
     name: "Tony",
     surname: "Stark",
@@ -11,7 +12,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-100 pt-15 w-full">
       <ProfileCard user={user} />
     </div>
   );

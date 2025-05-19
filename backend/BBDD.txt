@@ -100,3 +100,60 @@ CREATE TABLE Carrito (
     fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
 );
+
+
+-- Inserts para la tabla Usuarios
+INSERT INTO Usuarios (FOTO, nombre, email, password, direccion, telefono, rol)
+VALUES 
+(NULL, 'Joan', 'Joan@gmail.com', '$2a$10$RB5YAjmpDVmzevf4nheBh.VJG..GBUGpsyY5s36OVedDIqyUKHEwK', 'Calle Principal 123, Madrid', '612345678', 'user'),
+(NULL, 'Mario', 'Mario@gmail.com', '$2a$10$RB5YAjmpDVmzevf4nheBh.VJG..GBUGpsyY5s36OVedDIqyUKHEwK', 'Av. del Sol 45, Barcelona', '678901234', 'admin');
+
+-- Inserts para la tabla Categorías
+INSERT INTO Categorias (nombre, descripcion)
+VALUES 
+('Accesorios', 'Dispositivos electrónicos y accesorios'),
+('Juegos de Mesa', 'Artículos para el hogar y decoración'),
+('TCG', 'Juguetes y juegos para niños y adultos');
+
+-- Inserts para la tabla Cartas
+INSERT INTO cartas (nombre, stock, precio, scryfall_id, set_code, collector_number)
+VALUES 
+('Ponder', 50, 3.99, 'dc69f960-68ba-4315-8146-6a7a82047503', 'TDS', '001'),
+('Lightning Bolt', 100, 2.99, '77c6fa74-5543-42ac-9ead-0e890b188e99', 'CLU', '002');
+
+-- Inserts para la tabla Productos
+INSERT INTO productos (nombre, descripcion, precio, stock, imagenes)
+VALUES 
+('Deckbox de Marco', 'Placa frontal magnética: Cambia fácilmente la placa frontal desmontable para cambiar tu look. Todas las placas son compatibles con cajas del mismo tamaño.
+Amplia bandeja para barajas: Con capacidad para hasta 100 cartas con funda individual.', 30.99, 20, '["https://reillytcg.com/cdn/shop/files/60837368-C033-4737-8BD7-FD4E8F7B6531.jpg?v=1726513463&width=1920"]'),
+('Rising Sun', 'Elige bien tus opciones para poder gobernar la tierra del Sol Naciente.', 99.99, 50, '["https://media.zacatrus.com/catalog/product/cache/f22f70ef8ee260256901b557cf6bf49a/r/i/rising1_1.png"]');
+
+-- Inserts para la tabla ProductoCategoria
+INSERT INTO ProductoCategoria (id_producto, id_categoria)
+VALUES 
+(1, 1), -- Auriculares Bluetooth - Electrónica
+(2, 2); -- Lámpara LED - Hogar
+
+-- Inserts para la tabla Pedidos
+INSERT INTO Pedidos (id_usuario, total, estado)
+VALUES 
+(1, 59.99, 'Pagado'), 
+(2, 24.99, 'Pendiente');
+
+-- Inserts para la tabla DetallePedido
+INSERT INTO DetallePedido (id_pedido, tipo_item, id_item, cantidad, precio)
+VALUES 
+(1, 'producto', 1, 1, 30.99), -- Pedido de auriculares Bluetooth
+(2, 'producto', 2, 1, 99.99); -- Pedido de lámpara LED
+
+-- Inserts para la tabla Deseados
+INSERT INTO Deseados (id_usuario, id_producto)
+VALUES 
+(1, 2), -- Juan desea la lámpara LED
+(2, 1); -- Ana desea los auriculares Bluetooth
+
+-- Inserts para la tabla Carrito
+INSERT INTO Carrito (id_usuario, tipo_item, id_item, cantidad)
+VALUES 
+(1, 'producto', 1, 1), -- Juan tiene 1 auricular Bluetooth en su carrito
+(2, 'carta', 1, 2); -- Ana tiene 2 tarjetas de cumpleaños en su carrito

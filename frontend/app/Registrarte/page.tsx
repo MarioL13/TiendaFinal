@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const SignUpComponent = () => {
   const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    password: '',
-    direccion: '',
-    telefono: '',
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -23,122 +24,159 @@ const SignUpComponent = () => {
     setLoading(true);
     setMessage(null);
 
-    try {
-      const response = await fetch('http://localhost:5000/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Error desconocido');
-
-      setMessage('Usuario registrado exitosamente');
-      setFormData({
-        nombre: '',
-        email: '',
-        password: '',
-        direccion: '',
-        telefono: '',
-      }); // Limpiar formulario
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`);
-    } finally {
+    // Aquí puedes agregar la lógica para enviar los datos al backend
+    // Por ahora solo simula el registro exitoso
+    setTimeout(() => {
       setLoading(false);
-    }
+      setMessage("Usuario registrado exitosamente");
+      setFormData({
+        firstName: "",
+        lastName: "",
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+    }, 1000);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded-md shadow-md mt-30 mb-10">
-      <h2 className="text-2xl font-semibold mb-4 text-black">Registrar Usuario</h2>
+    <div className="mt-20 max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md px-8 py-10 flex flex-col items-center">
+      <h1 className="text-xl font-bold text-center text-gray-700 dark:text-gray-200 mb-8">
+        Welcome to My Company
+      </h1>
+      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+        <div className="flex items-start flex-col justify-start">
+          <label
+            htmlFor="firstName"
+            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
+          >
+            First Name:
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            required
+          />
+        </div>
 
-      <div className="mb-4">
-      <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">
-        Nombre
-      </label>
-      <input
-        type="text"
-        id="nombre"
-        name="nombre"
-        value={formData.nombre}
-        onChange={handleChange}
-        required
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-      />
+        <div className="flex items-start flex-col justify-start">
+          <label
+            htmlFor="lastName"
+            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
+          >
+            Last Name:
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <div className="flex items-start flex-col justify-start">
+          <label
+            htmlFor="username"
+            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
+          >
+            Username:
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <div className="flex items-start flex-col justify-start">
+          <label
+            htmlFor="email"
+            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
+          >
+            Email:
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <div className="flex items-start flex-col justify-start">
+          <label
+            htmlFor="password"
+            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
+          >
+            Password:
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <div className="flex items-start flex-col justify-start">
+          <label
+            htmlFor="confirmPassword"
+            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
+          >
+            Confirm Password:
+          </label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md shadow-sm"
+        >
+          {loading ? "Registering..." : "Register"}
+        </button>
+        {message && (
+          <p className="mt-2 text-center text-sm text-green-600 dark:text-green-400">
+            {message}
+          </p>
+        )}
+      </form>
+
+      <div className="mt-4 text-center">
+        <span className="text-sm text-gray-500 dark:text-gray-300">
+          Already have an account?{" "}
+        </span>
+        <a href="#" className="text-blue-500 hover:text-blue-600">
+          Login
+        </a>
       </div>
-
-      <div className="mb-4">
-      <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-        Email
-      </label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        required
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-      />
-      </div>
-
-      <div className="mb-4">
-      <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-        Contraseña
-      </label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-      />
-      </div>
-
-      <div className="mb-4">
-      <label htmlFor="direccion" className="block text-sm font-medium text-gray-700">
-        Dirección
-      </label>
-      <input
-        type="text"
-        id="direccion"
-        name="direccion"
-        value={formData.direccion}
-        onChange={handleChange}
-        required
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-      />
-      </div>
-
-      <div className="mb-4">
-      <label htmlFor="telefono" className="block text-sm font-medium text-gray-700">
-        Teléfono
-      </label>
-      <input
-        type="text"
-        id="telefono"
-        name="telefono"
-        value={formData.telefono}
-        onChange={handleChange}
-        required
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-      />
-      </div>
-
-      <button
-      type="submit"
-      disabled={loading}
-      className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-      >
-      {loading ? 'Registrando...' : 'Registrar'}
-      </button>
-
-      {message && <p className="mt-4 text-center text-sm">{message}</p>}
-    </form>
+    </div>
   );
 };
 
