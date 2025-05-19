@@ -198,22 +198,44 @@ export const obtenerDestacados = (): Promise<any[]> => {
                  LIMIT 4`,
             (err, results) => {
                 if (err) {
-                    reject(err);
-                } else {
-                    const productosTop = (results as RowDataPacket[]).map((producto: any) => {
-                        if (producto.imagenes) {
-                            try {
-                                producto.imagenes = JSON.parse(producto.imagenes);
-                            } catch (e) {
-                                producto.imagenes = [];
-                            }
-                        } else {
+                    return reject(err);
+                }
+
+                const productosTop = (results as any[]).map(producto => {
+                    if (producto.imagenes) {
+                        try {
+                            producto.imagenes = JSON.parse(producto.imagenes);
+                        } catch {
                             producto.imagenes = [];
                         }
-                        return producto;
+                    } else {
+                        producto.imagenes = [];
+                    }
+                    return producto;
+                });
+
+                // Ahora hay que obtener categorías para cada producto
+                const promisesCategorias = productosTop.map(producto => {
+                    return new Promise<void>((resolveCat, rejectCat) => {
+                        db.query(
+                            `SELECT c.nombre
+               FROM categorias c
+                        INNER JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria
+               WHERE pc.id_producto = ?`,
+                            [producto.id_producto],
+                            (err, categoriasResults) => {
+                                if (err) return rejectCat(err);
+
+                                producto.categorias = (categoriasResults as any[]).map((c: any) => c.nombre);
+                                resolveCat();
+                            }
+                        );
                     });
-                    resolve(productosTop);
-                }
+                });
+
+                Promise.all(promisesCategorias)
+                    .then(() => resolve(productosTop))
+                    .catch(reject);
             }
         );
     });
