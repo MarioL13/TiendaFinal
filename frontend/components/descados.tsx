@@ -5,29 +5,41 @@ interface Producto {
   nombre: string;
   descripcion: string;
   precio: number;
-  imagen: string | null;
-  categorias: string[];
+  imagen: string[];
+  categorias?: string[]; // Puede ser opcional si no viene
   total_vendidos: number;
 }
 
 const Destacados: React.FC = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        const fetchDestacados = async () => {
-            try {
-                const response = await axios.get<Producto[]>('http://localhost:5000/api/products/destacados');
-                console.log('Productos recibidos:', response.data);
-                setProductos(response.data);
-            } catch (error) {
-                console.error('Error al obtener productos destacados:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
 
-        fetchDestacados();
-    }, []);
+  useEffect(() => {
+    const fetchDestacados = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/products/destacados');
+        // Adaptar los datos recibidos al formato esperado
+        const data = response.data as any[];
+        const productosAdaptados: Producto[] = data.map((item: any) => ({
+          id_producto: item.id_producto,
+          nombre: item.nombre,
+          descripcion: item.descripcion,
+          precio: parseFloat(item.precio),
+          imagen: item.imagenes, // Cambia a 'imagenes'
+          categorias: item.categorias || [], // Si no viene, array vacío
+          total_vendidos: parseInt(item.total_vendidos, 10),
+        }));
+        setProductos(productosAdaptados);
+      } catch (error) {
+        console.error('Error al obtener productos destacados:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDestacados();
+  }, []);
+
   if (loading) {
     return <p className="text-center text-gray-500">Cargando productos destacados...</p>;
   }
@@ -41,13 +53,16 @@ const Destacados: React.FC = () => {
         >
           <div className="relative">
             <img
-              src={producto.imagen || 'https://via.placeholder.com/150'}
+              src={producto.imagen[0]}
               alt={producto.nombre}
               className="w-full h-52 object-cover"
             />
-            <span className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-              {producto.categorias}
-            </span>
+            {/* Mostrar categorías si existen */}
+            {producto.categorias && producto.categorias.length > 0 && (
+              <span className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                {producto.categorias.join(', ')}
+              </span>
+            )}
           </div>
 
           <div className="p-5 space-y-4">
