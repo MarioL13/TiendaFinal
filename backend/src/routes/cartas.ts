@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import {Router, Request, Response} from 'express';
 import {
     obtenerCartas,
     obtenerCartaPorId,
@@ -6,52 +6,54 @@ import {
     actualizarCarta,
     eliminarCarta
 } from '../services/cartasServices';
+import {verificarAdmin, verificarToken} from "../middlewares/authMiddleware";
 
 const router = Router();
 
-router.get('/api/cartas', async (Request, res: Response) => {
+router.get('/api/cartas', async (req: Request, res: Response) => {
     try {
         const cartas = await obtenerCartas();
         res.json(cartas);
     } catch (err: any) {
         console.error(err);
-        res.status(500).json({ message: 'Error al obtener las cartas', error: err.message})
+        res.status(500).json({message: 'Error al obtener las cartas', error: err.message})
     }
 })
 
 router.get('/api/cartas/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
 
-    try{
+    try {
         const carta = await obtenerCartaPorId(id);
-        if (carta){
+        if (carta) {
             res.json(carta);
-        } else{
-            res.status(404).json({ message: 'Carta no encontrada'})
+        } else {
+            res.status(404).json({message: 'Carta no encontrada'})
         }
     } catch (err: any) {
         console.error(err);
-        res.status(500).json({ message: 'Error al obtener la carta', error: err.message})
+        res.status(500).json({message: 'Error al obtener la carta', error: err.message})
     }
 });
 
-router.post('/api/cartas', async (req: Request, res: Response) => {
+router.post('/api/cartas', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const error = validarCarta(req.body);
     if (error) {
-        return res.status(400).json({ message: error });
+        return res.status(400).json({message: error});
     }
 
-    const { nombre, set_code, stock, precio } = req.body;
+    const {nombre, set_code, stock, precio} = req.body;
 
     try {
         const scryfallUrl = `https://api.scryfall.com/cards/search?q=!"${encodeURIComponent(nombre)}"+set:${set_code}`;
         const response = await fetch(scryfallUrl);
+        if (!response.ok) throw new Error('Scryfall no respondió correctamente');
         const data = await response.json();
 
         const carta = data.data?.[0];
 
         if (!carta) {
-            return res.status(404).json({ message: `Carta "${nombre}" no encontrada en el set ${set_code}` });
+            return res.status(404).json({message: `Carta "${nombre}" no encontrada en el set ${set_code}`});
         }
 
         const cartaNueva = {
@@ -65,19 +67,19 @@ router.post('/api/cartas', async (req: Request, res: Response) => {
         };
 
         const resultado = await crearCarta(cartaNueva);
-        res.status(201).json({ message: 'Carta creada desde Scryfall', id: resultado.insertId });
+        res.status(201).json({message: 'Carta creada desde Scryfall', id: resultado.insertId});
 
     } catch (err: any) {
         console.error(err);
-        res.status(500).json({ message: 'Error al crear carta', error: err.message });
+        res.status(500).json({message: 'Error al crear carta', error: err.message});
     }
 });
 
-router.post('/api/cartas/lote', async (req: Request, res: Response) => {
+router.post('/api/cartas/lote', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const cartas = req.body;
 
     if (!Array.isArray(cartas) || cartas.length === 0) {
-        return res.status(400).json({ message: 'Debes enviar un array de cartas' });
+        return res.status(400).json({message: 'Debes enviar un array de cartas'});
     }
 
     const resultados: any[] = [];
@@ -87,11 +89,11 @@ router.post('/api/cartas/lote', async (req: Request, res: Response) => {
         const error = validarCarta(carta);
 
         if (error) {
-            errores.push({ ...carta, error });
+            errores.push({...carta, error});
             continue;
         }
 
-        const { nombre, set_code, stock, precio } = carta;
+        const {nombre, set_code, stock, precio} = carta;
 
         try {
             const url = `https://api.scryfall.com/cards/search?q=!"${encodeURIComponent(nombre)}"+set:${set_code}`;
@@ -100,7 +102,7 @@ router.post('/api/cartas/lote', async (req: Request, res: Response) => {
             const resultado = data.data?.[0];
 
             if (!resultado) {
-                errores.push({ nombre, set_code, error: 'Carta no encontrada en Scryfall' });
+                errores.push({nombre, set_code, error: 'Carta no encontrada en Scryfall'});
                 continue;
             }
 
@@ -114,10 +116,10 @@ router.post('/api/cartas/lote', async (req: Request, res: Response) => {
             };
 
             const insert = await crearCarta(cartaNueva);
-            resultados.push({ nombre, id: insert.insertId });
+            resultados.push({nombre, id: insert.insertId});
 
         } catch (err: any) {
-            errores.push({ nombre, set_code, error: err.message });
+            errores.push({nombre, set_code, error: err.message});
         }
     }
 
@@ -129,47 +131,47 @@ router.post('/api/cartas/lote', async (req: Request, res: Response) => {
 });
 
 
-router.put('/api/cartas/:id', async (req: Request, res: Response) => {
+router.put('/api/cartas/:id', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const carta = req.body;
 
     // Validación de los campos
     const error = validarCarta(carta);
     if (error) {
-        return res.status(400).json({ message: error });
+        return res.status(400).json({message: error});
     }
 
     try {
         const result = await actualizarCarta(id, carta);
         if (result.affectedRows > 0) {
-            res.json({ message: 'Carta actualizada' });
+            res.json({message: 'Carta actualizada'});
         } else {
-            res.status(404).json({ message: 'Carta no encontrada' });
+            res.status(404).json({message: 'Carta no encontrada'});
         }
     } catch (err: any) {
         console.error(err);
-        res.status(500).json({ message: 'Error al actualizar carta', error: err.message });
+        res.status(500).json({message: 'Error al actualizar carta', error: err.message});
     }
 });
 
-router.delete('/api/cartas/:id', async (req: Request, res: Response) => {
+router.delete('/api/cartas/:id', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
         const result = await eliminarCarta(id);
         if (result.affectedRows > 0) {
-            res.json({ message: 'Carta eliminada'});
+            res.json({message: 'Carta eliminada'});
         } else {
-            res.status(404).json({ message: 'Carta no encontrada'})
+            res.status(404).json({message: 'Carta no encontrada'})
         }
-    }catch (err: any) {
+    } catch (err: any) {
         console.error(err);
-        res.status(500).json({ message: 'Error al eliminar la carta', error: err.message})
+        res.status(500).json({message: 'Error al eliminar la carta', error: err.message})
     }
 })
 
 export default router;
 
-function validarCarta({ nombre, set_code, stock, precio }: any) {
+function validarCarta({nombre, set_code, stock, precio}: any) {
     if (!nombre || !set_code) {
         return 'Faltan campos obligatorios: nombre o set_code';
     }

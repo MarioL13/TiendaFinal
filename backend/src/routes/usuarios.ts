@@ -42,7 +42,7 @@ router.get('/api/users/me', verificarToken, async (req: Request, res: Response) 
 });
 
 // Obtener un usuario por su ID
-router.get('/api/users/:id', verificarToken, async (req: Request, res: Response) => {
+router.get('/api/users/:id', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const usuarioLogeado = (req as any).usuario; // Aquí accedes al usuario del token
 

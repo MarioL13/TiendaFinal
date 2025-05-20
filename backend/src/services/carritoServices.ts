@@ -46,11 +46,11 @@ export const agregarAlCarrito = (id_usuario: number, tipo_item: 'producto' | 'ca
     });
 };
 
-export const actualizarCantidadCarrito = (id_carrito: number, cantidad: number): Promise<any> => {
+export const actualizarCantidadCarrito = (id_usuario: number, id_carrito: number, cantidad: number): Promise<any> => {
     return new Promise((resolve, reject) => {
         db.query(
-            `UPDATE carrito SET cantidad = ? WHERE id_carrito = ?`,
-            [cantidad, id_carrito],
+            `UPDATE carrito SET cantidad = ? WHERE id_carrito = ? AND id_usuario = ?`,
+            [cantidad, id_carrito, id_usuario],
             (err: QueryError | null, result: any) => {
                 if (err) {
                     reject(err);
