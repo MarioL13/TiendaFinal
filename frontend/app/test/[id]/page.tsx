@@ -8,7 +8,7 @@ export default function Page() {
   const id = Number(params.id);
 
   return (
-    <section className="container mx-auto px-4 mt-50 mb-20">
+    <section className="container mx-auto px-4 mt-42 mb-22 flex justify-center items-center">
       <ProductoVista id={id} />
     </section>
   );

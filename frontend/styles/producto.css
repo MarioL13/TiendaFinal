@@ -1,0 +1,21 @@
+.line-clamp-2-custom {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.img-cuadrada {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; 
+  overflow: hidden;
+}
+.img-cuadrada img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

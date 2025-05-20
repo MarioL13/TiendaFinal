@@ -10,6 +10,7 @@ interface User {
   avatar?: string;
 }
 
+
 export default function ProfileManager({ user }: { user: User }) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({

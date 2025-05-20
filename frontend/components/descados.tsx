@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../styles/producto.css';
 interface Producto {
   id_producto: number;
   nombre: string;
@@ -58,18 +59,14 @@ const Destacados: React.FC = () => {
               alt={producto.nombre}
               className="w-full h-52 object-cover"
             />
-            {/* Mostrar categorías si existen
-            {producto.categorias && producto.categorias.length > 0 && (
-              <span className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                {producto.categorias.join(', ')}
-              </span>
-            )} */}
           </div>
 
           <div className="p-5 space-y-4">
             <div>
               <h3 className="text-xl font-bold text-gray-900">{producto.nombre}</h3>
-              <p className="text-gray-500 mt-1">{producto.descripcion}</p>
+               <p className="text-gray-500 mt-1 line-clamp-2-custom overflow-hidden">
+                {producto.descripcion}
+              </p>
             </div>
             <div className="">
             {producto.categorias && producto.categorias.length > 0 && (

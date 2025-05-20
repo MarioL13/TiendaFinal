@@ -24,6 +24,18 @@ const SignUpComponent = () => {
     setLoading(true);
     setMessage(null);
 
+    // Validación de contraseña
+    const password = formData.password;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setLoading(false);
+      setMessage(
+        "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y símbolos."
+      );
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:5000/api/users', {
         method: 'POST',
@@ -38,18 +50,6 @@ const SignUpComponent = () => {
 
       setMessage('Usuario registrado exitosamente');
       setFormData({
-        nombre: '',
-        email: '',
-        password: '',
-        direccion: '',
-        telefono: '',
-      }); // Limpiar formulario
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
-      setMessage("Usuario registrado exitosamente");
-      setFormData({
         firstName: "",
         lastName: "",
         username: "",
@@ -57,13 +57,17 @@ const SignUpComponent = () => {
         password: "",
         confirmPassword: "",
       });
-    }, 1000);
+    } catch (error: any) {
+      setMessage(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="mt-20 max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md px-8 py-10 flex flex-col items-center">
       <h1 className="text-xl font-bold text-center text-gray-700 dark:text-gray-200 mb-8">
-        Welcome to My Company
+        Bienvenido a Mi Empresa
       </h1>
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
         <div className="flex items-start flex-col justify-start">
@@ -71,7 +75,7 @@ const SignUpComponent = () => {
             htmlFor="firstName"
             className="text-sm text-gray-700 dark:text-gray-200 mr-2"
           >
-            First Name:
+            Nombre:
           </label>
           <input
             type="text"
@@ -89,7 +93,7 @@ const SignUpComponent = () => {
             htmlFor="lastName"
             className="text-sm text-gray-700 dark:text-gray-200 mr-2"
           >
-            Last Name:
+            Apellido:
           </label>
           <input
             type="text"
@@ -107,7 +111,7 @@ const SignUpComponent = () => {
             htmlFor="username"
             className="text-sm text-gray-700 dark:text-gray-200 mr-2"
           >
-            Username:
+            Nombre de usuario:
           </label>
           <input
             type="text"
@@ -125,7 +129,7 @@ const SignUpComponent = () => {
             htmlFor="email"
             className="text-sm text-gray-700 dark:text-gray-200 mr-2"
           >
-            Email:
+            Correo electrónico:
           </label>
           <input
             type="email"
@@ -143,7 +147,7 @@ const SignUpComponent = () => {
             htmlFor="password"
             className="text-sm text-gray-700 dark:text-gray-200 mr-2"
           >
-            Password:
+            Contraseña:
           </label>
           <input
             type="password"
@@ -154,6 +158,9 @@ const SignUpComponent = () => {
             className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
+          <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y símbolos.
+          </span>
         </div>
 
         <div className="flex items-start flex-col justify-start">
@@ -161,7 +168,7 @@ const SignUpComponent = () => {
             htmlFor="confirmPassword"
             className="text-sm text-gray-700 dark:text-gray-200 mr-2"
           >
-            Confirm Password:
+            Confirmar contraseña:
           </label>
           <input
             type="password"
@@ -179,10 +186,16 @@ const SignUpComponent = () => {
           disabled={loading}
           className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md shadow-sm"
         >
-          {loading ? "Registering..." : "Register"}
+          {loading ? "Registrando..." : "Registrarse"}
         </button>
         {message && (
-          <p className="mt-2 text-center text-sm text-green-600 dark:text-green-400">
+          <p
+            className={`mt-2 text-center text-sm ${
+              message.startsWith("Error") || message.includes("contraseña") // Puedes ajustar esta condición
+                ? "text-red-600 dark:text-red-400"
+                : "text-green-600 dark:text-green-400"
+            }`}
+          >
             {message}
           </p>
         )}
@@ -190,10 +203,10 @@ const SignUpComponent = () => {
 
       <div className="mt-4 text-center">
         <span className="text-sm text-gray-500 dark:text-gray-300">
-          Already have an account?{" "}
+          ¿Ya tienes una cuenta?{" "}
         </span>
-        <a href="#" className="text-blue-500 hover:text-blue-600">
-          Login
+        <a href="/Login" className="text-blue-500 hover:text-blue-600">
+          Iniciar sesión
         </a>
       </div>
     </div>
