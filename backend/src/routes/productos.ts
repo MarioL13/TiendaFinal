@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 import multer, { Multer } from 'multer';
+import fs from 'fs';
+
 const upload: Multer = multer({ dest: 'uploads/' });
 
 import {
@@ -12,6 +14,7 @@ import {
     eliminarProducto,
     obtenerDestacados
 } from '../services/productosServices';
+import {verificarAdmin, verificarToken} from "../middlewares/authMiddleware";
 
 // Se crea una instancia del enrutador de Express
 const router = Router();
@@ -61,7 +64,7 @@ router.get('/api/products/:id', async (req: Request, res: Response) => {
 });
 
 // Ruta para crear un nuevo producto
-router.post('/api/products', upload.array('imagenes'), async (req: Request, res: Response) => {
+router.post('/api/products', upload.array('imagenes'),  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     let producto = req.body; // Obtiene los datos del producto
 
     if (!req.files || !Array.isArray(req.files)) {
@@ -108,7 +111,7 @@ router.post('/api/products', upload.array('imagenes'), async (req: Request, res:
 });
 
 // Ruta para actualizar un producto existente por su ID
-router.put('/api/products/:id', async (req: Request, res: Response) => {
+router.put('/api/products/:id',  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const producto = req.body;
 
@@ -132,7 +135,7 @@ router.put('/api/products/:id', async (req: Request, res: Response) => {
 });
 
 // Ruta para eliminar un producto por su ID
-router.delete('/api/products/:id', async (req: Request, res: Response) => {
+router.delete('/api/products/:id',  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id); // Convierte el ID de la URL a número
     try {
         const result = await eliminarProducto(id); // Llama a la función para eliminar el producto
@@ -174,10 +177,11 @@ cloudinary.config({
 const subirImagen = (imagen: Express.Multer.File): Promise<string> => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader.upload(imagen.path, (error, result) => {
+            fs.unlinkSync(imagen.path); // elimina el archivo local
             if (error || !result) {
                 return reject(error || new Error('No se pudo subir la imagen'));
             }
-            resolve(result.secure_url); // Devuelve el enlace seguro de la imagen
+            resolve(result.secure_url);
         });
     });
 };

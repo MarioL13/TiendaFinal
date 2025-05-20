@@ -51,13 +51,18 @@ router.post('/api/carrito', verificarToken, async (req: Request, res: Response) 
     }
 });
 
-// Actualizar cantidad de un ítem (verifica propietario más adelante si es necesario)
+// Actualizar cantidad de un ítem
 router.put('/api/carrito/:id_carrito', verificarToken, async (req: Request, res: Response) => {
     const { cantidad } = req.body;
     const id_carrito = parseInt(req.params.id_carrito);
+    const id_usuario = (req as any).usuario.id;
+
+    if (cantidad <= 0) {
+        return res.status(400).json({ message: 'Cantidad inválida' });
+    }
 
     try {
-        const result = await actualizarCantidadCarrito(id_carrito, cantidad);
+        const result = await actualizarCantidadCarrito(id_usuario, id_carrito, cantidad);
         if (result.affectedRows > 0) {
             res.json({ message: 'Cantidad actualizada' });
         } else {

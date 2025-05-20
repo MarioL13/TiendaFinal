@@ -9,7 +9,7 @@ export const verificarToken = (req: Request, res: Response, next: NextFunction) 
 
     try {
         const decoded = jwt.verify(token, secret);
-        (req as any).usuario = decoded; // 👈 evitar error de TypeScript
+        (req as any).usuario = decoded;
         next();
     } catch (err) {
         return res.status(403).json({ message: 'Token inválido' });
@@ -17,7 +17,7 @@ export const verificarToken = (req: Request, res: Response, next: NextFunction) 
 };
 
 export const verificarAdmin = (req: Request, res: Response, next: NextFunction) => {
-    const usuario = (req as any).usuario; // 👈 usar "any" para evitar errores
+    const usuario = (req as any).usuario;
 
     if (usuario?.rol !== 'admin') {
         return res.status(403).json({ message: 'Acceso restringido solo a administradores' });

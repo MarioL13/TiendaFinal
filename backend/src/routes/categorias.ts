@@ -6,6 +6,7 @@ import {
     actualizarCategoria,
     eliminarCategoria
 } from '../services/categoriasServices';
+import {verificarAdmin, verificarToken} from "../middlewares/authMiddleware";
 
 const router = Router();
 
@@ -37,7 +38,7 @@ router.get('/api/categorias/:id', async (req: Request, res: Response) => {
 });
 
 // Crear una nueva categoría
-router.post('/api/categorias', async (req: Request, res: Response) => {
+router.post('/api/categorias',  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const categoria = req.body;
 
     if (!categoria.nombre || typeof categoria.nombre !== 'string') {
@@ -57,7 +58,7 @@ router.post('/api/categorias', async (req: Request, res: Response) => {
 });
 
 // Actualizar una categoría
-router.put('/api/categorias/:id', async (req: Request, res: Response) => {
+router.put('/api/categorias/:id',  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const categoria = req.body;
 
@@ -79,7 +80,7 @@ router.put('/api/categorias/:id', async (req: Request, res: Response) => {
 });
 
 // Eliminar una categoría
-router.delete('/api/categorias/:id', async (req: Request, res: Response) => {
+router.delete('/api/categorias/:id',  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
         const result = await eliminarCategoria(id);
