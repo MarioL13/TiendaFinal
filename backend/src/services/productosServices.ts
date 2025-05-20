@@ -1,14 +1,52 @@
 import db from '../services/db';
 import {QueryError, FieldPacket, RowDataPacket} from "mysql2";
 import {obtenerCategoriaPorId, obtenerIdCategoria} from "./categoriasServices";
-
+interface FiltrosProducto {
+    page: number;
+    limit: number;
+    search: string;
+    category: string;
+    sort: 'asc' | 'desc';
+}
 // Función para obtener todos los productos de la base de datos
-export const obtenerProductos = (): Promise<any[]> => {
+export const obtenerProductos = ({ page, limit, search, category, sort }: FiltrosProducto): Promise<any> => {
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM productos', async (err: Error, results: any[]) => {
-            if (err) {
-                reject(err);
-            } else {
+        const offset = (page - 1) * limit;
+
+        const filtros: any[] = [];
+        const condiciones: string[] = [];
+
+        if (search) {
+            condiciones.push('p.nombre LIKE ?');
+            filtros.push(`%${search}%`);
+        }
+
+        if (category) {
+            condiciones.push('c.nombre = ?');
+            filtros.push(category);
+        }
+
+        const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
+
+        const sql = `
+            SELECT SQL_CALC_FOUND_ROWS p.*
+            FROM productos p
+            LEFT JOIN ProductoCategoria pc ON p.id_producto = pc.id_producto
+            LEFT JOIN categorias c ON pc.id_categoria = c.id_categoria
+            ${where}
+            GROUP BY p.id_producto
+            ORDER BY p.precio ${sort === 'desc' ? 'DESC' : 'ASC'}
+            LIMIT ? OFFSET ?
+        `;
+
+        db.query(sql, [...filtros, limit, offset], async (err: QueryError | null, results: any[]) => {
+            if (err) return reject(err);
+
+            // Consulta para contar el total sin paginación
+            db.query('SELECT FOUND_ROWS() AS total', async (err2: QueryError | null, totalResult: any[]) => {
+                if (err2) return reject(err2);
+
+                const total = totalResult[0].total;
                 const productosCategoria: any[] = [];
 
                 for (let producto of results) {
@@ -18,32 +56,27 @@ export const obtenerProductos = (): Promise<any[]> => {
                                 'SELECT c.nombre FROM categorias c JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria WHERE pc.id_producto = ?',
                                 [producto.id_producto],
                                 (err: QueryError | null, categoriaResults: any[]) => {
-                                    if (err) {
-                                        rej(err); // <-- cuidado, aquí usabas reject del scope de fuera
-                                    } else {
-                                        const nombres: string[] = [];
-                                        for (const c of categoriaResults) {
-                                            nombres.push(c.nombre);
-                                        }
-                                        res(nombres);
-                                    }
+                                    if (err) return rej(err);
+                                    const nombres = categoriaResults.map(c => c.nombre);
+                                    res(nombres);
                                 }
                             )
                         );
 
-                        // Asignamos las categorías al producto
                         producto.categorias = categorias;
-
-                        // Lo añadimos al array final
                         productosCategoria.push(producto);
                     } catch (error) {
-                        reject(error);
-                        return;
+                        return reject(error);
                     }
                 }
 
-                resolve(productosCategoria);
-            }
+                resolve({
+                    productos: productosCategoria,
+                    total,
+                    page,
+                    totalPages: Math.ceil(total / limit)
+                });
+            });
         });
     });
 };

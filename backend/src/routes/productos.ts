@@ -21,14 +21,22 @@ const router = Router();
 
 // Ruta para obtener todos los productos
 router.get('/api/products', async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const search = (req.query.search as string) || '';
+    const category = (req.query.category as string) || '';
+    const sortParam = req.query.sort as string;
+    const sort: 'asc' | 'desc' = sortParam === 'desc' ? 'desc' : 'asc';
+
     try {
-        const products = await obtenerProductos(); // Llama a la función que obtiene los productos
-        res.json(products); // Devuelve los productos en formato JSON
+        const productos = await obtenerProductos({ page, limit, search, category, sort });
+        res.json(productos);
     } catch (err: any) {
         console.log(err);
         res.status(500).json({ message: 'Error al obtener los productos', error: err.message });
     }
 });
+
 // Ruta para obtener todos los productos destacados
 router.get('/api/products/destacados', async (req: Request, res: Response) => {
     try{
