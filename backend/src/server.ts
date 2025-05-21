@@ -1,41 +1,42 @@
-    import express, { Request, Response } from 'express';
-    import cors from 'cors';
-    import usersRouter from './routes/usuarios'; // Importa las rutas
-    import productsRouter from './routes/productos';
-    import categoriasRouter from './routes/categorias';
-    import deseadosRouter from './routes/deseados';
-    import cartasRouter from './routes/cartas';
-    import carritoRouter from './routes/carrito';
-    import pedidosRouter from './routes/pedidos';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import usersRouter from './routes/usuarios'; // Importa las rutas
+import productsRouter from './routes/productos';
+import categoriasRouter from './routes/categorias';
+import deseadosRouter from './routes/deseados';
+import cartasRouter from './routes/cartas';
+import carritoRouter from './routes/carrito';
+import pedidosRouter from './routes/pedidos';
 
-    import path from 'path';
-    import cookieParser from 'cookie-parser';
+import path from 'path';
+import cookieParser from 'cookie-parser';
 
+const app = express();
+app.use(cookieParser());
+const port = 5000;
 
-    const app = express();
-    app.use(cookieParser());
-    const port = 5000;
+// Configura CORS para permitir solicitudes desde el frontend
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
-    app.use(cors());
-    app.use(express.json());  // Para poder recibir datos JSON en el cuerpo de las solicitudes
+app.use(express.json());  // Para poder recibir datos JSON en el cuerpo de las solicitudes
 
-    app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-    // Rutas
-    app.use(productsRouter);
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Rutas
+app.use(productsRouter);
 
-    // Usar las rutas de usuarios
-    app.use(usersRouter);
-    app.use(productsRouter);
-    app.use(categoriasRouter);
-    app.use(cartasRouter);
-    app.use(deseadosRouter);
-    app.use(carritoRouter);
-    app.use(pedidosRouter);
+// Usar las rutas de usuarios
+app.use(usersRouter);
+app.use(productsRouter);
+app.use(categoriasRouter);
+app.use(cartasRouter);
+app.use(deseadosRouter);
+app.use(carritoRouter);
+app.use(pedidosRouter);
 
-    app.get('/', (req: Request, res: Response) => {
-        res.send('API funcionando');
-    });
+app.get('/', (req: Request, res: Response) => {
+    res.send('API funcionando');
+});
 
-    app.listen(port, () => {
-        console.log(`Servidor Express corriendo en http://localhost:${port}`);
-    });
+app.listen(port, () => {
+    console.log(`Servidor Express corriendo en http://localhost:${port}`);
+});

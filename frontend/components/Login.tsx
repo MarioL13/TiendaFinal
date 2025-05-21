@@ -36,7 +36,7 @@ const Login = () => {
       setMessage(`Bienvenido ${data.usuario.nombre}`);
       localStorage.setItem('user', JSON.stringify(data.usuario));
 
-      router.push('/main');
+      router.push('/');
     } catch (error: any) {
       console.error('Error al iniciar sesión:', error); // Depuración de errores
       setMessage(`Error: ${error.message}`);

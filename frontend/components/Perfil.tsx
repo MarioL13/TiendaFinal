@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 interface User {
   name?: string;
@@ -10,23 +10,50 @@ interface User {
   avatar?: string;
 }
 
-
-export default function ProfileManager({ user }: { user: User }) {
+export default function ProfileManager() {
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: user.name || "",
-    surname: user.surname || "",
-    email: user.email || "",
-    phone: user.phone || "",
-    address: user.address || "",
-    avatar: user.avatar || "/default-avatar.png",
+  const [formData, setFormData] = useState<User>({
+    name: "",
+    surname: "",
+    email: "",
+    phone: "",
+    address: "",
+    avatar: "/default-avatar.png",
   });
-
+  const [loading, setLoading] = useState(true);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/users/me', {
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error al obtener el usuario: ${response.status} - ${errorText}`);
+        }
+        const data = await response.json();
+        setFormData({
+          name: data.nombre || "",
+          surname: "", // No hay apellido en la respuesta, puedes dejarlo vacío
+          email: data.email || "",
+          phone: data.telefono || "",
+          address: data.direccion || "",
+          avatar: data.FOTO ? data.FOTO : "/default-avatar.png",
+        });
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,25 +65,56 @@ export default function ProfileManager({ user }: { user: User }) {
     setPasswordData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Datos actualizados:", formData);
-    setIsEditing(false);
+    try {
+      const response = await fetch('http://localhost:5000/api/users/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) throw new Error('Error al actualizar el perfil');
+      setIsEditing(false);
+    } catch (error) {
+      alert("Error al actualizar el perfil");
+    }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       alert("Las contraseñas no coinciden");
       return;
     }
-    console.log("Contraseña actualizada:", passwordData);
+    // Aquí deberías hacer la petición real para cambiar la contraseña
+    // Ejemplo:
+    /*
+    try {
+      const response = await fetch('http://localhost:5000/api/users/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(passwordData),
+      });
+      if (!response.ok) throw new Error('Error al cambiar la contraseña');
+      alert("Contraseña actualizada");
+    } catch (error) {
+      alert("Error al cambiar la contraseña");
+    }
+    */
     setPasswordData({
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     });
   };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Cargando...</div>;
+  }
 
   return (
     <div className="w-screen h-screen flex items-center justify-center mt-20 mb-20">
@@ -152,6 +210,7 @@ export default function ProfileManager({ user }: { user: User }) {
                         value={formData.address}
                         onChange={handleInputChange}
                         className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Dirección"
                       />
                     </div>
                   </div>
