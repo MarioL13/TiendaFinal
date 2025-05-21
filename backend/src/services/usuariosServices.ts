@@ -34,10 +34,14 @@ export const obtenerUsuarioPorId = async (id: number): Promise<any | null> => {
 };
 
 const validarUsuario = (usuario: any): string | null => {
-    const { nombre, email, password, telefono } = usuario;
+    const { nombre, apellido, email, password, telefono } = usuario;
 
     if (!nombre || nombre.trim().length < 2) {
         return 'Nombre inválido.';
+    }
+
+    if (!apellido || apellido.trim().length < 2) {
+        return 'Apellido inválido.';
     }
 
     if (!email || !validator.isEmail(email)) {
@@ -52,7 +56,7 @@ const validarUsuario = (usuario: any): string | null => {
         return 'Teléfono inválido.';
     }
 
-    return null; // Si
+    return null;
 };
 
 // Función para validar la contraseña (8 caracteres, al menos una mayúscula, un número y un símbolo)
@@ -63,21 +67,21 @@ const validarPassword = (password: string): boolean => {
 
 // Crear un nuevo usuario
 export const crearUsuario = async (usuario: any): Promise<any> => {
-    let { nombre, FOTO, email, password, direccion, telefono } = usuario;
+    let { nombre, apellido, FOTO, email, password, direccion, telefono } = usuario;
 
-    const error = validarUsuario(usuario);  // Validamos los datos
-    if (error) throw new Error(error); // Si hay error, lanzamos una excepción
+    const error = validarUsuario(usuario);
+    if (error) throw new Error(error);
 
     if (!FOTO || FOTO === '' || typeof FOTO !== 'object') {
         FOTO = null;
     }
 
-    const hash = await bcrypt.hash(password, 10);  // Encriptamos la contraseña
+    const hash = await bcrypt.hash(password, 10);
 
     return new Promise((resolve, reject) => {
         db.query(
-            'INSERT INTO usuarios (nombre, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)',
-            [nombre, FOTO, email, hash, direccion, telefono],
+            'INSERT INTO usuarios (nombre, apellido, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [nombre, apellido, FOTO, email, hash, direccion, telefono],
             (err: QueryError | null, results: any) => {
                 if (err) {
                     reject(new Error('Error al crear el usuario: ' + err.message));
@@ -115,9 +119,10 @@ export const actualizarUsuario = async (id: number, usuario: any): Promise<any> 
             }
 
             db.query(
-                'UPDATE usuarios SET nombre = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?',
+                'UPDATE usuarios SET nombre = ?, apellido = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?',
                 [
                     usuarioActualizado.nombre,
+                    usuarioActualizado.apellido,
                     usuarioActualizado.FOTO,
                     usuarioActualizado.email,
                     usuarioActualizado.password,

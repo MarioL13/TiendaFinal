@@ -7,9 +7,10 @@ interface FiltrosProducto {
     search: string;
     category: string;
     sort: 'asc' | 'desc';
+    idioma: string;
 }
 // Función para obtener todos los productos de la base de datos
-export const obtenerProductos = ({ page, limit, search, category, sort }: FiltrosProducto): Promise<any> => {
+export const obtenerProductos = ({ page, limit, search, category, sort, idioma }: FiltrosProducto): Promise<any> => {
     return new Promise((resolve, reject) => {
         const offset = (page - 1) * limit;
 
@@ -24,6 +25,11 @@ export const obtenerProductos = ({ page, limit, search, category, sort }: Filtro
         if (category) {
             condiciones.push('c.nombre = ?');
             filtros.push(category);
+        }
+
+        if (idioma) {
+            condiciones.push('p.idioma = ?');
+            filtros.push(idioma);
         }
 
         const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
@@ -121,13 +127,13 @@ export const obtenerProductoPorId = (id: number): Promise<any> => {
 
 // Función para crear un nuevo producto en la base de datos
 export const crearProducto = async (producto: any): Promise<any> => {
-    const { nombre, descripcion, precio, stock, categorias, imagenes } = producto;
+    const { nombre, descripcion, precio, stock, idioma, categorias, imagenes } = producto;
 
     try {
         return new Promise((resolve, reject) => {
             db.query(
-                'INSERT INTO productos (nombre, descripcion, precio, stock, imagenes) VALUES (?, ?, ?, ?, ?)',
-                [nombre, descripcion, precio, stock, JSON.stringify(imagenes)],
+                'INSERT INTO productos (nombre, descripcion, precio, stock, idioma, imagenes) VALUES (?, ?, ?, ?, ?)',
+                [nombre, descripcion, precio, stock, idioma, JSON.stringify(imagenes)],
                 async (err: QueryError | null, results: any) => {
                     if (err) return reject(err);
                     const id_producto = results.insertId;
@@ -172,12 +178,13 @@ export const actualizarProducto = async (id: number, nuevosDatos: any): Promise<
         // Actualizamos el producto (sin id_categoria porque se gestiona en tabla intermedia)
         await new Promise((resolve, reject) => {
             db.query(
-                'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, imagenes = ? WHERE id_producto = ?',
+                'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, idioma = ?, imagenes = ? WHERE id_producto = ?',
                 [
                     productoActualizado.nombre,
                     productoActualizado.descripcion,
                     productoActualizado.precio,
                     productoActualizado.stock,
+                    productoActualizado.idioma,
                     imagenesJson,
                     id
                 ],

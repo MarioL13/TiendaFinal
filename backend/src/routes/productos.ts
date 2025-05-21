@@ -25,11 +25,12 @@ router.get('/api/products', async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 20;
     const search = (req.query.search as string) || '';
     const category = (req.query.category as string) || '';
+    const idioma = (req.query.idioma as string) || 'es';
     const sortParam = req.query.sort as string;
     const sort: 'asc' | 'desc' = sortParam === 'desc' ? 'desc' : 'asc';
 
     try {
-        const productos = await obtenerProductos({ page, limit, search, category, sort });
+        const productos = await obtenerProductos({ page, limit, search, category, sort, idioma });
         res.json(productos);
     } catch (err: any) {
         console.log(err);
@@ -51,6 +52,7 @@ router.get('/api/products/destacados', async (req: Request, res: Response) => {
 // Ruta para obtener un producto por su ID
 router.get('/api/products/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id); // Convierte el parámetro ID a número
+
     if (isNaN(id)) {
         return res.status(400).json({ error: 'ID de producto inválido' });
     }

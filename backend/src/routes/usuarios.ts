@@ -154,6 +154,7 @@ router.post('/api/login', async (req: Request, res: Response) => {
         const usuarioFiltrado = {
             id: user.id_usuario,
             nombre: user.nombre,
+            apellido: user.apellido,
             email: user.email,
         };
 
