@@ -25,7 +25,7 @@ router.get('/api/products', async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 20;
     const search = (req.query.search as string) || '';
     const category = (req.query.category as string) || '';
-    const idioma = (req.query.idioma as string) || 'es';
+    const idioma = (req.query.idioma as string);
     const sortParam = req.query.sort as string;
     const sort: 'asc' | 'desc' = sortParam === 'desc' ? 'desc' : 'asc';
 
