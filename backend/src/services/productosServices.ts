@@ -23,9 +23,10 @@ export const obtenerProductos = ({ page, limit, search, category, sort, idioma }
         }
 
         if (category) {
-            condiciones.push('c.nombre = ?');
-            filtros.push(category);
+            condiciones.push('c.nombre LIKE ?');
+            filtros.push(`%${category}%`);
         }
+
 
         if (idioma) {
             condiciones.push('p.idioma = ?');
