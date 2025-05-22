@@ -186,3 +186,26 @@ export const obtenerUsuarioPorEmail = async (email: string): Promise<any | null>
         );
     });
 };
+
+export const cambiarPassword = async (id: number, nuevaPassword: string): Promise<any> => {
+    if (!validarPassword(nuevaPassword)) {
+        throw new Error('La nueva contraseña debe tener mínimo 8 caracteres, incluir una mayúscula, un número y un símbolo.');
+    }
+
+    const hashedPassword = await bcrypt.hash(nuevaPassword, 10);
+
+    return new Promise((resolve, reject) => {
+        db.query(
+            'UPDATE usuarios SET password = ? WHERE id_usuario = ?',
+            [hashedPassword, id],
+            (err: QueryError | null, results: any) => {
+                if (err) {
+                    reject(new Error('Error al cambiar la contraseña: ' + err.message));
+                } else {
+                    resolve(results);
+                }
+            }
+        );
+    });
+};
+

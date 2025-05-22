@@ -10,7 +10,8 @@ import {
     crearUsuario,
     actualizarUsuario,
     eliminarUsuario,
-    obtenerUsuarioPorEmail
+    obtenerUsuarioPorEmail,
+    cambiarPassword
 } from '../services/usuariosServices';
 import bcrypt from "bcrypt"; // Importa las funciones del servicio que maneja los usuarios
 
@@ -173,6 +174,35 @@ router.post('/api/logout', verificarToken, (req: Request, res: Response) => {
 router.get('/api/check-auth', verificarToken, (req: Request, res: Response) => {
     const usuario = (req as any).usuario;
     res.json({ autenticado: true, rol: usuario.rol, id: usuario.id });
+});
+
+router.put('/api/cambiarpassword', verificarToken, async (req: Request, res: Response) => {
+    const { password, nuevapassword } = req.body;
+    const usuario = (req as any).usuario;
+
+    if (!password || !nuevapassword) {
+        return res.status(400).json({ message: 'Debes proporcionar la contraseña actual y la nueva contraseña' });
+    }
+
+    try {
+        const user = await obtenerUsuarioPorId(usuario.id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        const coincide = await bcrypt.compare(password, user.password);
+        if (!coincide) {
+            return res.status(401).json({ message: 'La contraseña actual es incorrecta' });
+        }
+
+        await cambiarPassword(usuario.id, nuevapassword);
+        res.json({ message: 'Contraseña actualizada correctamente' });
+
+    } catch (err: any) {
+        console.error(err);
+        res.status(500).json({ message: 'Error al cambiar la contraseña', error: err.message });
+    }
 });
 
 
