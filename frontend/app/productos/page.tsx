@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function ProductPage() {
   const router = useRouter();
-  const searchParams = useSearchParams(); // ✅ Llamado al inicio
+  const searchParams = useSearchParams(); 
 
   interface Producto {
     nombre: string;
@@ -45,8 +45,8 @@ export default function ProductPage() {
     };
 
     fetchProducto();
-  }, [searchParams]); // ✅ Añadimos searchParams como dependencia
-
+  }, [searchParams]);
+  
   if (loading) return <p>Cargando producto...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
   if (!producto) return <p>Producto no encontrado.</p>;
