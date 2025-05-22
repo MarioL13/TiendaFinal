@@ -8,7 +8,7 @@ import {
     actualizarCantidadCarrito,
     eliminarItemCarritoSeguro,
     vaciarCarrito,
-    existeItem
+    existeItem, obtenerTotalItemsCarrito
 } from '../services/carritoServices';
 
 const router = Router();
@@ -107,6 +107,19 @@ router.delete('/api/carrito/todo', verificarToken, async (req, res) => {
     } catch (err: any) {
         console.error(err);
         res.status(500).json({ message: 'Error al vaciar el carrito', error: err.message });
+    }
+});
+
+router.get('/api/carrito/total', verificarToken, async (req: Request, res: Response) => {
+    const usuarioLogeado = (req as any).usuario;
+    const id_usuario = usuarioLogeado.id;
+
+    try {
+        const total = await obtenerTotalItemsCarrito(id_usuario);
+        res.json({ totalItems: total });
+    } catch (err: any) {
+        console.error(err);
+        res.status(500).json({ message: 'Error al obtener el total del carrito', error: err.message });
     }
 });
 

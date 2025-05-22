@@ -110,3 +110,21 @@ export const existeItem = (tipo_item: 'producto' | 'carta', id_item: number): Pr
         );
     });
 };
+
+export const obtenerTotalItemsCarrito = (id_usuario: number): Promise<number> => {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT SUM(cantidad) AS total
+            FROM Carrito
+            WHERE id_usuario = ?
+        `;
+        db.query(query, [id_usuario], (err: QueryError | null, results: RowDataPacket[]) => {
+            if (err) {
+                reject(err);
+            } else {
+                const total = results[0].total || 0;
+                resolve(total);
+            }
+        });
+    });
+};
