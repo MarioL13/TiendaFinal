@@ -121,20 +121,50 @@ router.post('/api/products', upload.array('imagenes'),  verificarToken, verifica
 });
 
 // Ruta para actualizar un producto existente por su ID
-router.put('/api/products/:id',  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
+router.put('/api/products/:id', verificarToken, verificarAdmin, upload.array('imagenes'), async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
-    const producto = req.body;
+    let producto = req.body;
 
-    // Validación de los campos
+    // Validar campos antes
     const error = validarProducto(producto);
-    if (error) {
-        return res.status(400).json({ message: error });
+    if (error) return res.status(400).json({ message: error });
+
+    // Si vienen imágenes nuevas, subirlas
+    let nuevasImagenesUrls: string[] = [];
+    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+        try {
+            nuevasImagenesUrls = await Promise.all(
+                (req.files as Express.Multer.File[]).map(file => subirImagen(file))
+            );
+        } catch (err) {
+            return res.status(500).json({ message: 'Error al subir las imágenes nuevas', error: (err as Error).message });
+        }
     }
 
     try {
+        // Obtener producto actual para obtener imágenes actuales
+        const productoActual = await obtenerProductoPorId(id);
+        if (!productoActual) return res.status(404).json({ message: 'Producto no encontrado' });
+
+        // Combinar imágenes existentes con nuevas, o solo nuevas si quieres reemplazar
+        let imagenesActuales: string[] = [];
+        try {
+            imagenesActuales = JSON.parse(productoActual.imagenes);
+        } catch {
+            imagenesActuales = [];
+        }
+
+        // Por ejemplo, añadir nuevas imágenes a las antiguas
+        const imagenesFinales = [...imagenesActuales, ...nuevasImagenesUrls];
+
+        // Actualizar el objeto producto con las imágenes finales
+        producto.imagenes = imagenesFinales;
+
+        // Actualizar producto en BD
         const result = await actualizarProducto(id, producto);
+
         if (result.affectedRows > 0) {
-            res.json({ message: 'Producto actualizado' });
+            res.json({ message: 'Producto actualizado con imágenes nuevas' });
         } else {
             res.status(404).json({ message: 'Producto no encontrado' });
         }
