@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import '../styles/producto.css';
 
 interface Producto {
@@ -29,8 +28,9 @@ const Destacados: React.FC = () => {
     const fetchDestacados = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<ApiResponse>(`http://localhost:5000/api/products?page=${page}`);
-        const data = response.data;
+        const response = await fetch(`http://localhost:5000/api/products?page=${page}`);
+        if (!response.ok) throw new Error('Error al obtener productos destacados');
+        const data: ApiResponse = await response.json();
         const productosAdaptados: Producto[] = data.productos.map((item: any) => ({
           id_producto: item.id_producto,
           nombre: item.nombre,

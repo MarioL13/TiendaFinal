@@ -1,19 +1,10 @@
 // pages/profile.jsx
 import ProfileCard from "@/components/Perfil";
-export default function ProfilePage() {
-  
-  const user = {
-    name: "Tony",
-    surname: "Stark",
-    email: "tony.stark@avengers.com",
-    phone: "123-456-7890",
-    address: "Stark Tower, New York",
-    avatar: "https://i.pravatar.cc/150?img=3",
-  };
 
+export default function ProfilePage() {
   return (
-    <div className="min-h-screen bg-gray-100 pt-15 w-full">
-      <ProfileCard user={user} />
+    <div className="min-h-screen bg-gray-100 pt-35 pb-30 w-full">
+      <ProfileCard />
     </div>
   );
 }
