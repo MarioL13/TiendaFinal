@@ -33,7 +33,7 @@ export const obtenerUsuarioPorId = async (id: number): Promise<any | null> => {
     });
 };
 
-const validarUsuario = (usuario: any): string | null => {
+const validarUsuario = (usuario: any, requerirPassword: boolean = true): string | null => {
     const { nombre, apellido, email, password, telefono } = usuario;
 
     if (!nombre || nombre.trim().length < 2) {
@@ -48,7 +48,7 @@ const validarUsuario = (usuario: any): string | null => {
         return 'Email inválido.';
     }
 
-    if (!password || !validarPassword(password)) {
+    if (requerirPassword && (!password || !validarPassword(password))) {
         return 'La contraseña debe tener mínimo 8 caracteres, incluir una mayúscula, un número y un símbolo.';
     }
 
@@ -72,7 +72,8 @@ export const crearUsuario = async (usuario: any): Promise<any> => {
     const error = validarUsuario(usuario);
     if (error) throw new Error(error);
 
-    if (!FOTO || FOTO === '' || typeof FOTO !== 'object') {
+    // FOTO debe ser string o null
+    if (!FOTO || FOTO === '') {
         FOTO = null;
     }
 
@@ -97,26 +98,29 @@ export const crearUsuario = async (usuario: any): Promise<any> => {
 export const actualizarUsuario = async (id: number, usuario: any): Promise<any> => {
     return new Promise(async (resolve, reject) => {
         try {
-            // Obtener el usuario actual
             const usuarioActual = await obtenerUsuarioPorId(id);
             if (!usuarioActual) {
                 return reject(new Error('Usuario no encontrado'));
             }
 
-            // Validar los nuevos datos
-            const error = validarUsuario(usuario);  // Validamos los datos
-            if (error) return reject(new Error(error)); // Si hay error, lanzamos una excepción
+            const error = validarUsuario(usuario, false);
+            if (error) return reject(new Error(error));
 
-            // Mezclar datos: lo que envía el usuario reemplaza lo que ya existía
+            // Preparar imagen
+            let fotoFinal = usuario.FOTO;
+            if (Array.isArray(usuario.FOTO)) {
+                fotoFinal = JSON.stringify(usuario.FOTO);
+            }
+
+            // No permitimos cambiar contraseña desde aquí
+            const passwordFinal = usuarioActual.password;
+
             const usuarioActualizado = {
                 ...usuarioActual,
                 ...usuario,
+                FOTO: fotoFinal ?? usuarioActual.FOTO,
+                password: passwordFinal,
             };
-
-            // Si la contraseña ha cambiado, encriptarla
-            if (usuario.password && usuario.password !== usuarioActual.password) {
-                usuarioActualizado.password = await bcrypt.hash(usuario.password, 10);
-            }
 
             db.query(
                 'UPDATE usuarios SET nombre = ?, apellido = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?',

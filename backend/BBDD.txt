@@ -4,7 +4,7 @@ USE TiendaOnline;
 -- Tabla de Usuarios
 CREATE TABLE Usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    FOTO LONGBLOB,
+    FOTO LONGTEXT,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
