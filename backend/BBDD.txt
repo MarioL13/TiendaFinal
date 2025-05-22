@@ -6,7 +6,7 @@ CREATE TABLE Usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     FOTO LONGBLOB,
     nombre VARCHAR(100) NOT NULL,
-    apellido VARCHAR(100), -- NUEVO CAMPO
+    apellido VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     direccion VARCHAR(255) NOT NULL,
@@ -33,11 +33,11 @@ CREATE TABLE cartas (
     collector_number VARCHAR(20)
 );
 
--- Tabla de Productos (sin id_categoria directamente)
+-- Tabla de Productos
 CREATE TABLE productos (
     id_producto INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
-    idioma VARCHAR(100), -- NUEVO CAMPO
+    idioma VARCHAR(100),
     descripcion TEXT,
     precio DECIMAL(10,2) NOT NULL,
     stock INT NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE Pedidos (
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
 );
 
--- Tabla de Detalles de Pedido (para cartas y productos)
+-- Tabla de Detalles de Pedido
 CREATE TABLE DetallePedido (
     id_detalle INT AUTO_INCREMENT PRIMARY KEY,
     id_pedido INT,
@@ -74,18 +74,14 @@ CREATE TABLE DetallePedido (
     FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido) ON DELETE CASCADE
 );
 
--- Tabla de Deseados (wishlist)
+-- Tabla de Deseados
 CREATE TABLE Deseados (
     id_deseado INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_carta INT DEFAULT NULL,
     id_producto INT DEFAULT NULL,
-
-    -- Restricciones para evitar duplicados
     UNIQUE (id_usuario, id_carta),
     UNIQUE (id_usuario, id_producto),
-
-    -- Relaciones
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_carta) REFERENCES cartas(id_carta) ON DELETE SET NULL,
     FOREIGN KEY (id_producto) REFERENCES Productos(id_producto) ON DELETE SET NULL
@@ -100,6 +96,31 @@ CREATE TABLE Carrito (
     cantidad INT NOT NULL,
     fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
+);
+
+-- Tabla de Eventos
+CREATE TABLE Eventos (
+    id_evento INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    juego VARCHAR(255) NOT NULL,
+    fecha DATETIME NOT NULL,
+    precio_inscripcion DECIMAL(10,2) DEFAULT 0.00,
+    premios TEXT,
+    aforo_maximo INT DEFAULT NULL,
+    descripcion TEXT,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Inserts para la tabla Eventos (ejemplo)
+INSERT INTO Eventos (nombre, juego, fecha, precio_inscripcion, premios, aforo_maximo, descripcion)
+VALUES (
+    'Torneo Modern Magic', 
+    'Magic: The Gathering', 
+    '2025-06-15 16:00:00', 
+    10.00, 
+    'Sobres + cartas promocionales para el top 4', 
+    32, 
+    'Formato Moderno, partidas al mejor de 3. Es obligatorio traer mazo propio.'
 );
 
 -- Inserts para la tabla Usuarios

@@ -7,6 +7,7 @@ import deseadosRouter from './routes/deseados';
 import cartasRouter from './routes/cartas';
 import carritoRouter from './routes/carrito';
 import pedidosRouter from './routes/pedidos';
+import eventosRouter from './routes/eventos';
 
 import path from 'path';
 import cookieParser from 'cookie-parser';
@@ -32,6 +33,7 @@ app.use(cartasRouter);
 app.use(deseadosRouter);
 app.use(carritoRouter);
 app.use(pedidosRouter);
+app.use(eventosRouter);
 
 app.get('/', (req: Request, res: Response) => {
     res.send('API funcionando');
