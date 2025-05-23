@@ -159,7 +159,7 @@ const Productos: React.FC = () => {
                                 </div>
                                 <button
                                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors"
-                                    onClick={() => window.location.href = `/producto/${producto.id_producto}`}
+                                    onClick={() => window.location.href = `/productos/${producto.id_producto}`}
                                 >
                                     Ver producto
                                 </button>

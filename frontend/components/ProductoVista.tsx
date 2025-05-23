@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useCart } from "@/context/CartContext";
+import toast from 'react-hot-toast';
 
 interface Producto {
   id_producto: number;
@@ -13,6 +15,47 @@ interface Producto {
 const ProductCard = ({ id }: { id: number }) => {
   const [producto, setProducto] = useState<Producto | null>(null);
   const [mainImgIdx, setMainImgIdx] = useState(0);
+  const { updateCartTotal } = useCart();
+
+  const handleAddToCart = async () => {
+    try {
+      const toastId = toast.loading('Añadiendo al carrito...');
+      const response = await fetch('http://localhost:5000/api/carrito', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          tipo_item: 'producto',
+          id_item: id,
+          cantidad: 1
+        })
+      });
+
+      if (response.ok) {
+        await updateCartTotal();
+        toast.success('¡Producto añadido al carrito!', {
+          id: toastId,
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+      } else {
+        const data = await response.json();
+        toast.error(data.message || 'Error al añadir al carrito', {
+          id: toastId,
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al añadir al carrito');
+    }
+  };
 
   useEffect(() => {
     const fetchProducto = async () => {
@@ -107,8 +150,10 @@ const ProductCard = ({ id }: { id: number }) => {
           <div className="flex space-x-4 mt-auto mb-0 w-full justify-center">
             <button className="flex-1 mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer">
               Buy Now
-            </button>
-            <button className="flex-1 mt-8 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer">
+            </button>            <button 
+              onClick={handleAddToCart}
+              className="flex-1 mt-8 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer"
+            >
               Add to Cart
             </button>
           </div>

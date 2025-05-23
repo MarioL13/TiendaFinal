@@ -1,11 +1,24 @@
 'use client';
 import React, { useState, useRef, useEffect } from "react";
 import Head from "next/head";
+import { useCart } from "@/context/CartContext";
+
+interface Usuario {
+  id_usuario: number;
+  FOTO: string | null;
+  nombre: string;
+  apellido: string;
+  email: string;
+  direccion: string;
+  telefono: string;
+  rol: string;
+}
 
 const StoreLayout = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userData, setUserData] = useState<Usuario | null>(null);  const { cartTotal } = useCart();
 
   const handleLogout = async () => {
     try {
@@ -23,20 +36,26 @@ const StoreLayout = () => {
       console.error('Error al cerrar sesión:', error);
     }
   };
-
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/users/me", {
           credentials: "include",
         });
-        setIsAuthenticated(res.ok);
+        if (res.ok) {
+          const data = await res.json();
+          setUserData(data);
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
       } catch {
         setIsAuthenticated(false);
       }
     };
     checkAuth();
   }, []);
+
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -79,8 +98,7 @@ const StoreLayout = () => {
               <a href="/tienda" className="text-gray-700 hover:text-gray-900">Tienda</a>
               <a href="#" className="text-gray-700 hover:text-gray-900">Sobre Nosotros</a>
             </nav>
-            <div className="flex items-center space-x-4">
-              <label htmlFor="cartToggle" className="cursor-pointer text-gray-700 hover:text-gray-900">
+            <div className="flex items-center space-x-4">              <label htmlFor="cartToggle" className="cursor-pointer text-gray-700 hover:text-gray-900 relative">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="lucide lucide-shopping-basket-icon lucide-shopping-basket">
                   <path d="m15 11-1 9"/>
                   <path d="m19 11-4-7"/>
@@ -90,14 +108,18 @@ const StoreLayout = () => {
                   <path d="m5 11 4-7"/>
                   <path d="m9 11 1 9"/>
                 </svg>
+                {cartTotal > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                    {cartTotal}
+                  </span>
+                )}
               </label>
               
               <div className="relative" ref={profileRef}>
                 {isAuthenticated === null ? null : isAuthenticated ? (
-                  <>
-                    <img
-                      alt="Profile"
-                      src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+                  <>                    <img
+                      alt={userData?.nombre || "Profile"}
+                      src={userData?.FOTO ? userData.FOTO : "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"}
                       className="inline-block h-12 w-12 cursor-pointer rounded-full object-cover object-center border-2 border-gray-300"
                       onClick={() => setProfileOpen((v) => !v)}
                     />
@@ -119,7 +141,7 @@ const StoreLayout = () => {
                         </li>
                         <li>
                           <button
-                            onClick={() => window.location.href = "/perfil/edit"}
+                            onClick={() => window.location.href = "/perfil/editar"}
                             className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 text-black"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true" className="h-4 w-4">

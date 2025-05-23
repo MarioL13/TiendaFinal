@@ -57,8 +57,7 @@ export default function EditarPerfil({
                 name="name"
                 value={formData.name}
                 onChange={onChange}
-
-                className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black"
+                className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black text-black"
                 placeholder="Nombre"
               />
             </div>
@@ -71,7 +70,7 @@ export default function EditarPerfil({
                 name="surname"
                 value={formData.surname}
                 onChange={onChange}
-                className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black"
+                className="w-full mt-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black text-black"
                 placeholder="Apellido"
               />
             </div>
@@ -85,7 +84,8 @@ export default function EditarPerfil({
               name="email"
               value={formData.email}
               onChange={onChange}
-              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black text-black"
+              placeholder="Correo Electrónico"
             />
           </div>
           <div>
@@ -97,10 +97,11 @@ export default function EditarPerfil({
               name="phone"
               value={formData.phone}
               onChange={onChange}
-              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black text-black"
+              placeholder="Teléfono"
             />
           </div>
-          <div>
+            <div>
             <label className="block text-sm font-medium text-black">
               Dirección
             </label>
@@ -109,10 +110,10 @@ export default function EditarPerfil({
               name="address"
               value={formData.address}
               onChange={onChange}
-              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black"
+              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black text-black"
               placeholder="Dirección"
             />
-          </div>
+            </div>
         </div>
         <div className="flex justify-end gap-4">
           <button
@@ -145,7 +146,8 @@ export default function EditarPerfil({
               name="currentPassword"
               value={passwordData.currentPassword}
               onChange={onPasswordChange}
-              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black text-black"
+              placeholder="Contraseña Actual"
             />
           </div>
           <div>
@@ -157,7 +159,8 @@ export default function EditarPerfil({
               name="newPassword"
               value={passwordData.newPassword}
               onChange={onPasswordChange}
-              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black text-black"
+              placeholder="Nueva Contraseña"
             />
           </div>
           <div>
@@ -169,7 +172,8 @@ export default function EditarPerfil({
               name="confirmPassword"
               value={passwordData.confirmPassword}
               onChange={onPasswordChange}
-              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black text-black"
+              placeholder="Confirmar Nueva Contraseña"
             />
           </div>
           <button

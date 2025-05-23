@@ -203,8 +203,8 @@ export default function ProfileManager() {
                     <p className="text-sm text-gray-600"><strong>Teléfono:</strong> {formData.phone}</p>
                     <p className="text-sm text-gray-600"><strong>Dirección:</strong> {formData.address}</p>
                     <button
-                        onClick={() => setIsEditing(true)}
-                        className="mt-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer"
+                      onClick={() => router.push("/editarperfil")}
+                      className="mt-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer"
                     >
                       Editar Perfil
                     </button>
