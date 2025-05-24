@@ -4,12 +4,13 @@ import React, { useState } from "react";
 
 const SignUpComponent = () => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    username: "",
+    nombre: "",
+    apellido: "",
     email: "",
     password: "",
     confirmPassword: "",
+    direccion: "",
+    telefono: ""
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -35,6 +36,11 @@ const SignUpComponent = () => {
       );
       return;
     }
+    if (formData.password !== formData.confirmPassword) {
+      setLoading(false);
+      setMessage("Las contraseñas no coinciden.");
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:5000/api/users', {
@@ -42,7 +48,14 @@ const SignUpComponent = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          nombre: formData.nombre,
+          apellido: formData.apellido,
+          email: formData.email,
+          password: formData.password,
+          direccion: formData.direccion,
+          telefono: formData.telefono
+        }),
       });
 
       const data = await response.json();
@@ -50,12 +63,13 @@ const SignUpComponent = () => {
 
       setMessage('Usuario registrado exitosamente');
       setFormData({
-        firstName: "",
-        lastName: "",
-        username: "",
+        nombre: "",
+        apellido: "",
         email: "",
         password: "",
         confirmPassword: "",
+        direccion: "",
+        telefono: ""
       });
     } catch (error: any) {
       setMessage(`Error: ${error.message}`);
@@ -71,64 +85,35 @@ const SignUpComponent = () => {
       </h1>
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
         <div className="flex items-start flex-col justify-start">
-          <label
-            htmlFor="firstName"
-            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
-          >
+          <label htmlFor="nombre" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
             Nombre:
           </label>
           <input
             type="text"
-            id="firstName"
-            name="firstName"
-            value={formData.firstName}
+            id="nombre"
+            name="nombre"
+            value={formData.nombre}
             onChange={handleChange}
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-
         <div className="flex items-start flex-col justify-start">
-          <label
-            htmlFor="lastName"
-            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
-          >
+          <label htmlFor="apellido" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
             Apellido:
           </label>
           <input
             type="text"
-            id="lastName"
-            name="lastName"
-            value={formData.lastName}
+            id="apellido"
+            name="apellido"
+            value={formData.apellido}
             onChange={handleChange}
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-
         <div className="flex items-start flex-col justify-start">
-          <label
-            htmlFor="username"
-            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
-          >
-            Nombre de usuario:
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <div className="flex items-start flex-col justify-start">
-          <label
-            htmlFor="email"
-            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
-          >
+          <label htmlFor="email" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
             Correo electrónico:
           </label>
           <input
@@ -137,16 +122,12 @@ const SignUpComponent = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-
         <div className="flex items-start flex-col justify-start">
-          <label
-            htmlFor="password"
-            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
-          >
+          <label htmlFor="password" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
             Contraseña:
           </label>
           <input
@@ -155,19 +136,15 @@ const SignUpComponent = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
           <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y símbolos.
           </span>
         </div>
-
         <div className="flex items-start flex-col justify-start">
-          <label
-            htmlFor="confirmPassword"
-            className="text-sm text-gray-700 dark:text-gray-200 mr-2"
-          >
+          <label htmlFor="confirmPassword" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
             Confirmar contraseña:
           </label>
           <input
@@ -176,11 +153,38 @@ const SignUpComponent = () => {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-
+        <div className="flex items-start flex-col justify-start">
+          <label htmlFor="direccion" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
+            Dirección:
+          </label>
+          <input
+            type="text"
+            id="direccion"
+            name="direccion"
+            value={formData.direccion}
+            onChange={handleChange}
+            required
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+        <div className="flex items-start flex-col justify-start">
+          <label htmlFor="telefono" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
+            Teléfono:
+          </label>
+          <input
+            type="text"
+            id="telefono"
+            name="telefono"
+            value={formData.telefono}
+            onChange={handleChange}
+            required
+            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
         <button
           type="submit"
           disabled={loading}
@@ -191,7 +195,7 @@ const SignUpComponent = () => {
         {message && (
           <p
             className={`mt-2 text-center text-sm ${
-              message.startsWith("Error") || message.includes("contraseña") // Puedes ajustar esta condición
+              message.startsWith("Error") || message.includes("contraseña")
                 ? "text-red-600 dark:text-red-400"
                 : "text-green-600 dark:text-green-400"
             }`}

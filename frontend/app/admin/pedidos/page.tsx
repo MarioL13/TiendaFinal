@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Pedido {
   id_pedido: number;
@@ -14,6 +15,28 @@ interface Pedido {
 const estados = ["Pendiente", "Pagado", "Entregado", "Cancelado"];
 
 export default function GestionPedidosPage() {
+  const router = useRouter();
+
+  // Verificar si el usuario es admin al cargar la página
+  useEffect(() => {
+    const verificarAdmin = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/check-auth', {
+          credentials: 'include',
+        });
+        const data = await res.json();
+        
+        if (!res.ok || !data.autenticado || data.rol !== 'admin') {
+          router.push('/Login');
+        }
+      } catch (error) {
+        console.error('Error al verificar autenticación:', error);
+        router.push('/Login');
+      }
+    };
+
+    verificarAdmin();
+  }, []);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,12 +46,21 @@ export default function GestionPedidosPage() {
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [actualizando, setActualizando] = useState<number | null>(null);
-  const [success, setSuccess] = useState("");
-
-  const fetchPedidos = async () => {
+  const [success, setSuccess] = useState("");  const fetchPedidos = async () => {
     setLoading(true);
     setError("");
     try {
+      // Primero verificamos si seguimos teniendo permisos
+      const authCheck = await fetch('http://localhost:5000/api/check-auth', {
+        credentials: 'include'
+      });
+      const authData = await authCheck.json();
+      
+      if (!authCheck.ok || !authData.autenticado || authData.rol !== 'admin') {
+        router.push('/Login');
+        throw new Error('No tienes permisos de administrador');
+      }
+
       const params = new URLSearchParams({
         page: String(page),
         limit: "10",
@@ -36,11 +68,27 @@ export default function GestionPedidosPage() {
         ...(fechaInicio && { fecha_inicio: fechaInicio }),
         ...(fechaFin && { fecha_fin: fechaFin }),
       });
+      
       const res = await fetch(`http://localhost:5000/api/pedidos?${params.toString()}`, {
         credentials: "include",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
       });
+      
+      if (res.status === 401 || res.status === 403) {
+        window.location.href = '/Login';
+        throw new Error('No tienes permiso para ver esta página');
+      }
+      
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al cargar pedidos");
+      if (!res.ok) throw new Error(data.error || data.message || "Error al cargar pedidos");
+      
+      if (!data.pedidos) {
+        throw new Error('No se recibieron datos de pedidos');
+      }
+      
       setPedidos(data.pedidos);
       setTotalPages(data.totalPages);
     } catch (err: any) {

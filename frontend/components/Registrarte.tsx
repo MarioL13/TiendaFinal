@@ -107,6 +107,7 @@ const SignUpComponent = () => {
                 name="nombre"
                 value={form.nombre}
                 onChange={handleChange}
+                required
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
             </div>
@@ -120,6 +121,7 @@ const SignUpComponent = () => {
                 name="apellido"
                 value={form.apellido}
                 onChange={handleChange}
+                required
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
             </div>
@@ -133,6 +135,7 @@ const SignUpComponent = () => {
                 name="email"
                 value={form.email}
                 onChange={handleChange}
+                required
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
             </div>
@@ -146,6 +149,7 @@ const SignUpComponent = () => {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
+                required
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
             </div>
@@ -159,6 +163,7 @@ const SignUpComponent = () => {
                 name="direccion"
                 value={form.direccion}
                 onChange={handleChange}
+                required
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
             </div>
@@ -172,6 +177,7 @@ const SignUpComponent = () => {
                 name="telefono"
                 value={form.telefono}
                 onChange={handleChange}
+                required
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
             </div>

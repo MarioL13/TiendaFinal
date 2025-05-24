@@ -199,25 +199,30 @@ export const obtenerPedidos = ({ page, limit, estado, fecha_inicio, fecha_fin}: 
 
         const whereClause = condiciones.length > 0 ? `WHERE ${condiciones.join(' AND ')}` : '';
 
+        // Primero obtenemos el total de registros con los filtros
+        const countSql = `
+            SELECT COUNT(*) as total
+            FROM Pedidos
+            ${whereClause}
+        `;
+
+        // Luego obtenemos los pedidos paginados
         const sql = `
-            SELECT SQL_CALC_FOUND_ROWS *
+            SELECT *
             FROM Pedidos
             ${whereClause}
             ORDER BY fecha_pedido DESC
             LIMIT ? OFFSET ?
-        `;
-
-        db.query(sql, [...params, limit, offset], (err, resultados) => {
+        `;        // Primero obtenemos el total
+        db.query(countSql, params, (err, countResult: any) => {
             if (err) return reject(err);
 
-            db.query(`SELECT FOUND_ROWS() as total`, async (err, totalRows) => {
-                if (err) return reject(err);
-                const [rows] = await db
-                    .promise()
-                    .query<RowDataPacket[]>('SELECT COUNT(*) as total FROM Pedidos');
+            const total = countResult[0].total;
+            const totalPages = Math.ceil(total / limit);
 
-                const total = (rows[0] as { total: number }).total;
-                const totalPages = Math.ceil(total / limit);
+            // Luego obtenemos los pedidos
+            db.query(sql, [...params, limit, offset], (err, resultados) => {
+                if (err) return reject(err);
 
                 resolve({
                     pedidos: resultados,
