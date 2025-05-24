@@ -35,9 +35,12 @@ export const crearCarta = async (carta: any): Promise<any> => {
     return new Promise((resolve, reject) => {
         db.query(
             `INSERT INTO cartas (nombre, stock, precio, scryfall_id, set_code, collector_number, imagen)
-             VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [nombre, stock, precio, scryfall_id, set_code, collector_number],
-            (err: QueryError | null, results: any[]) => {
+             VALUES (?, ?, ?, ?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE
+                                      stock = stock + VALUES(stock),
+                                      precio = VALUES(precio)`,
+            [nombre, stock, precio, scryfall_id, set_code, collector_number, imagen],
+            (err: QueryError | null, results: any) => {
                 if (err) {
                     reject(new Error('Error al crear la carta: ' + err.message));
                 } else {
@@ -108,3 +111,28 @@ export const eliminarCarta = async (id: number): Promise<any> => {
         }
     })
 }
+
+export const buscarCartasPorNombres = async (nombres: string[]): Promise<{ encontradas: any[], noEncontradas: string[] }> => {
+    return new Promise((resolve, reject) => {
+        if (nombres.length === 0) return resolve({ encontradas: [], noEncontradas: [] });
+
+        const placeholders = nombres.map(() => '?').join(',');
+        db.query(
+            `SELECT * FROM cartas WHERE nombre IN (${placeholders})`,
+            nombres,
+            (err: QueryError | null, results: any[]) => {
+                if (err) {
+                    return reject(new Error('Error al buscar cartas: ' + err.message));
+                }
+
+                const encontradasNombres = results.map(carta => carta.nombre.toLowerCase());
+                const noEncontradas = nombres.filter(nombre => !encontradasNombres.includes(nombre.toLowerCase()));
+
+                resolve({
+                    encontradas: results,
+                    noEncontradas
+                });
+            }
+        )
+    });
+};
