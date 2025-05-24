@@ -99,63 +99,58 @@ const Productos: React.FC = () => {
     return (
         <>
             <div className="mb-6 flex flex-wrap items-center gap-4 justify-center">
-                <div className="border border-gray-300 p-6 grid grid-cols-1 gap-6 bg-white shadow-lg rounded-lg w-full md:w-auto">
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <select
-                            value={sort}
-                            onChange={handleSortChange}
-                            className="border p-2 rounded min-w-[140px]"
-                        >
-                            <option value="asc">Precio ↑</option>
-                            <option value="desc">Precio ↓</option>
-                        </select>
-                        <select
-                            value={idioma}
-                            onChange={handleIdiomaChange}
-                            className="border p-2 rounded min-w-[140px]"
-                        >
-                            <option value="">Idioma</option>
-                            <option value="es">Español</option>
-                            <option value="en">Inglés</option>
-                        </select>
+                <div className="border border-gray-300 p-4 flex flex-col md:flex-row items-center gap-4 bg-white shadow-lg rounded-lg w-full md:w-auto">
+                    {/* Input de búsqueda */}
+                    <div className="flex items-center border rounded bg-gray-200 px-2 py-1">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                        <input
+                            type="text"
+                            placeholder="Buscar producto..."
+                            value={search}
+                            onChange={handleSearchChange}
+                            className="bg-gray-200 focus:outline-none text-gray-700 flex-1"
+                        />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="grid grid-cols-2 gap-2 border border-gray-200 p-2 rounded bg-gray-50">
-                            <div className="flex border rounded bg-gray-200 items-center p-2">
-                                <svg className="fill-current text-gray-800 mr-2 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                                    <path d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.64 5.64a7.5 7.5 0 0010.61 10.61z" />
-                                </svg>
-                                <input
-                                    type="text"
-                                    placeholder="Buscar producto..."
-                                    value={search}
-                                    onChange={handleSearchChange}
-                                    className="bg-gray-200 max-w-full focus:outline-none text-gray-700 flex-1"
-                                />
-                            </div>
-                            <div className="flex border rounded bg-gray-200 items-center p-2">
-                                <svg className="fill-current text-gray-800 mr-2 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                                    <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zM5.68 7.1A7.96 7.96 0 0 0 4.06 11H5a1 1 0 0 1 0 2h-.94a7.95 7.95 0 0 0 1.32 3.5A9.96 9.96 0 0 1 11 14.05V9a1 1 0 0 1 2 0v5.05a9.96 9.96 0 0 1 5.62 2.45 7.95 7.95 0 0 0 1.32-3.5H19a1 1 0 0 1 0-2h.94a7.96 7.96 0 0 0-1.62-3.9l-.66.66a1 1 0 1 1-1.42-1.42l.67-.66A7.96 7.96 0 0 0 13 4.06V5a1 1 0 0 1-2 0v-.94c-1.46.18-2.8.76-3.9 1.62l.66.66a1 1 0 0 1-1.42 1.42l-.66-.67zM6.71 18a7.97 7.97 0 0 0 10.58 0 7.97 7.97 0 0 0-10.58 0z" />
-                                </svg>
-                                <input
-                                    type="text"
-                                    placeholder="Categoría"
-                                    value={category}
-                                    onChange={handleCategoryChange}
-                                    className="bg-gray-200 max-w-full focus:outline-none text-gray-700 flex-1"
-                                />
-                            </div>
-                        </div>
-                        <div className="flex justify-center items-center">
-                            <button
-                                className="p-2 border w-32 rounded-md bg-gray-800 text-white font-bold shadow hover:bg-gray-900 transition"
-                                onClick={() => fetchProductos()}
-                                type="button"
-                            >
-                                Buscar
-                            </button>
-                        </div>
+                    {/* Input de categoría */}
+                    <div className="flex items-center border rounded bg-gray-200 px-2 py-1">
+                        <svg className="fill-current text-gray-800 mr-2 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zM5.68 7.1A7.96 7.96 0 0 0 4.06 11H5a1 1 0 0 1 0 2h-.94a7.95 7.95 0 0 0 1.32 3.5A9.96 9.96 0 0 1 11 14.05V9a1 1 0 0 1 2 0v5.05a9.96 9.96 0 0 1 5.62 2.45 7.95 7.95 0 0 0 1.32-3.5H19a1 1 0 0 1 0-2h.94a7.96 7.96 0 0 0-1.62-3.9l-.66.66a1 1 0 1 1-1.42-1.42l.67-.66A7.96 7.96 0 0 0 13 4.06V5a1 1 0 0 1-2 0v-.94c-1.46.18-2.8.76-3.9 1.62l.66.66a1 1 0 0 1-1.42 1.42l-.66-.67zM6.71 18a7.97 7.97 0 0 0 10.58 0 7.97 7.97 0 0 0-10.58 0z" />
+                        </svg>
+                        <input
+                            type="text"
+                            placeholder="Categoría"
+                            value={category}
+                            onChange={handleCategoryChange}
+                            className="bg-gray-200 focus:outline-none text-gray-700 flex-1"
+                        />
                     </div>
+                    {/* Selector de orden */}
+                    <select
+                        value={sort}
+                        onChange={handleSortChange}
+                        className="border p-2 rounded min-w-[120px] text-black"
+                    >
+                        <option value="asc">Precio ↑</option>
+                        <option value="desc">Precio ↓</option>
+                    </select>
+                    {/* Selector de idioma */}
+                    <select
+                        value={idioma}
+                        onChange={handleIdiomaChange}
+                        className="border p-2 rounded min-w-[120px] text-black"
+                    >
+                        <option value="">Idioma</option>
+                        <option value="es">Español</option>
+                        <option value="en">Inglés</option>
+                    </select>
+                    {/* Botón buscar */}
+                    <button
+                        className="p-2 border rounded-md bg-gray-800 text-white font-bold shadow hover:bg-gray-900 transition"
+                        onClick={() => fetchProductos()}
+                        type="button"
+                    >
+                        Buscar
+                    </button>
                 </div>
             </div>
 
