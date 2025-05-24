@@ -8,8 +8,7 @@ export default function Tienda() {
 
       </section>
       {/* Productos destacados */}
-      <section className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Productos Destacados</h2>
+      <section className="container mx-auto px-4 pt-10">
         <Productos />
       </section>
     </div>

@@ -15,6 +15,7 @@ interface Producto {
 const ProductCard = ({ id }: { id: number }) => {
   const [producto, setProducto] = useState<Producto | null>(null);
   const [mainImgIdx, setMainImgIdx] = useState(0);
+  const [cantidad, setCantidad] = useState(1);
   const { updateCartTotal } = useCart();
 
   const handleAddToCart = async () => {
@@ -29,7 +30,7 @@ const ProductCard = ({ id }: { id: number }) => {
         body: JSON.stringify({
           tipo_item: 'producto',
           id_item: id,
-          cantidad: 1
+          cantidad: cantidad
         })
       });
 
@@ -61,7 +62,6 @@ const ProductCard = ({ id }: { id: number }) => {
     const fetchProducto = async () => {
       const response = await fetch(`http://localhost:5000/api/products/${id}`);
       const data = await response.json();
-      // Si 'imagenes' es un string, conviértelo en array
       if (typeof data.imagenes === 'string') {
         data.imagenes = data.imagenes.split(',').map((img: string) => img.trim());
       }
@@ -135,13 +135,28 @@ const ProductCard = ({ id }: { id: number }) => {
             <span className="text-sm text-gray-500 ml-2">{producto.categorias.join(', ')}</span>
           </div>
 
+          {/* Selector de cantidad */}
+          <div className="mb-4">
+            <label htmlFor="cantidad" className="block text-sm font-medium text-gray-700 mb-1">Cantidad:</label>
+            <select
+              id="cantidad"
+              value={cantidad}
+              onChange={e => setCantidad(Number(e.target.value))}
+              className="border rounded px-2 py-1 text-black"
+            >
+              {Array.from({ length: Math.min(producto.stock, 10) }, (_, i) => i + 1).map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+
           <ul className="text-sm text-gray-700 mb-6">
-            {/* Puedes agregar más detalles si tu API los devuelve */}
+            {}
           </ul>
 
           <div className="flex items-center justify-between mb-4">
             <div>
-              <span className="text-3xl font-bold text-gray-900">${producto.precio}</span>
+              <span className="text-3xl font-bold text-gray-900">{producto.precio} EUR</span>
             </div>
           </div>
 
@@ -150,7 +165,8 @@ const ProductCard = ({ id }: { id: number }) => {
           <div className="flex space-x-4 mt-auto mb-0 w-full justify-center">
             <button className="flex-1 mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer">
               Buy Now
-            </button>            <button 
+            </button>
+            <button 
               onClick={handleAddToCart}
               className="flex-1 mt-8 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer"
             >
