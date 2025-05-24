@@ -1,9 +1,50 @@
 'use client'
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'
 
 const SignUpComponent = () => {
-    const router = useRouter()
+    const router = useRouter();
+    const [form, setForm] = useState({
+        nombre: '',
+        apellido: '',
+        email: '',
+        password: '',
+        direccion: '',
+        telefono: '',
+    });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setSuccess('');
+        setLoading(true);
+        try {
+            const res = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.error || data.message || 'Error al registrar');
+            } else {
+                setSuccess('Registro exitoso. Redirigiendo al login...');
+                setTimeout(() => router.push('/Login'), 1500);
+            }
+        } catch (err) {
+            setError('Error de red o del servidor');
+        } finally {
+            setLoading(false);
+        }
+    };
+
   return (
     <div className="flex h-screen justify-center items-center bg-gray-100">
       {/* Panel Derecho */}
@@ -55,7 +96,7 @@ const SignUpComponent = () => {
           <div className="mt-4 text-sm text-gray-600 text-center">
             <p>o con correo electrónico</p>
           </div>
-          <form action="#" method="POST" className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 Usuario
@@ -63,7 +104,22 @@ const SignUpComponent = () => {
               <input
                 type="text"
                 id="username"
-                name="username"
+                name="nombre"
+                value={form.nombre}
+                onChange={handleChange}
+                className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+              />
+            </div>
+            <div>
+              <label htmlFor="apellido" className="block text-sm font-medium text-gray-700">
+                Apellido
+              </label>
+              <input
+                type="text"
+                id="apellido"
+                name="apellido"
+                value={form.apellido}
+                onChange={handleChange}
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
             </div>
@@ -75,6 +131,8 @@ const SignUpComponent = () => {
                 type="email"
                 id="email"
                 name="email"
+                value={form.email}
+                onChange={handleChange}
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
             </div>
@@ -86,8 +144,12 @@ const SignUpComponent = () => {
                 type="password"
                 id="password"
                 name="password"
+                value={form.password}
+                onChange={handleChange}
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
+            </div>
+            <div>
               <label htmlFor="direccion" className="block text-sm font-medium text-gray-700">
                 Dirección
               </label>
@@ -95,8 +157,12 @@ const SignUpComponent = () => {
                 type="text"
                 id="direccion"
                 name="direccion"
+                value={form.direccion}
+                onChange={handleChange}
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
+            </div>
+            <div>
               <label htmlFor="telefono" className="block text-sm font-medium text-gray-700">
                 Teléfono
               </label>
@@ -104,15 +170,20 @@ const SignUpComponent = () => {
                 type="text"
                 id="telefono"
                 name="telefono"
+                value={form.telefono}
+                onChange={handleChange}
                 className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
               />
             </div>
+            {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+            {success && <div className="text-green-600 text-sm text-center">{success}</div>}
             <div>
               <button
                 type="submit"
                 className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300"
+                disabled={loading}
               >
-                Registrarse
+                {loading ? 'Registrando...' : 'Registrarse'}
               </button>
             </div>
           </form>
