@@ -28,9 +28,10 @@ CREATE TABLE cartas (
     nombre VARCHAR(255),
     stock INT,
     precio DECIMAL(10,2),
-    scryfall_id VARCHAR(255),
+    scryfall_id VARCHAR(255) UNIQUE,
     set_code VARCHAR(10),
-    collector_number VARCHAR(20)
+    collector_number VARCHAR(20),
+    imagen TEXT
 );
 
 -- Tabla de Productos

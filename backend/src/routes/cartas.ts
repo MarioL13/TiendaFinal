@@ -4,7 +4,8 @@ import {
     obtenerCartaPorId,
     crearCarta,
     actualizarCarta,
-    eliminarCarta
+    eliminarCarta,
+    buscarCartasPorNombres
 } from '../services/cartasServices';
 import {verificarAdmin, verificarToken} from "../middlewares/authMiddleware";
 
@@ -112,7 +113,8 @@ router.post('/api/cartas/lote', verificarToken, verificarAdmin, async (req: Requ
                 precio,
                 scryfall_id: resultado.id,
                 set_code: resultado.set,
-                collector_number: resultado.collector_number
+                collector_number: resultado.collector_number,
+                imagen: resultado.image_uris?.normal || ''
             };
 
             const insert = await crearCarta(cartaNueva);
@@ -169,7 +171,29 @@ router.delete('/api/cartas/:id', verificarToken, verificarAdmin, async (req: Req
     }
 })
 
-export default router;
+router.post('/api/cartas/buscar-por-nombre', async (req: Request, res: Response) => {
+    const nombresRaw = req.body.nombres as string;
+
+    if (!nombresRaw) {
+        return res.status(400).json({ message: 'Debes proporcionar nombres de cartas separados por comas en el body' });
+    }
+
+    const nombres = nombresRaw.split(',').map(n => n.trim()).filter(n => n !== '');
+
+    try {
+        const { encontradas, noEncontradas } = await buscarCartasPorNombres(nombres);
+
+        res.json({
+            encontradas,
+            mensaje: noEncontradas.length > 0
+                ? `Cartas no encontradas: ${noEncontradas.join(', ')}`
+                : 'Todas las cartas fueron encontradas'
+        });
+    } catch (err: any) {
+        console.error(err);
+        res.status(500).json({ message: 'Error al buscar cartas', error: err.message });
+    }
+});
 
 function validarCarta({nombre, set_code, stock, precio}: any) {
     if (!nombre || !set_code) {
@@ -186,3 +210,5 @@ function validarCarta({nombre, set_code, stock, precio}: any) {
 
     return null; //bien
 }
+
+export default router;
