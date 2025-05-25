@@ -184,7 +184,7 @@ export default function GestionPedidosPage() {
                   <tr key={p.id_pedido} className="border-b hover:bg-purple-50">
                     <td className="p-2 text-center">{p.id_pedido}</td>
                     <td className="p-2 text-center">{p.id_usuario}</td>
-                    <td className="p-2 text-center">{p.total.toFixed(2)}</td>
+                    <td className="p-2 text-center">{Number(p.total).toFixed(2)}</td>
                     <td className="p-2 text-center">
                       <select
                         value={p.estado}
