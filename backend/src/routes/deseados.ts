@@ -5,6 +5,7 @@ import {
     eliminarDeseado,
     existeDeseado
 } from '../services/deseadosServices';
+import {verificarToken} from "../middlewares/authMiddleware";
 
 const router = Router();
 
@@ -20,18 +21,16 @@ const router = Router();
  * @apiError 404 No hay lista de deseos para ese usuario
  * @apiError 500 Error interno al obtener la lista
  */
-router.get('/api/wishlist/:id', async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
+router.get('/api/wishlist', verificarToken, async (req: Request, res: Response) => {
+    const usuarioLogeado = (req as any).usuario;
+    const id_usuario = usuarioLogeado.id;
+
     try {
-        const deseados = await obtenerDeseados(id);
-        if (deseados) {
-            res.json(deseados);
-        } else {
-            res.status(404).json({ message: 'No hay lista aun' });
-        }
+        const wishlist = await obtenerDeseados(id_usuario);
+        res.json(wishlist);
     } catch (err: any) {
-        console.log(err);
-        res.status(500).json({ message: 'Error al obtener la lista', error: err.message });
+        console.error(err);
+        res.status(500).json({ message: 'Error al obtener la lista deseada', error: err.message });
     }
 });
 

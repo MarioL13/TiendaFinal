@@ -1,19 +1,39 @@
 import db from './db';
 import { QueryError, FieldPacket, RowDataPacket } from 'mysql2';
 
-export const obtenerDeseados = async (id: number): Promise<any[]> => {
+export const obtenerDeseados = async (id_usuario: number): Promise<any[]> => {
     return new Promise((resolve, reject) => {
-        db.query(
-            'SELECT * FROM deseados WHERE id_usuario = ?',
-            [id],
-            (err: QueryError | null, results: any[], fields: FieldPacket[]) => {
-                if (err) {
-                    reject(new Error('Error al obtener la lista' + err.message));
-                } else {
-                    resolve(results);
-                }
+        const query = `
+            SELECT d.id_deseado, d.id_carta, d.id_producto,
+                   CASE
+                       WHEN d.id_producto IS NOT NULL THEN 'producto'
+                       ELSE 'carta'
+                   END AS tipo_item,
+                   CASE
+                       WHEN d.id_producto IS NOT NULL THEN p.nombre
+                       ELSE ca.nombre
+                   END AS nombre,
+                   CASE
+                       WHEN d.id_producto IS NOT NULL THEN p.precio
+                       ELSE ca.precio
+                   END AS precio,
+                   CASE
+                       WHEN d.id_producto IS NOT NULL THEN JSON_UNQUOTE(JSON_EXTRACT(p.imagenes, '$[0]'))
+                       ELSE NULL
+                   END AS imagen
+            FROM Deseados d
+                     LEFT JOIN Productos p ON d.id_producto = p.id_producto
+                     LEFT JOIN cartas ca ON d.id_carta = ca.id_carta
+            WHERE d.id_usuario = ?
+        `;
+
+        db.query(query, [id_usuario], (err: QueryError | null, results: any[]) => {
+            if (err) {
+                reject(new Error('Error al obtener la lista deseada: ' + err.message));
+            } else {
+                resolve(results);
             }
-        );
+        });
     });
 };
 
