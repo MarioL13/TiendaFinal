@@ -3,18 +3,18 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+interface Producto {
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  categoria?: {
+    nombre: string;
+  };
+}
+
 export default function ProductPage() {
   const router = useRouter();
-  const searchParams = useSearchParams(); 
-
-  interface Producto {
-    nombre: string;
-    descripcion: string;
-    precio: number;
-    categoria?: {
-      nombre: string;
-    };
-  }
+  const searchParams = useSearchParams();
 
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,7 +46,7 @@ export default function ProductPage() {
 
     fetchProducto();
   }, [searchParams]);
-  
+
   if (loading) return <p>Cargando producto...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
   if (!producto) return <p>Producto no encontrado.</p>;
