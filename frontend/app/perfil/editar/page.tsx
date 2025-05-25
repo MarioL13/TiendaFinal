@@ -10,7 +10,8 @@ interface User {
   email: string;
   phone: string;
   address: string;
-  avatar: string;
+  avatar: string; // para vista previa
+  avatarFile?: File; // <-- para subir al backend
 }
 
 export default function ProfilePage() {
@@ -79,8 +80,13 @@ export default function ProfilePage() {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const url = URL.createObjectURL(files[0]);
-      setFormData(prev => ({ ...prev, avatar: url }));
+      const file = files[0];
+      const url = URL.createObjectURL(file);
+      setFormData(prev => ({
+        ...prev,
+        avatar: url,
+        avatarFile: file, // <-- Guardamos el archivo
+      } as any)); // puedes definir el tipo correctamente luego
     }
   };
 
@@ -100,18 +106,20 @@ export default function ProfilePage() {
     }
 
     try {
+      const form = new FormData();
+      form.append('nombre', formData.name);
+      form.append('apellido', formData.surname);
+      form.append('email', formData.email);
+      form.append('telefono', formData.phone);
+      form.append('direccion', formData.address);
+      if (formData.avatarFile) {
+        form.append('FOTO', formData.avatarFile); // <-- campo esperado por multer
+      }
+
       const response = await fetch(`http://localhost:5000/api/users/${formData.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          id_usuario: formData.id,
-          nombre: formData.name,
-          apellido: formData.surname,
-          email: formData.email,
-          telefono: formData.phone,
-          direccion: formData.address,
-        }),
+        body: form, // no usamos headers Content-Type, el navegador lo define solo
       });
 
       if (!response.ok) {
