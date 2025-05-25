@@ -10,7 +10,19 @@ import {
 
 const router = Router();
 
-// GET: Obtener todos los eventos con filtros opcionales
+/**
+ * @api {get} /api/eventos Obtener todos los eventos
+ * @apiName ObtenerEventos
+ * @apiGroup Eventos
+ *
+ * @apiParam (Query) {String} [fecha] Filtro opcional por fecha del evento (formato ISO).
+ * @apiParam (Query) {String} [juego] Filtro opcional por nombre del juego.
+ * @apiParam (Query) {String} [nombre] Filtro opcional por nombre del evento.
+ *
+ * @apiSuccess {Object[]} eventos Lista de eventos que cumplen con los filtros.
+ *
+ * @apiError (500) InternalServerError Error al obtener los eventos.
+ */
 router.get('/api/eventos', async (req: Request, res: Response) => {
     const { fecha, juego, nombre } = req.query;
 
@@ -27,7 +39,19 @@ router.get('/api/eventos', async (req: Request, res: Response) => {
     }
 });
 
-// GET: Obtener evento por ID
+/**
+ * @api {get} /api/eventos/:id Obtener evento por ID
+ * @apiName ObtenerEventoPorId
+ * @apiGroup Eventos
+ *
+ * @apiParam (URL) {Number} id ID único del evento.
+ *
+ * @apiSuccess {Object} evento Detalles del evento solicitado.
+ *
+ * @apiError (400) BadRequest ID inválido.
+ * @apiError (404) NotFound Evento no encontrado.
+ * @apiError (500) InternalServerError Error al obtener el evento.
+ */
 router.get('/api/eventos/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
 
@@ -48,7 +72,28 @@ router.get('/api/eventos/:id', async (req: Request, res: Response) => {
     }
 });
 
-// POST: Crear nuevo evento
+/**
+ * @api {post} /api/eventos Crear un nuevo evento
+ * @apiName CrearEvento
+ * @apiGroup Eventos
+ * @apiPermission admin
+ *
+ * @apiHeader {String} Authorization Token JWT del usuario (Bearer).
+ *
+ * @apiBody {String} nombre Nombre del evento.
+ * @apiBody {String} fecha Fecha del evento (formato ISO).
+ * @apiBody {String} juego Juego asociado al evento.
+ * @apiBody {Number} [precio_inscripcion] Precio de inscripción (opcional).
+ * @apiBody {Number} [aforo_maximo] Aforo máximo permitido (opcional).
+ *
+ * @apiSuccess (201) {String} message Mensaje de confirmación.
+ * @apiSuccess (201) {Number} id ID del evento creado.
+ *
+ * @apiError (400) BadRequest Datos inválidos o incompletos.
+ * @apiError (401) Unauthorized Token inválido o no proporcionado.
+ * @apiError (403) Forbidden El usuario no tiene permisos de administrador.
+ * @apiError (500) InternalServerError Error al crear el evento.
+ */
 router.post('/api/eventos', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const evento = req.body;
 
@@ -66,7 +111,29 @@ router.post('/api/eventos', verificarToken, verificarAdmin, async (req: Request,
     }
 });
 
-// PUT: Actualizar evento
+/**
+ * @api {put} /api/eventos/:id Actualizar un evento
+ * @apiName ActualizarEvento
+ * @apiGroup Eventos
+ * @apiPermission admin
+ *
+ * @apiHeader {String} Authorization Token JWT del usuario (Bearer).
+ *
+ * @apiParam (URL) {Number} id ID del evento a actualizar.
+ * @apiBody {String} nombre Nombre actualizado del evento.
+ * @apiBody {String} fecha Fecha actualizada (formato ISO).
+ * @apiBody {String} juego Juego actualizado.
+ * @apiBody {Number} [precio_inscripcion] Precio de inscripción actualizado (opcional).
+ * @apiBody {Number} [aforo_maximo] Aforo máximo actualizado (opcional).
+ *
+ * @apiSuccess {String} message Mensaje de confirmación.
+ *
+ * @apiError (400) BadRequest Datos inválidos.
+ * @apiError (401) Unauthorized Token inválido o no proporcionado.
+ * @apiError (403) Forbidden Sin permisos para modificar.
+ * @apiError (404) NotFound Evento no encontrado.
+ * @apiError (500) InternalServerError Error al actualizar el evento.
+ */
 router.put('/api/eventos/:id', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const evento = req.body;
@@ -89,7 +156,23 @@ router.put('/api/eventos/:id', verificarToken, verificarAdmin, async (req: Reque
     }
 });
 
-// DELETE: Eliminar evento
+/**
+ * @api {delete} /api/eventos/:id Eliminar un evento
+ * @apiName EliminarEvento
+ * @apiGroup Eventos
+ * @apiPermission admin
+ *
+ * @apiHeader {String} Authorization Token JWT del usuario (Bearer).
+ *
+ * @apiParam (URL) {Number} id ID del evento a eliminar.
+ *
+ * @apiSuccess {String} message Mensaje de confirmación.
+ *
+ * @apiError (401) Unauthorized Token inválido o no proporcionado.
+ * @apiError (403) Forbidden Sin permisos para eliminar.
+ * @apiError (404) NotFound Evento no encontrado.
+ * @apiError (500) InternalServerError Error al eliminar el evento.
+ */
 router.delete('/api/eventos/:id', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
 
@@ -108,7 +191,11 @@ router.delete('/api/eventos/:id', verificarToken, verificarAdmin, async (req: Re
 
 export default router;
 
-// Validación básica
+/**
+ * Validación básica de los datos del evento
+ * @param {any} evento Objeto evento con los datos a validar
+ * @returns {string | null} Retorna mensaje de error o null si es válido
+ */
 const validarEvento = (evento: any): string | null => {
     if (!evento.nombre || typeof evento.nombre !== 'string') {
         return 'El nombre del evento es obligatorio y debe ser un texto';
@@ -129,4 +216,3 @@ const validarEvento = (evento: any): string | null => {
     }
     return null;
 };
-

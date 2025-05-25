@@ -6,11 +6,19 @@ import {
     actualizarCategoria,
     eliminarCategoria
 } from '../services/categoriasServices';
-import {verificarAdmin, verificarToken} from "../middlewares/authMiddleware";
+import { verificarAdmin, verificarToken } from "../middlewares/authMiddleware";
 
 const router = Router();
 
-// Obtener todas las categorías
+/**
+ * @api {get} /api/categorias Obtener todas las categorías
+ * @apiName ObtenerCategorias
+ * @apiGroup Categorias
+ *
+ * @apiSuccess {Object[]} categorias Lista de categorías.
+ *
+ * @apiError (500) InternalServerError Error al obtener las categorías.
+ */
 router.get('/api/categorias', async (req: Request, res: Response) => {
     try {
         const categorias = await obtenerCategorias();
@@ -21,7 +29,18 @@ router.get('/api/categorias', async (req: Request, res: Response) => {
     }
 });
 
-// Obtener una categoría por ID
+/**
+ * @api {get} /api/categorias/:id Obtener categoría por ID
+ * @apiName ObtenerCategoriaPorId
+ * @apiGroup Categorias
+ *
+ * @apiParam {Number} id ID único de la categoría.
+ *
+ * @apiSuccess {Object} categoria Datos de la categoría.
+ *
+ * @apiError (404) NotFound Categoría no encontrada.
+ * @apiError (500) InternalServerError Error al obtener la categoría.
+ */
 router.get('/api/categorias/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
@@ -37,8 +56,24 @@ router.get('/api/categorias/:id', async (req: Request, res: Response) => {
     }
 });
 
-// Crear una nueva categoría
-router.post('/api/categorias',  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
+/**
+ * @api {post} /api/categorias Crear nueva categoría
+ * @apiName CrearCategoria
+ * @apiGroup Categorias
+ * @apiPermission admin
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ *
+ * @apiParam {String} nombre Nombre de la categoría.
+ *
+ * @apiSuccess (201) {Object} categoria Categoría creada con ID.
+ *
+ * @apiError (400) BadRequest Nombre de categoría inválido.
+ * @apiError (401) Unauthorized Token inválido o no enviado.
+ * @apiError (403) Forbidden Usuario no autorizado.
+ * @apiError (500) InternalServerError Error al crear la categoría.
+ */
+router.post('/api/categorias', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const categoria = req.body;
 
     if (!categoria.nombre || typeof categoria.nombre !== 'string') {
@@ -57,8 +92,26 @@ router.post('/api/categorias',  verificarToken, verificarAdmin, async (req: Requ
     }
 });
 
-// Actualizar una categoría
-router.put('/api/categorias/:id',  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
+/**
+ * @api {put} /api/categorias/:id Actualizar categoría por ID
+ * @apiName ActualizarCategoria
+ * @apiGroup Categorias
+ * @apiPermission admin
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ *
+ * @apiParam {Number} id ID único de la categoría.
+ * @apiParam {String} nombre Nombre actualizado de la categoría.
+ *
+ * @apiSuccess {String} message Confirmación de actualización.
+ *
+ * @apiError (400) BadRequest Nombre de categoría inválido.
+ * @apiError (401) Unauthorized Token inválido o no enviado.
+ * @apiError (403) Forbidden Usuario no autorizado.
+ * @apiError (404) NotFound Categoría no encontrada.
+ * @apiError (500) InternalServerError Error al actualizar la categoría.
+ */
+router.put('/api/categorias/:id', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const categoria = req.body;
 
@@ -79,8 +132,24 @@ router.put('/api/categorias/:id',  verificarToken, verificarAdmin, async (req: R
     }
 });
 
-// Eliminar una categoría
-router.delete('/api/categorias/:id',  verificarToken, verificarAdmin, async (req: Request, res: Response) => {
+/**
+ * @api {delete} /api/categorias/:id Eliminar categoría por ID
+ * @apiName EliminarCategoria
+ * @apiGroup Categorias
+ * @apiPermission admin
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ *
+ * @apiParam {Number} id ID único de la categoría.
+ *
+ * @apiSuccess {String} message Confirmación de eliminación.
+ *
+ * @apiError (401) Unauthorized Token inválido o no enviado.
+ * @apiError (403) Forbidden Usuario no autorizado.
+ * @apiError (404) NotFound Categoría no encontrada.
+ * @apiError (500) InternalServerError Error al eliminar la categoría.
+ */
+router.delete('/api/categorias/:id', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
         const result = await eliminarCategoria(id);

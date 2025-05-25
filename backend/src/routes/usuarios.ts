@@ -1,8 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { v2 as cloudinary } from 'cloudinary';
 import multer, { Multer } from 'multer';
-
-const upload: Multer = multer({ dest: 'uploads/' });
 import jwt, { SignOptions } from 'jsonwebtoken';
 import {
     verificarToken,
@@ -19,22 +17,54 @@ import {
 } from '../services/usuariosServices';
 import bcrypt from "bcrypt";
 import fs from "fs";
-import dotenv from "dotenv"; // Importa las funciones del servicio que maneja los usuarios
+import dotenv from "dotenv";
+
+const upload: Multer = multer({ dest: 'uploads/' });
+
+dotenv.config();
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const router = Router();
 
-// Obtener todos los usuarios
-router.get('/api/users', verificarToken, verificarAdmin, async (req: Request, res: Response) => {    try {
-        const users = await obtenerUsuarios(); // Llama a la función para obtener los usuarios
-        res.json(users); // Devuelve los usuarios en formato JSON
+/**
+ * @api {get} /api/users Obtener todos los usuarios
+ * @apiName ObtenerUsuarios
+ * @apiGroup Usuarios
+ * @apiPermission admin
+ *
+ * @apiHeader {String} Authorization Token JWT de administrador.
+ *
+ * @apiSuccess {Object[]} users Lista de usuarios.
+ * @apiError 500 Error interno del servidor.
+ */
+router.get('/api/users', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
+    try {
+        const users = await obtenerUsuarios();
+        res.json(users);
     } catch (err: any) {
         console.error(err);
         res.status(500).json({ message: 'Error al obtener los usuarios', error: err.message });
     }
 });
 
+/**
+ * @api {get} /api/users/me Obtener datos del usuario autenticado
+ * @apiName ObtenerUsuarioLogeado
+ * @apiGroup Usuarios
+ * @apiPermission user
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ *
+ * @apiSuccess {Object} user Datos del usuario logeado.
+ * @apiError 404 Usuario no encontrado.
+ * @apiError 500 Error interno del servidor.
+ */
 router.get('/api/users/me', verificarToken, async (req: Request, res: Response) => {
-    const usuarioLogeado = (req as any).usuario; // Aquí accedes al usuario del token
+    const usuarioLogeado = (req as any).usuario;
     try {
         const user = await obtenerUsuarioPorId(usuarioLogeado.id);
         if (user) {
@@ -48,10 +78,24 @@ router.get('/api/users/me', verificarToken, async (req: Request, res: Response) 
     }
 });
 
-// Obtener un usuario por su ID
+/**
+ * @api {get} /api/users/:id Obtener un usuario por ID
+ * @apiName ObtenerUsuarioPorId
+ * @apiGroup Usuarios
+ * @apiPermission admin, user (propio)
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ *
+ * @apiParam {Number} id ID del usuario.
+ *
+ * @apiSuccess {Object} user Datos del usuario solicitado.
+ * @apiError 403 Acceso denegado si no es admin ni el mismo usuario.
+ * @apiError 404 Usuario no encontrado.
+ * @apiError 500 Error interno del servidor.
+ */
 router.get('/api/users/:id', verificarToken, verificarAdmin, async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
-    const usuarioLogeado = (req as any).usuario; // Aquí accedes al usuario del token
+    const usuarioLogeado = (req as any).usuario;
 
     if (usuarioLogeado.rol !== 'admin' && usuarioLogeado.id !== id) {
         return res.status(403).json({ message: 'No puedes acceder a este usuario' });
@@ -70,7 +114,20 @@ router.get('/api/users/:id', verificarToken, verificarAdmin, async (req: Request
     }
 });
 
-// Crear un nuevo usuario con subida de imágenes a Cloudinary
+/**
+ * @api {post} /api/users Crear un nuevo usuario
+ * @apiName CrearUsuario
+ * @apiGroup Usuarios
+ *
+ * @apiParam {String} [FOTO] Imagen del usuario (form-data).
+ * @apiParam {String} nombre Nombre del usuario.
+ * @apiParam {String} apellido Apellido del usuario.
+ * @apiParam {String} email Email del usuario.
+ * @apiParam {String} password Contraseña del usuario.
+ *
+ * @apiSuccess (201) {Number} id ID del usuario creado.
+ * @apiError 500 Error al crear el usuario.
+ */
 router.post('/api/users', upload.single('FOTO'), async (req: Request, res: Response) => {
     const usuario = req.body;
 
@@ -91,7 +148,22 @@ router.post('/api/users', upload.single('FOTO'), async (req: Request, res: Respo
     }
 });
 
-// Actualizar un usuario existente
+/**
+ * @api {put} /api/users/:id Actualizar un usuario existente
+ * @apiName ActualizarUsuario
+ * @apiGroup Usuarios
+ * @apiPermission admin, user (propio)
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ * @apiParam {Number} id ID del usuario a actualizar.
+ * @apiParam {String} [FOTO] Nueva imagen (form-data).
+ * @apiParam {String} [nombre] Nombre actualizado.
+ * @apiParam {String} [apellido] Apellido actualizado.
+ *
+ * @apiSuccess {String} message Confirmación de actualización.
+ * @apiError 403 Sin permisos para editar.
+ * @apiError 500 Error al actualizar usuario.
+ */
 router.put('/api/users/:id', verificarToken, upload.single('FOTO'), async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const usuarioLogeado = (req as any).usuario;
@@ -103,7 +175,6 @@ router.put('/api/users/:id', verificarToken, upload.single('FOTO'), async (req: 
     try {
         const datosActualizados = req.body;
 
-        // Si se sube nueva imagen, la subimos a Cloudinary
         if (req.file) {
             const urlImagen = await subirImagen(req.file);
             datosActualizados.FOTO = urlImagen;
@@ -117,15 +188,27 @@ router.put('/api/users/:id', verificarToken, upload.single('FOTO'), async (req: 
     }
 });
 
-// Eliminar un usuario por su ID
+/**
+ * @api {delete} /api/users/:id Eliminar un usuario
+ * @apiName EliminarUsuario
+ * @apiGroup Usuarios
+ * @apiPermission admin, user (propio)
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ * @apiParam {Number} id ID del usuario a eliminar.
+ *
+ * @apiSuccess {String} message Confirmación de eliminación.
+ * @apiError 404 Usuario no encontrado.
+ * @apiError 500 Error al eliminar usuario.
+ */
 router.delete('/api/users/:id', verificarToken, async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id); // Convierte el ID de la URL en número
+    const id = parseInt(req.params.id);
     try {
-        const result = await eliminarUsuario(id); // Llama a la función para eliminar un usuario
+        const result = await eliminarUsuario(id);
         if (result.affectedRows > 0) {
-            res.json({ message: 'Usuario eliminado' }); // Confirma la eliminación del usuario
+            res.json({ message: 'Usuario eliminado' });
         } else {
-            res.status(404).json({ message: 'Usuario no encontrado' }); // Devuelve error si el usuario no existe
+            res.status(404).json({ message: 'Usuario no encontrado' });
         }
     } catch (err: any) {
         console.error(err);
@@ -133,7 +216,21 @@ router.delete('/api/users/:id', verificarToken, async (req: Request, res: Respon
     }
 });
 
-// Endpoint de login
+/**
+ * @api {post} /api/login Login de usuario
+ * @apiName LoginUsuario
+ * @apiGroup Autenticación
+ *
+ * @apiParam {String} email Email del usuario.
+ * @apiParam {String} password Contraseña del usuario.
+ * @apiParam {Boolean} [mantenerSesion] Mantener sesión abierta (24h) o no (2h).
+ *
+ * @apiSuccess {String} message Mensaje de éxito.
+ * @apiSuccess {Object} usuario Datos del usuario (sin password).
+ * @apiError 404 Usuario no encontrado.
+ * @apiError 401 Contraseña incorrecta.
+ * @apiError 500 Error interno.
+ */
 router.post('/api/login', async (req: Request, res: Response) => {
     const { email, password, mantenerSesion } = req.body;
     const secret = process.env.JWT_SECRET;
@@ -184,16 +281,54 @@ router.post('/api/login', async (req: Request, res: Response) => {
     }
 });
 
+/**
+ * @api {post} /api/logout Cerrar sesión
+ * @apiName LogoutUsuario
+ * @apiGroup Autenticación
+ * @apiPermission user
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ *
+ * @apiSuccess {String} message Confirmación de cierre de sesión.
+ */
 router.post('/api/logout', verificarToken, (req: Request, res: Response) => {
     res.clearCookie('token');
     res.json({ message: 'Sesión cerrada correctamente' });
 });
 
+/**
+ * @api {get} /api/check-auth Verificar autenticación
+ * @apiName CheckAuth
+ * @apiGroup Autenticación
+ * @apiPermission user
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ *
+ * @apiSuccess {Boolean} autenticado true si está autenticado.
+ * @apiSuccess {String} rol Rol del usuario.
+ * @apiSuccess {Number} id ID del usuario.
+ */
 router.get('/api/check-auth', verificarToken, (req: Request, res: Response) => {
     const usuario = (req as any).usuario;
     res.json({ autenticado: true, rol: usuario.rol, id: usuario.id });
 });
 
+/**
+ * @api {put} /api/cambiarpassword Cambiar contraseña del usuario autenticado
+ * @apiName CambiarPassword
+ * @apiGroup Usuarios
+ * @apiPermission user
+ *
+ * @apiHeader {String} Authorization Token JWT.
+ * @apiParam {String} password Contraseña actual.
+ * @apiParam {String} nuevapassword Nueva contraseña.
+ *
+ * @apiSuccess {String} message Confirmación de cambio.
+ * @apiError 400 Faltan parámetros.
+ * @apiError 401 Contraseña actual incorrecta.
+ * @apiError 404 Usuario no encontrado.
+ * @apiError 500 Error al cambiar contraseña.
+ */
 router.put('/api/cambiarpassword', verificarToken, async (req: Request, res: Response) => {
     const { password, nuevapassword } = req.body;
     const usuario = (req as any).usuario;
@@ -223,24 +358,22 @@ router.put('/api/cambiarpassword', verificarToken, async (req: Request, res: Res
     }
 });
 
-dotenv.config();
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
+/**
+ * Función para subir una imagen a Cloudinary
+ * @param {Express.Multer.File} imagen Archivo subido con multer
+ * @returns {Promise<string>} URL segura de la imagen subida
+ */
 const subirImagen = (imagen: Express.Multer.File): Promise<string> => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader.upload(imagen.path, (error, result) => {
-            fs.unlinkSync(imagen.path); // elimina el archivo local
+            fs.unlinkSync(imagen.path); // elimina el archivo temporal local
             if (error || !result) {
-                return reject(error || new Error('No se pudo subir la imagen'));
+                reject(error || new Error('Error subiendo la imagen a Cloudinary'));
+            } else {
+                resolve(result.secure_url);
             }
-            resolve(result.secure_url);
         });
     });
 };
 
-// Exporta el enrutador para ser utilizado en la aplicación principal
 export default router;
