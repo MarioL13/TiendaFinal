@@ -1,5 +1,6 @@
 "use client";
 
+import { notFound } from 'next/navigation'
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,26 +18,35 @@ const estados = ["Pendiente", "Pagado", "Entregado", "Cancelado"];
 export default function GestionPedidosPage() {
   const router = useRouter();
 
+  const [estado, setEstado] = useState<'cargando' | 'autorizado' | 'no-autorizado'>('cargando')
   // Verificar si el usuario es admin al cargar la página
   useEffect(() => {
-    const verificarAdmin = async () => {
+    const verificarAuth = async () => {
       try {
         const res = await fetch('http://localhost:5000/api/check-auth', {
+          method: 'GET',
           credentials: 'include',
-        });
-        const data = await res.json();
-        
-        if (!res.ok || !data.autenticado || data.rol !== 'admin') {
-          router.push('/Login');
+        })
+        if (!res.ok) throw new Error()
+        const data = await res.json()
+        if (data.rol === 'admin') {
+          setEstado('autorizado')
+        } else {
+          setEstado('no-autorizado')
         }
-      } catch (error) {
-        console.error('Error al verificar autenticación:', error);
-        router.push('/Login');
+      } catch {
+        setEstado('no-autorizado')
       }
-    };
+    }
+    verificarAuth()
+  }, [])
 
-    verificarAdmin();
-  }, []);
+  useEffect(() => {
+    if (estado === 'no-autorizado') {
+      router.push('/Login');
+    }
+  }, [estado, router]);
+
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -123,6 +133,9 @@ export default function GestionPedidosPage() {
       setActualizando(null);
     }
   };
+
+  if (estado === 'cargando') return <p>Cargando...</p>
+  if (estado === 'no-autorizado') return notFound()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 py-8 px-2 flex flex-col items-center">

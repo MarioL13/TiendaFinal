@@ -7,7 +7,7 @@ interface Producto {
   descripcion: string;
   precio: number;
   imagen: string[];
-  categorias?: string[]; // Puede ser opcional si no viene
+  categorias?: string[]; 
   total_vendidos: number;
 }
 
@@ -19,15 +19,15 @@ const Destacados: React.FC = () => {
     const fetchDestacados = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/products/destacados');
-        // Adaptar los datos recibidos al formato esperado
+
         const data = response.data as any[];
         const productosAdaptados: Producto[] = data.map((item: any) => ({
           id_producto: item.id_producto,
           nombre: item.nombre,
           descripcion: item.descripcion,
           precio: parseFloat(item.precio),
-          imagen: item.imagenes, // Cambia a 'imagenes'
-          categorias: item.categorias || [], // Si no viene, array vacío
+          imagen: item.imagenes,
+          categorias: item.categorias || [],
           total_vendidos: parseInt(item.total_vendidos, 10),
         }));
         setProductos(productosAdaptados);
@@ -77,7 +77,7 @@ const Destacados: React.FC = () => {
             </div>
             <div className="flex justify-between items-center">
               <div className="space-y-1">
-                <p className="text-sm text-gray-500">${producto.precio}</p>
+                <p className="text-sm text-gray-500">{producto.precio} €</p>
               </div>
               <div className="flex items-center gap-1">
                 <div className="text-yellow-400">★★★★</div>
@@ -86,8 +86,9 @@ const Destacados: React.FC = () => {
               </div>
             </div>
 
-            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors">
-              Add to Cart
+            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors"
+            onClick={() => window.location.href = `/productos/${producto.id_producto}`}>
+              ver producto
             </button>
           </div>
         </div>

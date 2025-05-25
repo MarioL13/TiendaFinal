@@ -16,6 +16,8 @@ const ProductCard = ({ id }: { id: number }) => {
   const [producto, setProducto] = useState<Producto | null>(null);
   const [mainImgIdx, setMainImgIdx] = useState(0);
   const [cantidad, setCantidad] = useState(1);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [wishlistSuccess, setWishlistSuccess] = useState(false);
   const { updateCartTotal } = useCart();
 
   const handleAddToCart = async () => {
@@ -58,6 +60,42 @@ const ProductCard = ({ id }: { id: number }) => {
     }
   };
 
+  // TODO: Reemplaza esto por la obtención real del usuario autenticado
+  const id_usuario = 1; // <-- Ajusta según tu lógica de usuario
+
+  // Handler para añadir a favoritos
+  const handleAddToWishlist = async () => {
+    if (!producto) return;
+    setWishlistLoading(true);
+    const toastId = toast.loading('Añadiendo a favoritos...');
+    try {
+      const response = await fetch('http://localhost:5000/api/wishlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id_usuario: 1, // TODO: Reemplazar por el id del usuario autenticado
+          id_producto: producto.id_producto
+        })
+      });
+      if (response.ok) {
+        toast.success('¡Añadido a favoritos!', { id: toastId });
+      } else {
+        const data = await response.json();
+        if (data.message && data.message.includes('ya está en la lista')) {
+          toast.error('El producto ya está en tu lista de deseados.', { id: toastId });
+        } else {
+          toast.error(data.message || 'Error al añadir a favoritos', { id: toastId });
+        }
+      }
+    } catch (error) {
+      toast.error('Error al añadir a favoritos', { id: toastId });
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchProducto = async () => {
       const response = await fetch(`http://localhost:5000/api/products/${id}`);
@@ -91,11 +129,13 @@ const ProductCard = ({ id }: { id: number }) => {
           <div className="flex-1 flex items-center justify-center h-64 md:h-full relative">
             <button
               onClick={handlePrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-200 hover:bg-gray-300 rounded-full p-2 z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white shadow-md hover:bg-blue-200 text-blue-600 hover:text-blue-800 border border-blue-300 rounded-full p-2 z-10 transition duration-200 flex items-center justify-center"
               aria-label="Anterior"
               type="button"
             >
-              &#8592;
+              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
             </button>
             <img
               src={producto.imagenes[mainImgIdx]}
@@ -104,11 +144,13 @@ const ProductCard = ({ id }: { id: number }) => {
             />
             <button
               onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200 hover:bg-gray-300 rounded-full p-2 z-10"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white shadow-md hover:bg-blue-200 text-blue-600 hover:text-blue-800 border border-blue-300 rounded-full p-2 z-10 transition duration-200 flex items-center justify-center"
               aria-label="Siguiente"
               type="button"
             >
-              &#8594;
+              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
             </button>
           </div>
           {/* Miniaturas debajo de la imagen principal */}
@@ -160,20 +202,21 @@ const ProductCard = ({ id }: { id: number }) => {
             </div>
           </div>
 
-          <p className="text-green-600 text-sm font-semibold mb-4">Free Delivery</p>
-
           <div className="flex space-x-4 mt-auto mb-0 w-full justify-center">
-            <button className="flex-1 mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer">
-              Buy Now
+            <button 
+              onClick={handleAddToWishlist}
+              className={`flex-1 mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer ${wishlistLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+              disabled={wishlistLoading}
+            >
+              {wishlistLoading ? 'Añadiendo...' : 'Añadir a favoritos'}
             </button>
             <button 
               onClick={handleAddToCart}
               className="flex-1 mt-8 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer"
             >
-              Add to Cart
+              Añadir al carrito
             </button>
           </div>
-         
         </div>
       </div>
     </div>

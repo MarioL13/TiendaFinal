@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { notFound } from 'next/navigation'
 
 interface Usuario {
   id_usuario: number;
@@ -18,7 +19,29 @@ export default function UsuariosAdminPage() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [estado, setEstado] = useState<'cargando' | 'autorizado' | 'no-autorizado'>('cargando')
   const router = useRouter();
+
+  useEffect(() => {
+    const verificarAuth = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/check-auth', {
+          method: 'GET',
+          credentials: 'include',
+        })
+        if (!res.ok) throw new Error()
+        const data = await res.json()
+        if (data.rol === 'admin') {
+          setEstado('autorizado')
+        } else {
+          setEstado('no-autorizado')
+        }
+      } catch {
+        setEstado('no-autorizado')
+      }
+    }
+    verificarAuth()
+  }, [])
 
   useEffect(() => {
     const fetchUsuarios = async () => {
@@ -53,6 +76,9 @@ export default function UsuariosAdminPage() {
       alert(err.message || "Error desconocido");
     }
   };
+
+  if (estado === 'cargando') return <p>Cargando...</p>
+  if (estado === 'no-autorizado') return notFound()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 py-8 px-2 flex flex-col items-center">

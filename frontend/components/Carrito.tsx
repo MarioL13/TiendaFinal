@@ -124,6 +124,12 @@ const Carrito: React.FC = () => {
           >
             Proceder al pago
           </button>
+          <button
+            className="w-full mt-3 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded shadow border border-blue-600 transition text-lg"
+            disabled={items.length === 0}
+          >
+            Recoger en tienda
+          </button>
           <p className="text-xs text-gray-500 mt-3">El envío y los impuestos se calcularán en el siguiente paso.</p>
         </div>
       </div>

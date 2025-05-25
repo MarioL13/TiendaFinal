@@ -19,9 +19,7 @@ export default function Main() {
       </section>
       {/* Productos destacados */}
       <section className="container mx-auto px-4 d-flex">
-        <h2 className="text-2xl font-bold mb-6 text-center">Productos Destacados</h2>
-        <Eventos />
-        <Eventos />
+        <h2 className="text-2xl font-bold mb-6 text-center">Eventos</h2>
         <Eventos />
       </section>
     </div>

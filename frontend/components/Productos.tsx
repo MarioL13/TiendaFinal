@@ -187,6 +187,9 @@ const Productos: React.FC = () => {
                                         </span>
                                     )}
                                 </div>
+                                <div>
+                                    <span className="text-lg font-bold text-gray-900">{producto.precio} €</span>
+                                </div>
                                 <button
                                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors"
                                     onClick={() => window.location.href = `/productos/${producto.id_producto}`}

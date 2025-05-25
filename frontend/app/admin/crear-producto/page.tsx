@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { notFound } from 'next/navigation'
 
 export default function CrearProducto() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function CrearProducto() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [idioma, setIdioma] = useState("");
+  const [estado, setEstado] = useState<'cargando' | 'autorizado' | 'no-autorizado'>('cargando')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +63,30 @@ export default function CrearProducto() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const verificarAuth = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/check-auth', {
+          method: 'GET',
+          credentials: 'include',
+        })
+        if (!res.ok) throw new Error()
+        const data = await res.json()
+        if (data.rol === 'admin') {
+          setEstado('autorizado')
+        } else {
+          setEstado('no-autorizado')
+        }
+      } catch {
+        setEstado('no-autorizado')
+      }
+    }
+    verificarAuth()
+  }, [])
+
+  if (estado === 'cargando') return <p>Cargando...</p>
+  if (estado === 'no-autorizado') return notFound()
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-200 py-8">
