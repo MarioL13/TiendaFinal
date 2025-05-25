@@ -83,7 +83,6 @@ export const eliminarCategoria = (id: number): Promise<any> => {
 
 // Obtiene el ID de una categoría por su nombre
 export const obtenerIdCategoria = (nombreCategoria: string): Promise<number> => {
-    console.log(nombreCategoria);
     return new Promise((resolve, reject) => {
         db.query(
             'SELECT id_categoria FROM categorias WHERE nombre = ?',

@@ -133,7 +133,7 @@ export const crearProducto = async (producto: any): Promise<any> => {
     try {
         return new Promise((resolve, reject) => {
             db.query(
-                'INSERT INTO productos (nombre, descripcion, precio, stock, idioma, imagenes) VALUES (?, ?, ?, ?, ?)',
+                'INSERT INTO productos (nombre, descripcion, precio, stock, idioma, imagenes) VALUES (?, ?, ?, ?, ?, ?)',
                 [nombre, descripcion, precio, stock, idioma, JSON.stringify(imagenes)],
                 async (err: QueryError | null, results: any) => {
                     if (err) return reject(err);
