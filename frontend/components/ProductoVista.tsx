@@ -47,6 +47,7 @@ const ProductCard = ({ id }: { id: number }) => {
             color: '#fff',
           },
         });
+        window.location.href = '/tienda';
       } else {
         const data = await response.json();
         toast.error(data.message || 'Error al añadir al carrito', {
@@ -205,14 +206,36 @@ const ProductCard = ({ id }: { id: number }) => {
           <div className="flex space-x-4 mt-auto mb-0 w-full justify-center">
             <button 
               onClick={handleAddToWishlist}
-              className={`flex-1 mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer ${wishlistLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+              className={`flex-1 mt-8 font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer ${wishlistLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+              style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
               disabled={wishlistLoading}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#FBFEF9';
+                e.currentTarget.style.color = '#334139';
+                e.currentTarget.style.border = '2px solid #6E2C91';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#334139';
+                e.currentTarget.style.color = '#FBFEF9';
+                e.currentTarget.style.border = '2px solid #334139';
+              }}
             >
               {wishlistLoading ? 'Añadiendo...' : 'Añadir a favoritos'}
             </button>
             <button 
               onClick={handleAddToCart}
-              className="flex-1 mt-8 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer"
+              className="flex-1 mt-8 font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 cursor-pointer"
+              style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#FBFEF9';
+                e.currentTarget.style.color = '#334139';
+                e.currentTarget.style.border = '2px solid #6E2C91';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#334139';
+                e.currentTarget.style.color = '#FBFEF9';
+                e.currentTarget.style.border = '2px solid #334139';
+              }}
             >
               Añadir al carrito
             </button>

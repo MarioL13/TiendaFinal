@@ -23,7 +23,7 @@ export default function Page() {
     }, []);
 
     return (
-        <div>
+        <div style={{ background: '#FBFEF9', minHeight: '100vh' }}>
             <h1 className="text-xl font-bold mb-4">Usuarios</h1>
             <ul className="list-disc pl-6">
                 {users.map((user) => (

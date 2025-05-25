@@ -37,7 +37,13 @@ const Login = () => {
       setMessage(`Bienvenido ${data.usuario.nombre}`);
       localStorage.setItem('user', JSON.stringify(data.usuario));
 
-      router.push('/');
+      if (data.usuario.rol === 'admin') {
+        router.push('/admin');
+
+      } else {
+        router.push('/');
+
+      }
     } catch (error: any) {
       console.error('Error al iniciar sesión:', error); // Depuración de errores
       setMessage(`Error: ${error.message}`);

@@ -161,7 +161,16 @@ const Productos: React.FC = () => {
                     {productos.map((producto) => (
                         <div
                             key={producto.id_producto}
-                            className="max-w-sm w-full bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all"
+                            className="max-w-sm w-full bg-white rounded-xl overflow-hidden transition-all"
+                            style={{
+                                boxShadow: '0 8px 24px 0 rgba(78,29,99,0.18), 0 1.5rem 2rem rgba(78,29,99,0.10)',
+                                borderRadius: '2rem',
+                                border: '1px solid #6E2C91',
+                                transform: 'translateY(-8px)',
+                                position: 'relative',
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-20px) scale(1.03)'}
+                            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(-8px)'}
                         >
                             <div className="relative aspect-w-4 aspect-h-3">
                                 <div className="img-cuadrada">
@@ -191,8 +200,19 @@ const Productos: React.FC = () => {
                                     <span className="text-lg font-bold text-gray-900">{producto.precio} €</span>
                                 </div>
                                 <button
-                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors"
+                                    className="w-full font-bold py-3 rounded-lg transition-colors"
+                                    style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
                                     onClick={() => window.location.href = `/productos/${producto.id_producto}`}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = '#FBFEF9';
+                                        e.currentTarget.style.color = '#334139';
+                                        e.currentTarget.style.border = '2px solid #6E2C91';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = '#334139';
+                                        e.currentTarget.style.color = '#FBFEF9';
+                                        e.currentTarget.style.border = '2px solid #334139';
+                                    }}
                                 >
                                     Ver producto
                                 </button>
@@ -209,7 +229,8 @@ const Productos: React.FC = () => {
                         <button
                             onClick={() => handlePageChange(page - 1)}
                             disabled={page === 1}
-                            className="mx-1 flex h-9 w-9 items-center justify-center rounded-full border text-sm text-gray-500"
+                            className="mx-1 flex h-9 w-9 items-center justify-center rounded-full border text-sm"
+                            style={{ background: '#97DF4D', color: '#6E2C91', borderColor: '#4E1D63' }}
                         >
                             ←
                         </button>
@@ -218,11 +239,8 @@ const Productos: React.FC = () => {
                         <li key={i + 1}>
                             <button
                                 onClick={() => handlePageChange(i + 1)}
-                                className={`mx-1 h-9 w-9 flex items-center justify-center rounded-full text-sm ${
-                                    page === i + 1
-                                        ? 'bg-pink-500 text-white'
-                                        : 'border text-gray-600'
-                                }`}
+                                style={{ background: page === i + 1 ? '#97DF4D' : 'white', color: '#6E2C91', borderColor: '#4E1D63' }}
+                                className={`mx-1 h-9 w-9 flex items-center justify-center rounded-full text-sm border ${page === i + 1 ? 'font-bold shadow' : ''}`}
                             >
                                 {i + 1}
                             </button>
@@ -232,7 +250,8 @@ const Productos: React.FC = () => {
                         <button
                             onClick={() => handlePageChange(page + 1)}
                             disabled={page === totalPages}
-                            className="mx-1 flex h-9 w-9 items-center justify-center rounded-full border text-sm text-gray-500"
+                            className="mx-1 flex h-9 w-9 items-center justify-center rounded-full border text-sm"
+                            style={{ background: '#97DF4D', color: '#4E1D63', borderColor: '#4E1D63' }}
                         >
                             →
                         </button>

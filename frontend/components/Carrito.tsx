@@ -96,7 +96,18 @@ const Carrito: React.FC = () => {
                       </div>
                       <button
                         onClick={() => handleRemove(item.tipo_item, item.id_item)}
-                        className="mt-4 md:mt-0 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded shadow border border-yellow-500 transition"
+                        className="mt-4 md:mt-0 font-semibold px-4 py-2 rounded shadow border transition text-white"
+                        style={{ background: '#F87171', border: '2px solid #B91C1C' }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = '#B91C1C';
+                          e.currentTarget.style.border = '2px solid #F87171';
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = '#F87171';
+                          e.currentTarget.style.border = '2px solid #B91C1C';
+                          e.currentTarget.style.color = '#fff';
+                        }}
                       >
                         Eliminar
                       </button>
@@ -119,14 +130,36 @@ const Carrito: React.FC = () => {
             <span className="text-green-700 font-bold">{total.toFixed(2)}€</span>
           </div>
           <button
-            className="w-full mt-6 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 rounded shadow border border-yellow-500 transition text-lg"
+            className="w-full mt-6 font-bold py-3 rounded shadow border transition text-lg"
+            style={{ background: '#97DF4D', color: '#4E1D63', border: '2px solid #4E1D63' }}
             disabled={items.length === 0}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#6E2C91';
+              e.currentTarget.style.color = '#97DF4D';
+              e.currentTarget.style.border = '2px solid #97DF4D';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#97DF4D';
+              e.currentTarget.style.color = '#4E1D63';
+              e.currentTarget.style.border = '2px solid #4E1D63';
+            }}
           >
             Proceder al pago
           </button>
           <button
-            className="w-full mt-3 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded shadow border border-blue-600 transition text-lg"
+            className="w-full mt-3 font-bold py-3 rounded shadow border transition text-lg"
+            style={{ background: '#97DF4D', color: '#4E1D63', border: '2px solid #4E1D63' }}
             disabled={items.length === 0}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#6E2C91';
+              e.currentTarget.style.color = '#97DF4D';
+              e.currentTarget.style.border = '2px solid #97DF4D';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#97DF4D';
+              e.currentTarget.style.color = '#4E1D63';
+              e.currentTarget.style.border = '2px solid #4E1D63';
+            }}
           >
             Recoger en tienda
           </button>

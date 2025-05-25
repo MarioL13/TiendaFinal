@@ -14,12 +14,12 @@ export default function Main() {
 
       {/* Productos destacados */}
       <section className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Productos Destacados</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center" style={{ color: '#334139' }}>Productos Destacados</h2>
         <Destacados />
       </section>
       {/* Productos destacados */}
       <section className="container mx-auto px-4 d-flex">
-        <h2 className="text-2xl font-bold mb-6 text-center">Eventos</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center" style={{  color: '#334139' }}>Eventos</h2>
         <Eventos />
       </section>
     </div>

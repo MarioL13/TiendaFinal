@@ -36,7 +36,28 @@ export default function EditarPerfil({
               className="w-24 h-24 rounded-full object-cover border-2 border-blue-500"
             />
             <label className="ml-4 flex items-center">
-              <span className="py-2 px-4 bg-gray-700 text-white rounded-lg border border-gray-600 shadow-sm hover:bg-gray-900 hover:shadow-lg transition-all duration-200 cursor-pointer">
+              <span
+                className="py-2 px-4 font-bold rounded-lg transition-colors border-2 text-lg cursor-pointer"
+                style={{
+                  background: "#97DF4D",
+                  color: "#4E1D63",
+                  border: "2px solid #4E1D63",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLSpanElement).style.background =
+                    "#6E2C91";
+                  (e.currentTarget as HTMLSpanElement).style.color = "#97DF4D";
+                  (e.currentTarget as HTMLSpanElement).style.border =
+                    "2px solid #97DF4D";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLSpanElement).style.background =
+                    "#97DF4D";
+                  (e.currentTarget as HTMLSpanElement).style.color = "#4E1D63";
+                  (e.currentTarget as HTMLSpanElement).style.border =
+                    "2px solid #4E1D63";
+                }}
+              >
                 Agregar archivo
                 <input
                   type="file"
@@ -101,7 +122,7 @@ export default function EditarPerfil({
               placeholder="Teléfono"
             />
           </div>
-            <div>
+          <div>
             <label className="block text-sm font-medium text-black">
               Dirección
             </label>
@@ -113,19 +134,49 @@ export default function EditarPerfil({
               className="w-full mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-black text-black"
               placeholder="Dirección"
             />
-            </div>
+          </div>
         </div>
         <div className="flex justify-end gap-4">
           <button
             type="button"
             onClick={onCancel}
-            className="py-2 px-4 bg-gray-700 text-white rounded-lg border border-gray-600 shadow-sm hover:bg-gray-900 hover:shadow-lg transition-all duration-200 cursor-pointer"
+            className="py-2 px-4 font-bold rounded-lg transition-colors border-2 text-lg"
+            style={{
+              background: "#97DF4D",
+              color: "#4E1D63",
+              border: "2px solid #4E1D63",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#6E2C91";
+              e.currentTarget.style.color = "#97DF4D";
+              e.currentTarget.style.border = "2px solid #97DF4D";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#97DF4D";
+              e.currentTarget.style.color = "#4E1D63";
+              e.currentTarget.style.border = "2px solid #4E1D63";
+            }}
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="py-2 px-4 bg-blue-900 text-white rounded-lg border border-blue-800 shadow-sm hover:bg-blue-800 hover:shadow-lg transition-all duration-200 cursor-pointer"
+            className="py-2 px-4 font-bold rounded-lg transition-colors border-2 text-lg"
+            style={{
+              background: "#97DF4D",
+              color: "#4E1D63",
+              border: "2px solid #4E1D63",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#6E2C91";
+              e.currentTarget.style.color = "#97DF4D";
+              e.currentTarget.style.border = "2px solid #97DF4D";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#97DF4D";
+              e.currentTarget.style.color = "#4E1D63";
+              e.currentTarget.style.border = "2px solid #4E1D63";
+            }}
           >
             Guardar Cambios
           </button>
@@ -178,7 +229,22 @@ export default function EditarPerfil({
           </div>
           <button
             type="submit"
-            className="py-2 px-4 bg-gray-700 text-white rounded-lg border border-gray-600 shadow-sm hover:bg-gray-900 hover:shadow-lg transition-all duration-200 cursor-pointer"
+            className="py-2 px-4 font-bold rounded-lg transition-colors border-2 text-lg"
+            style={{
+              background: "#97DF4D",
+              color: "#4E1D63",
+              border: "2px solid #4E1D63",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#6E2C91";
+              e.currentTarget.style.color = "#97DF4D";
+              e.currentTarget.style.border = "2px solid #97DF4D";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#97DF4D";
+              e.currentTarget.style.color = "#4E1D63";
+              e.currentTarget.style.border = "2px solid #4E1D63";
+            }}
           >
             Actualizar Contraseña
           </button>

@@ -51,7 +51,16 @@ const Destacados: React.FC = () => {
       {productos.map((producto) => (
         <div
           key={producto.id_producto}
-          className="max-w-sm w-full bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all"
+          className="max-w-sm w-full bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 border-2"
+          style={{ border: '2px solid #4E1D63', boxShadow: '0 4px 16px 0 rgba(78,29,99,0.10)' }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-8px) scale(1.04)';
+            e.currentTarget.style.boxShadow = '0 12px 32px 0 rgba(78,29,99,0.18)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'none';
+            e.currentTarget.style.boxShadow = '0 4px 16px 0 rgba(78,29,99,0.10)';
+          }}
         >
           <div className="relative">
             <img
@@ -86,8 +95,21 @@ const Destacados: React.FC = () => {
               </div>
             </div>
 
-            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors"
-            onClick={() => window.location.href = `/productos/${producto.id_producto}`}>
+            <button
+              className="w-full font-bold py-3 rounded-lg transition-colors"
+              style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
+              onClick={() => window.location.href = `/productos/${producto.id_producto}`}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#FBFEF9';
+                e.currentTarget.style.color = '#334139';
+                e.currentTarget.style.border = '2px solid #6E2C91';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#334139';
+                e.currentTarget.style.color = '#FBFEF9';
+                e.currentTarget.style.border = '2px solid #334139';
+              }}
+            >
               ver producto
             </button>
           </div>

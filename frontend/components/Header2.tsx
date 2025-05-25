@@ -85,7 +85,7 @@ const StoreLayout = () => {
 
       <input type="checkbox" id="cartToggle" className="hidden" />
 
-      <header className="w-full bg-white shadow-md p-4 fixed top-0 left-0 z-20">
+      <header className="w-full shadow-md p-4 fixed top-0 left-0 z-20" style={{ background: '#97DF4D' }}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="hidden md:flex w-full justify-between items-center">
             <div className="text-lg font-bold">
@@ -93,15 +93,15 @@ const StoreLayout = () => {
                 <img src="/logo.jpg" alt="Logo" className="w-12 h-12 rounded-lg" />
               </a>
             </div>
-            <nav className="flex space-x-4">
-              <a href="/" className="text-gray-700 hover:text-gray-900">Portada</a>
-              <a href="/tienda" className="text-gray-700 hover:text-gray-900">Tienda</a>
-              <a href="/Cartas" className="text-gray-700 hover:text-gray-900">Cartas</a>
+            <nav className="flex space-x-4 text-xl font-bold">
+              <a href="/" className="text-[#6e2c91] hover:text-white">Portada</a>
+              <a href="/tienda" className="text-[#6e2c91] hover:text-white">Tienda</a>
+              <a href="/Cartas" className="text-[#6e2c91] hover:text-white">Cartas</a>
             </nav>
             <div className="flex items-center space-x-4">
                 <label
                 htmlFor="cartToggle"
-                className="cursor-pointer text-gray-700 hover:text-gray-900 relative"
+                className="cursor-pointer text-[#6e2c91] hover:text-white relative"
                 onClick={() => window.location.href = "/Carrito"}
                 >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="lucide lucide-shopping-basket-icon lucide-shopping-basket">
@@ -136,7 +136,18 @@ const StoreLayout = () => {
                         <li>
                           <button
                             onClick={() => window.location.href = "/perfil"}
-                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 text-black"
+                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all font-bold border-2"
+                            style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = '#FBFEF9';
+                              e.currentTarget.style.color = '#334139';
+                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = '#334139';
+                              e.currentTarget.style.color = '#FBFEF9';
+                              e.currentTarget.style.border = '2px solid #334139';
+                            }}
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true" className="h-4 w-4">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -147,7 +158,18 @@ const StoreLayout = () => {
                         <li>
                           <button
                             onClick={() => window.location.href = "/perfil/editar"}
-                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 text-black"
+                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all font-bold border-2"
+                            style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = '#FBFEF9';
+                              e.currentTarget.style.color = '#334139';
+                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = '#334139';
+                              e.currentTarget.style.color = '#FBFEF9';
+                              e.currentTarget.style.border = '2px solid #334139';
+                            }}
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true" className="h-4 w-4">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
@@ -158,7 +180,18 @@ const StoreLayout = () => {
                         <li>
                           <button
                             onClick={() => window.location.href = "/historial"}
-                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 text-black"
+                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all font-bold border-2"
+                            style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = '#FBFEF9';
+                              e.currentTarget.style.color = '#334139';
+                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = '#334139';
+                              e.currentTarget.style.color = '#FBFEF9';
+                              e.currentTarget.style.border = '2px solid #334139';
+                            }}
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-history-icon lucide-history">
                               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -171,16 +204,38 @@ const StoreLayout = () => {
                         <li>
                           <button
                             onClick={() => window.location.href = "/deseados"}
-                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 text-black"
+                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all font-bold border-2"
+                            style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = '#FBFEF9';
+                              e.currentTarget.style.color = '#334139';
+                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = '#334139';
+                              e.currentTarget.style.color = '#FBFEF9';
+                              e.currentTarget.style.border = '2px solid #334139';
+                            }}
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-star-icon lucide-star"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-star-icon lucide-star"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
                             <p>Deseados</p>
                           </button>
                         </li>
                         <li>
                           <button
                             onClick={handleLogout}
-                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 text-black"
+                            className="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-2 text-start leading-tight outline-none transition-all font-bold border-2"
+                            style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = '#FBFEF9';
+                              e.currentTarget.style.color = '#334139';
+                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = '#334139';
+                              e.currentTarget.style.color = '#FBFEF9';
+                              e.currentTarget.style.border = '2px solid #334139';
+                            }}
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-log-out-icon lucide-log-out">
                               <path d="m16 17 5-5-5-5" />
@@ -196,7 +251,18 @@ const StoreLayout = () => {
                 ) : (
                   <button
                     onClick={() => window.location.href = "/Login"}
-                    className="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    className="py-2 px-4 font-bold rounded-lg transition-colors border-2 text-lg"
+                    style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = '#FBFEF9';
+                      e.currentTarget.style.color = '#334139';
+                      e.currentTarget.style.border = '2px solid #FBFEF9';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = '#334139';
+                      e.currentTarget.style.color = '#FBFEF9';
+                      e.currentTarget.style.border = '2px solid #334139';
+                    }}
                   >
                     Iniciar sesión
                   </button>
