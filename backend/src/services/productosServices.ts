@@ -38,7 +38,7 @@ export const obtenerProductos = ({ page, limit, search, category, sort, idioma }
         const sql = `
             SELECT SQL_CALC_FOUND_ROWS p.*
             FROM productos p
-            LEFT JOIN Producto_categoria pc ON p.id_producto = pc.id_producto
+            LEFT JOIN producto_categoria pc ON p.id_producto = pc.id_producto
             LEFT JOIN categorias c ON pc.id_categoria = c.id_categoria
             ${where}
             GROUP BY p.id_producto
