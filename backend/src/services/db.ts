@@ -4,122 +4,116 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Crear la conexión a la base de datos
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
     host: process.env.MYSQLHOST,
     user: process.env.MYSQLUSER,
     password: process.env.MYSQLPASSWORD,
     database: process.env.MYSQLDATABASE,
     port: Number(process.env.MYSQLPORT)
-}).promise();
+});
 
-// Verificar si la conexión se establece correctamente
-async function initializeDatabase() {
-    const sql = `
-    USE TiendaOnline;
-
-    CREATE TABLE IF NOT EXISTS Usuarios (
-        id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-        FOTO LONGTEXT,
-        nombre VARCHAR(100) NOT NULL,
-        apellido VARCHAR(100),
-        email VARCHAR(100) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        direccion VARCHAR(255) NOT NULL,
-        telefono VARCHAR(255) NOT NULL,
-        fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
-        rol ENUM('user', 'admin') NOT NULL DEFAULT 'user'
+const sql = `CREATE TABLE IF NOT EXISTS Usuarios (
+                                                     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+                                                     FOTO LONGTEXT,
+                                                     nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100),
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    direccion VARCHAR(255) NOT NULL,
+    telefono VARCHAR(255) NOT NULL,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    rol ENUM('user', 'admin') NOT NULL DEFAULT 'user'
     );
 
-    CREATE TABLE IF NOT EXISTS Categorias (
-        id_categoria INT AUTO_INCREMENT PRIMARY KEY,
-        nombre VARCHAR(100) UNIQUE NOT NULL,
-        descripcion TEXT
+CREATE TABLE IF NOT EXISTS Categorias (
+                                          id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+                                          nombre VARCHAR(100) UNIQUE NOT NULL,
+    descripcion TEXT
     );
 
-    CREATE TABLE IF NOT EXISTS cartas (
-        id_carta INT PRIMARY KEY AUTO_INCREMENT,
-        nombre VARCHAR(255),
-        stock INT,
-        precio DECIMAL(10,2),
-        scryfall_id VARCHAR(255) UNIQUE,
-        set_code VARCHAR(10),
-        collector_number VARCHAR(20),
-        imagen TEXT
+CREATE TABLE IF NOT EXISTS cartas (
+                                      id_carta INT PRIMARY KEY AUTO_INCREMENT,
+                                      nombre VARCHAR(255),
+    stock INT,
+    precio DECIMAL(10,2),
+    scryfall_id VARCHAR(255) UNIQUE,
+    set_code VARCHAR(10),
+    collector_number VARCHAR(20),
+    imagen TEXT
     );
 
-    CREATE TABLE IF NOT EXISTS productos (
-        id_producto INT AUTO_INCREMENT PRIMARY KEY,
-        nombre VARCHAR(255) NOT NULL,
-        idioma VARCHAR(100),
-        descripcion TEXT,
-        precio DECIMAL(10,2) NOT NULL,
-        stock INT NOT NULL,
-        imagenes LONGTEXT
+CREATE TABLE IF NOT EXISTS productos (
+                                         id_producto INT AUTO_INCREMENT PRIMARY KEY,
+                                         nombre VARCHAR(255) NOT NULL,
+    idioma VARCHAR(100),
+    descripcion TEXT,
+    precio DECIMAL(10,2) NOT NULL,
+    stock INT NOT NULL,
+    imagenes LONGTEXT
     );
 
-    CREATE TABLE IF NOT EXISTS ProductoCategoria (
-        id_producto INT,
-        id_categoria INT,
-        PRIMARY KEY (id_producto, id_categoria),
-        FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
-        FOREIGN KEY (id_categoria) REFERENCES Categorias(id_categoria) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS ProductoCategoria (
+                                                 id_producto INT,
+                                                 id_categoria INT,
+                                                 PRIMARY KEY (id_producto, id_categoria),
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
+    FOREIGN KEY (id_categoria) REFERENCES Categorias(id_categoria) ON DELETE CASCADE
     );
 
-    CREATE TABLE IF NOT EXISTS Pedidos (
-        id_pedido INT AUTO_INCREMENT PRIMARY KEY,
-        id_usuario INT,
-        fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        total DECIMAL(10,2) NOT NULL,
-        estado ENUM('Pendiente', 'Pagado', 'Entregado', 'Cancelado') DEFAULT 'Pendiente',
-        FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS Pedidos (
+                                       id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+                                       id_usuario INT,
+                                       fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                       total DECIMAL(10,2) NOT NULL,
+    estado ENUM('Pendiente', 'Pagado', 'Entregado', 'Cancelado') DEFAULT 'Pendiente',
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
     );
 
-    CREATE TABLE IF NOT EXISTS DetallePedido (
-        id_detalle INT AUTO_INCREMENT PRIMARY KEY,
-        id_pedido INT,
-        tipo_item ENUM('producto', 'carta') NOT NULL,
-        id_item INT NOT NULL,
-        cantidad INT NOT NULL,
-        precio DECIMAL(10,2) NOT NULL,
-        FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS DetallePedido (
+                                             id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+                                             id_pedido INT,
+                                             tipo_item ENUM('producto', 'carta') NOT NULL,
+    id_item INT NOT NULL,
+    cantidad INT NOT NULL,
+    precio DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido) ON DELETE CASCADE
     );
 
-    CREATE TABLE IF NOT EXISTS Deseados (
-        id_deseado INT AUTO_INCREMENT PRIMARY KEY,
-        id_usuario INT NOT NULL,
-        id_carta INT DEFAULT NULL,
-        id_producto INT DEFAULT NULL,
-        UNIQUE (id_usuario, id_carta),
-        UNIQUE (id_usuario, id_producto),
-        FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE,
-        FOREIGN KEY (id_carta) REFERENCES cartas(id_carta) ON DELETE SET NULL,
-        FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE SET NULL
+CREATE TABLE IF NOT EXISTS Deseados (
+                                        id_deseado INT AUTO_INCREMENT PRIMARY KEY,
+                                        id_usuario INT NOT NULL,
+                                        id_carta INT DEFAULT NULL,
+                                        id_producto INT DEFAULT NULL,
+                                        UNIQUE (id_usuario, id_carta),
+    UNIQUE (id_usuario, id_producto),
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_carta) REFERENCES cartas(id_carta) ON DELETE SET NULL,
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE SET NULL
     );
 
-    CREATE TABLE IF NOT EXISTS Carrito (
-        id_carrito INT AUTO_INCREMENT PRIMARY KEY,
-        id_usuario INT NOT NULL,
-        tipo_item ENUM('producto', 'carta') NOT NULL,
-        id_item INT NOT NULL,
-        cantidad INT NOT NULL,
-        fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS Carrito (
+                                       id_carrito INT AUTO_INCREMENT PRIMARY KEY,
+                                       id_usuario INT NOT NULL,
+                                       tipo_item ENUM('producto', 'carta') NOT NULL,
+    id_item INT NOT NULL,
+    cantidad INT NOT NULL,
+    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
     );
 
-    CREATE TABLE IF NOT EXISTS Eventos (
-        id_evento INT AUTO_INCREMENT PRIMARY KEY,
-        nombre VARCHAR(255) NOT NULL,
-        juego VARCHAR(255) NOT NULL,
-        fecha DATETIME NOT NULL,
-        precio_inscripcion DECIMAL(10,2) DEFAULT 0.00,
-        premios TEXT,
-        aforo_maximo INT DEFAULT NULL,
-        descripcion TEXT,
-        creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS Eventos (
+                                       id_evento INT AUTO_INCREMENT PRIMARY KEY,
+                                       nombre VARCHAR(255) NOT NULL,
+    juego VARCHAR(255) NOT NULL,
+    fecha DATETIME NOT NULL,
+    precio_inscripcion DECIMAL(10,2) DEFAULT 0.00,
+    premios TEXT,
+    aforo_maximo INT DEFAULT NULL,
+    descripcion TEXT,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
-    INSERT IGNORE INTO Eventos (nombre, juego, fecha, precio_inscripcion, premios, aforo_maximo, descripcion)
+INSERT IGNORE INTO Eventos (nombre, juego, fecha, precio_inscripcion, premios, aforo_maximo, descripcion)
     VALUES (
         'Torneo Modern Magic', 
         'Magic: The Gathering', 
@@ -165,18 +159,22 @@ async function initializeDatabase() {
 
     INSERT IGNORE INTO Carrito (id_usuario, tipo_item, id_item, cantidad)
     VALUES (1, 'producto', 1, 1), (2, 'carta', 1, 2);
-    `;
+    ;`;
 
-    try {
-        await connection.query(sql);
-        console.log('✅ Base de datos inicializada correctamente');
-    } catch (err) {
-        console.error('❌ Error al inicializar la base de datos:', err);
-    } finally {
-        await connection.end();
+db.connect((err: mysql.QueryError | null) => {
+    if (err) {
+        console.error('Error al conectar a la base de datos: ', err);
+    } else {
+        console.log('Conectado a la base de datos');
+
+        db.query(sql, (err) => {
+            if (err) {
+                console.error('Error al crear las tablas o insertar datos: ', err);
+            } else {
+                console.log('Tablas creadas e inserts ejecutados correctamente');
+            }
+        });
     }
-}
+});
 
-initializeDatabase();
-
-export default connection;
+export default db;
