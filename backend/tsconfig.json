@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "CommonJS",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "jsx": "preserve",
     "strict": true,
@@ -9,9 +9,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "noEmit": false,
     "incremental": true,
-    "allowJs": true
+    "allowJs": true,
+    "outDir": "./dist"
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

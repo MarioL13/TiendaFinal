@@ -13,7 +13,6 @@ async function initDatabase() {
     });
 
     const sql = `
-    CREATE DATABASE IF NOT EXISTS TiendaOnline;
     USE TiendaOnline;
 
     CREATE TABLE IF NOT EXISTS Usuarios (
