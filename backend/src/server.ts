@@ -14,7 +14,7 @@ import cookieParser from 'cookie-parser';
 
 const app = express();
 app.use(cookieParser());
-const port = process.env.PORT || 5000;
+const port = 5000;
 
 // Configura CORS para permitir solicitudes desde el frontend
 app.use(cors({ origin: 'https://rinconfriki-production.up.railway.app', credentials: true }));
@@ -40,5 +40,5 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.listen(port, () => {
-    console.log(`✅ Servidor Express corriendo en http://localhost:${port}`);
+    console.log(`Servidor Express corriendo en http://localhost:${port}`);
 });
