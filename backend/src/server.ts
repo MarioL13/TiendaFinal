@@ -17,8 +17,13 @@ app.use(cookieParser());
 const port = process.env.PORT || 5000;
 
 // Configura CORS para permitir solicitudes desde el frontend
-app.use(cors({ origin: 'https://rinconfriki-production.up.railway.app', credentials: true }));
-
+app.use(cors({
+    origin: [
+        'https://rinconfriki-production.up.railway.app',
+        'https://tiendafinal-production-2d5f.up.railway.app' // tu URL en Railway
+    ],
+    credentials: true
+}));
 app.use(express.json());  // Para poder recibir datos JSON en el cuerpo de las solicitudes
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
