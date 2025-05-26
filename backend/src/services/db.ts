@@ -14,106 +14,116 @@ const db = mysql.createConnection({
 });
 
 const sql = `
-    create table if not exists usuarios (
-                                            id_usuario int auto_increment primary key,
-                                            foto longtext,
-                                            nombre varchar(100) not null,
-        apellido varchar(100),
-        email varchar(100) unique not null,
-        password varchar(255) not null,
-        direccion varchar(255) not null,
-        telefono varchar(255) not null,
-        fecha_registro datetime default current_timestamp,
-        rol enum('user', 'admin') not null default 'user'
-        );
+    DROP TABLE IF EXISTS producto_categoria;
+    DROP TABLE IF EXISTS detalle_pedido;
+    DROP TABLE IF EXISTS carrito;
+    DROP TABLE IF EXISTS deseados;
+    DROP TABLE IF EXISTS pedidos;
+    DROP TABLE IF EXISTS cartas;
+    DROP TABLE IF EXISTS productos;
+    DROP TABLE IF EXISTS categorias;
+    DROP TABLE IF EXISTS usuarios;
 
-    create table if not exists categorias (
-                                              id_categoria int auto_increment primary key,
-                                              nombre varchar(100) unique not null,
-        descripcion text
-        );
+    create table usuarios (
+                              id_usuario int auto_increment primary key,
+                              foto longtext,
+                              nombre varchar(100) not null,
+                              apellido varchar(100),
+                              email varchar(100) unique not null,
+                              password varchar(255) not null,
+                              direccion varchar(255) not null,
+                              telefono varchar(255) not null,
+                              fecha_registro datetime default current_timestamp,
+                              rol enum('user', 'admin') not null default 'user'
+    );
 
-    create table if not exists cartas (
-                                          id_carta int primary key auto_increment,
-                                          nombre varchar(255),
-        stock int,
-        precio decimal(10,2),
-        scryfall_id varchar(255) unique,
-        set_code varchar(10),
-        collector_number varchar(20),
-        imagen text
-        );
+    create table categorias (
+                                id_categoria int auto_increment primary key,
+                                nombre varchar(100) unique not null,
+                                descripcion text
+    );
 
-    create table if not exists productos (
-                                             id_producto int auto_increment primary key,
-                                             nombre varchar(255) not null,
-        idioma varchar(100),
-        descripcion text,
-        precio decimal(10,2) not null,
-        stock int not null,
-        imagenes longtext
-        );
+    create table cartas (
+                            id_carta int primary key auto_increment,
+                            nombre varchar(255),
+                            stock int,
+                            precio decimal(10,2),
+                            scryfall_id varchar(255) unique,
+                            set_code varchar(10),
+                            collector_number varchar(20),
+                            imagen text
+    );
 
-    create table if not exists producto_categoria (
-                                                      id_producto int,
-                                                      id_categoria int,
-                                                      primary key (id_producto, id_categoria),
-        foreign key (id_producto) references productos(id_producto) on delete cascade,
-        foreign key (id_categoria) references categorias(id_categoria) on delete cascade
-        );
+    create table productos (
+                               id_producto int auto_increment primary key,
+                               nombre varchar(255) not null,
+                               idioma varchar(100),
+                               descripcion text,
+                               precio decimal(10,2) not null,
+                               stock int not null,
+                               imagenes longtext
+    );
 
-    create table if not exists pedidos (
-                                           id_pedido int auto_increment primary key,
-                                           id_usuario int,
-                                           fecha_pedido timestamp default current_timestamp,
-                                           total decimal(10,2) not null,
-        estado enum('pendiente', 'pagado', 'entregado', 'cancelado') default 'pendiente',
-        foreign key (id_usuario) references usuarios(id_usuario) on delete cascade
-        );
+    create table producto_categoria (
+                                        id_producto int,
+                                        id_categoria int,
+                                        primary key (id_producto, id_categoria),
+                                        foreign key (id_producto) references productos(id_producto) on delete cascade,
+                                        foreign key (id_categoria) references categorias(id_categoria) on delete cascade
+    );
 
-    create table if not exists detalle_pedido (
-                                                  id_detalle int auto_increment primary key,
-                                                  id_pedido int,
-                                                  tipo_item enum('producto', 'carta') not null,
-        id_item int not null,
-        cantidad int not null,
-        precio decimal(10,2) not null,
-        foreign key (id_pedido) references pedidos(id_pedido) on delete cascade
-        );
+    create table pedidos (
+                             id_pedido int auto_increment primary key,
+                             id_usuario int,
+                             fecha_pedido timestamp default current_timestamp,
+                             total decimal(10,2) not null,
+                             estado enum('pendiente', 'pagado', 'entregado', 'cancelado') default 'pendiente',
+                             foreign key (id_usuario) references usuarios(id_usuario) on delete cascade
+    );
 
-    create table if not exists deseados (
-                                            id_deseado int auto_increment primary key,
-                                            id_usuario int not null,
-                                            id_carta int default null,
-                                            id_producto int default null,
-                                            unique (id_usuario, id_carta),
-        unique (id_usuario, id_producto),
-        foreign key (id_usuario) references usuarios(id_usuario) on delete cascade,
-        foreign key (id_carta) references cartas(id_carta) on delete set null,
-        foreign key (id_producto) references productos(id_producto) on delete set null
-        );
+    create table detalle_pedido (
+                                    id_detalle int auto_increment primary key,
+                                    id_pedido int,
+                                    tipo_item enum('producto', 'carta') not null,
+                                    id_item int not null,
+                                    cantidad int not null,
+                                    precio decimal(10,2) not null,
+                                    foreign key (id_pedido) references pedidos(id_pedido) on delete cascade
+    );
 
-    create table if not exists carrito (
-                                           id_carrito int auto_increment primary key,
-                                           id_usuario int not null,
-                                           tipo_item enum('producto', 'carta') not null,
-        id_item int not null,
-        cantidad int not null,
-        fecha_agregado timestamp default current_timestamp,
-        foreign key (id_usuario) references usuarios(id_usuario) on delete cascade
-        );
+    create table deseados (
+                              id_deseado int auto_increment primary key,
+                              id_usuario int not null,
+                              id_carta int default null,
+                              id_producto int default null,
+                              unique (id_usuario, id_carta),
+                              unique (id_usuario, id_producto),
+                              foreign key (id_usuario) references usuarios(id_usuario) on delete cascade,
+                              foreign key (id_carta) references cartas(id_carta) on delete set null,
+                              foreign key (id_producto) references productos(id_producto) on delete set null
+    );
 
-    create table if not exists eventos (
-                                           id_evento int auto_increment primary key,
-                                           nombre varchar(255) not null,
-        juego varchar(255) not null,
-        fecha datetime not null,
-        precio_inscripcion decimal(10,2) default 0.00,
-        premios text,
-        aforo_maximo int default null,
-        descripcion text,
-        creado_en timestamp default current_timestamp
-        );
+    create table carrito (
+                             id_carrito int auto_increment primary key,
+                             id_usuario int not null,
+                             tipo_item enum('producto', 'carta') not null,
+                             id_item int not null,
+                             cantidad int not null,
+                             fecha_agregado timestamp default current_timestamp,
+                             foreign key (id_usuario) references usuarios(id_usuario) on delete cascade
+    );
+
+    create table eventos (
+                             id_evento int auto_increment primary key,
+                             nombre varchar(255) not null,
+                             juego varchar(255) not null,
+                             fecha datetime not null,
+                             precio_inscripcion decimal(10,2) default 0.00,
+                             premios text,
+                             aforo_maximo int default null,
+                             descripcion text,
+                             creado_en timestamp default current_timestamp
+    );
 
     insert ignore into eventos (nombre, juego, fecha, precio_inscripcion, premios, aforo_maximo, descripcion)
     values (
