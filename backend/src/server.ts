@@ -17,7 +17,7 @@ app.use(cookieParser());
 const port = 5000;
 
 // Configura CORS para permitir solicitudes desde el frontend
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: 'https://rinconfriki-production.up.railway.app', credentials: true }));
 
 app.use(express.json());  // Para poder recibir datos JSON en el cuerpo de las solicitudes
 
