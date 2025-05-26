@@ -3,11 +3,11 @@ import mysql from 'mysql2';
 
 // Crear la conexión a la base de datos
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'tiendaonline',
-    port: 3306,
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.DB_NAME,
+    port: Number(process.env.DB_PORT)
 });
 
 // Verificar si la conexión se establece correctamente

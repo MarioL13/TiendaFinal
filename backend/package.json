@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "tsc && node dist/server.js",
     "start": "node dist/server.js",
+    "init-db": "ts-node scripts/initDB.ts",
     "build": "tsc"
   },
   "dependencies": {
