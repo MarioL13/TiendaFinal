@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import './scripts/initDB';
 import cors from 'cors';
 import usersRouter from './routes/usuarios'; // Importa las rutas
 import productsRouter from './routes/productos';
