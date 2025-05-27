@@ -20,8 +20,6 @@ const Login = () => {
     setMessage(null);
 
     try {
-      console.log('Datos enviados:', formData); // Depuración de datos enviados
-
       const response = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
