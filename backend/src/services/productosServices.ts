@@ -231,7 +231,7 @@ export const obtenerDestacados = (): Promise<any[]> => {
         db.query(
             `SELECT p.*,
                     SUM(dp.cantidad) AS total_vendidos
-             FROM detallepedido dp
+             FROM detalle_pedido dp
                       JOIN productos p ON dp.id_item = p.id_producto
              WHERE dp.tipo_item = 'producto'
              GROUP BY dp.id_item

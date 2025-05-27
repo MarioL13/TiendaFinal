@@ -59,7 +59,7 @@ export const confirmarCompra = (
                     await db
                         .promise()
                         .query<OkPacket>(
-                            `INSERT INTO DetallePedido (id_pedido, tipo_item, id_item, cantidad, precio)
+                            `INSERT INTO detalle_pedido (id_pedido, tipo_item, id_item, cantidad, precio)
                VALUES (?, ?, ?, ?, ?)`,
                             [
                                 id_pedido,
@@ -150,7 +150,7 @@ export const obtenerDetallesPedido = (id_pedido: number): Promise<any[]> => {
                         WHEN 'producto' THEN p.nombre
                         WHEN 'carta' THEN c.nombre
                     END AS nombre_item
-             FROM DetallePedido d
+             FROM detalle_pedido d
              LEFT JOIN productos p ON d.tipo_item = 'producto' AND d.id_item = p.id_producto
              LEFT JOIN cartas c ON d.tipo_item = 'carta' AND d.id_item = c.id_carta
              WHERE d.id_pedido = ?`,
