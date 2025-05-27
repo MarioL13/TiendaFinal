@@ -13,15 +13,16 @@ export default function BuscarCartasPorNombrePage() {
     setCartas([]);
     setLoading(true);
     try {
-      // Separa por salto de línea o coma
-      const lista = nombres
-        .split(/\n|,/)
-        .map((n) => n.trim())
-        .filter((n) => n.length > 0);
-      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/cartas/buscar-por-nombre", {
+      const nombresFormateados = nombres
+          .split(/\n|,/)
+          .map(n => n.trim())
+          .filter(n => n.length > 0)
+          .join(', ');
+
+      const res = await fetch("http://localhost:5000/api/cartas/buscar-por-nombre", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombres: lista }),
+        body: JSON.stringify({ nombres: nombresFormateados }),
       });
       const data = await res.json();
       if (!res.ok) {
