@@ -16,7 +16,7 @@ export default function Page() {
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/users')
+        fetch('https://tiendafinal-production-2d5f.up.railway.app/api/users')
             .then((response) => response.json())
             .then((data) => setUsers(data))
             .catch((error) => console.error('Error:', error));

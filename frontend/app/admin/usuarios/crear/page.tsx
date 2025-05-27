@@ -33,7 +33,7 @@ export default function CrearUsuario() {
       if (foto) {
         formData.append("FOTO", foto);
       }
-      const res = await fetch("http://localhost:5000/api/users", {
+      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/users", {
         method: "POST",
         body: formData,
         credentials: "include",

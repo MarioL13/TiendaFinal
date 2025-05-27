@@ -43,7 +43,7 @@ const Productos: React.FC = () => {
                 idioma
             });
             console.log(queryParams.toString());
-            const response = await fetch(`http://localhost:5000/api/products?${queryParams.toString()}`);
+            const response = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/products?${queryParams.toString()}`);
             if (!response.ok) throw new Error('Error al obtener productos');
 
             const data: ApiResponse = await response.json();

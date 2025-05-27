@@ -22,7 +22,7 @@ const StoreLayout = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/logout', {
+      const response = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/logout', {
         method: 'POST',
         credentials: 'include',
       });
@@ -39,7 +39,7 @@ const StoreLayout = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/users/me", {
+        const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/users/me", {
           credentials: "include",
         });
         if (res.ok) {

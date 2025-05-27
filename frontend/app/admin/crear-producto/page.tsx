@@ -39,7 +39,7 @@ export default function CrearProducto() {
           formData.append("imagenes", img);
         });
       }
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/products", {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -67,7 +67,7 @@ export default function CrearProducto() {
   useEffect(() => {
     const verificarAuth = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/check-auth', {
+        const res = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/check-auth', {
           method: 'GET',
           credentials: 'include',
         })

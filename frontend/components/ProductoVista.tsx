@@ -23,7 +23,7 @@ const ProductCard = ({ id }: { id: number }) => {
   const handleAddToCart = async () => {
     try {
       const toastId = toast.loading('Añadiendo al carrito...');
-      const response = await fetch('http://localhost:5000/api/carrito', {
+      const response = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/carrito', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const ProductCard = ({ id }: { id: number }) => {
     setWishlistLoading(true);
     const toastId = toast.loading('Añadiendo a favoritos...');
     try {
-      const response = await fetch('http://localhost:5000/api/wishlist', {
+      const response = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/wishlist', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ const ProductCard = ({ id }: { id: number }) => {
 
   useEffect(() => {
     const fetchProducto = async () => {
-      const response = await fetch(`http://localhost:5000/api/products/${id}`);
+      const response = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/products/${id}`);
       const data = await response.json();
       if (typeof data.imagenes === 'string') {
         data.imagenes = data.imagenes.split(',').map((img: string) => img.trim());

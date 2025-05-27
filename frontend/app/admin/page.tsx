@@ -9,7 +9,7 @@ export default function AdminPage() {
     useEffect(() => {
         const verificarAuth = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/check-auth', {
+                const res = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/check-auth', {
                     method: 'GET',
                     credentials: 'include',
                 })

@@ -22,7 +22,7 @@ const Carrito: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/carrito", {
+      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/carrito", {
         credentials: "include",
       });
       if (!res.ok) throw new Error("No se pudo cargar el carrito");
@@ -41,7 +41,7 @@ const Carrito: React.FC = () => {
 
   const handleRemove = async (tipo_item: string, id_item: number) => {
     try {
-      const res = await fetch("http://localhost:5000/api/carrito/item", {
+      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/carrito/item", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

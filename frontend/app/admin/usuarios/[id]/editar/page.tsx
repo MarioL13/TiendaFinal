@@ -30,7 +30,7 @@ export default function EditarUsuarioPage() {
     const fetchUsuario = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+        const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/users/${id}`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -61,7 +61,7 @@ export default function EditarUsuarioPage() {
       if (foto) {
         formData.append("FOTO", foto);
       }
-      const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+      const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/users/${id}`, {
         method: "PUT",
         body: formData,
         credentials: "include",
