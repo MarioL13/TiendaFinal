@@ -30,7 +30,6 @@ app.use(express.json());  // Para poder recibir datos JSON en el cuerpo de las s
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Rutas
-app.use(productsRouter);
 
 // Usar las rutas de usuarios
 app.use(usersRouter);
