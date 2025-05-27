@@ -1,6 +1,5 @@
 import db from '../services/db';
-import {QueryError, FieldPacket, RowDataPacket, ResultSetHeader} from "mysql2";
-import { obtenerIdCategoria } from "./categoriasServices";
+import { QueryError, FieldPacket, RowDataPacket, ResultSetHeader } from "mysql2";
 
 interface FiltrosEvento {
     fecha?: string;
@@ -57,9 +56,6 @@ export const obtenerEventos = ({
                 const total = (totalResult as RowDataPacket[])[0].total;
                 const eventos = results as RowDataPacket[];
 
-                // Opcional: obtener categorías para cada evento si las tienes en tabla relacionada
-                // Aquí supondré que no hay categorías, o lo dejamos para más adelante
-
                 resolve({
                     eventos,
                     total,
@@ -79,16 +75,7 @@ export const obtenerEventoPorId = (id: number): Promise<any> => {
             const filas = results as RowDataPacket[];
             const evento = filas[0];
             if (!evento) return resolve(null);
-
-            db.query(
-                'SELECT c.nombre FROM categorias c INNER JOIN EventoCategoria ec ON c.id_categoria = ec.id_categoria WHERE ec.id_evento = ?',
-                [id],
-                (err2, catResults) => {
-                    if (err2) return reject(err2);
-                    evento.categorias = (catResults as RowDataPacket[]).map((c: any) => c.nombre);
-                    resolve(evento);
-                }
-            );
+            resolve(evento);
         });
     });
 };
@@ -107,10 +94,10 @@ export const crearEvento = (evento: any): Promise<any> => {
 
     return new Promise((resolve, reject) => {
         const sql = `
-      INSERT INTO eventos 
-      (nombre, descripcion, fecha, juego, precio_inscripcion, premios, aforo_maximo)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
+            INSERT INTO eventos
+            (nombre, descripcion, fecha, juego, precio_inscripcion, premios, aforo_maximo)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
         db.query(
             sql,
             [nombre, descripcion, fecha, juego, precio_inscripcion, premios, aforo_maximo],
@@ -136,10 +123,10 @@ export const actualizarEvento = (id: number, datos: any): Promise<any> => {
         } = datos;
 
         const sql = `
-      UPDATE eventos SET
-      nombre = ?, descripcion = ?, fecha = ?, juego = ?, precio_inscripcion = ?, premios = ?, aforo_maximo = ?
-      WHERE id_evento = ?
-    `;
+            UPDATE eventos SET
+                               nombre = ?, descripcion = ?, fecha = ?, juego = ?, precio_inscripcion = ?, premios = ?, aforo_maximo = ?
+            WHERE id_evento = ?
+        `;
 
         db.query(
             sql,
@@ -152,7 +139,6 @@ export const actualizarEvento = (id: number, datos: any): Promise<any> => {
     });
 };
 
-
 // Eliminar evento
 export const eliminarEvento = (id_evento: number): Promise<any> => {
     return new Promise((resolve, reject) => {
@@ -161,24 +147,4 @@ export const eliminarEvento = (id_evento: number): Promise<any> => {
             else resolve(results);
         });
     });
-};
-
-// Actualizar categorías del evento
-export const actualizarCategoriasEvento = async (id_evento: number, nuevasCategorias: number[]) => {
-    await new Promise((resolve, reject) => {
-        db.query('DELETE FROM EventoCategoria WHERE id_evento = ?', [id_evento], (err) => {
-            if (err) reject(err);
-            else resolve(null);
-        });
-    });
-
-    for (const id_categoria of nuevasCategorias) {
-        await new Promise((resolve, reject) => {
-            db.query(
-                'INSERT INTO EventoCategoria (id_evento, id_categoria) VALUES (?, ?)',
-                [id_evento, id_categoria],
-                (err) => err ? reject(err) : resolve(null)
-            );
-        });
-    }
 };
