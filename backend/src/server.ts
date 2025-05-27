@@ -20,9 +20,18 @@ const app = express();
 app.use(cookieParser());
 const port = 5000;
 
-// Configura CORS para permitir solicitudes desde el frontend
+const allowedOrigins = [
+    'https://rinconfriki-production.up.railway.app',
+];
+
 app.use(cors({
-    origin: 'https://rinconfriki-production.up.railway.app',
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Origen no permitido por CORS'));
+        }
+    },
     credentials: true,
 }));
 
