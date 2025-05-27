@@ -1,5 +1,9 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 import usersRouter from './routes/usuarios'; // Importa las rutas
 import productsRouter from './routes/productos';
 import categoriasRouter from './routes/categorias';
@@ -14,7 +18,7 @@ import cookieParser from 'cookie-parser';
 
 const app = express();
 app.use(cookieParser());
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // Configura CORS para permitir solicitudes desde el frontend
 app.use(cors({
