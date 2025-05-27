@@ -39,7 +39,7 @@ const Footer = () => {
               <ul>
                 <li className="mb-2"><Link href="/" className="hover:text-gray-800">Inicio</Link></li>
                 <li className="mb-2"><Link href="/tienda" className="hover:text-gray-800">Tienda</Link></li>
-                <li className="mb-2"><Link href="/cartas" className="hover:text-gray-800">Cartas</Link></li>
+                <li className="mb-2"><Link href="/Cartas" className="hover:text-gray-800">Cartas</Link></li>
               </ul>
             </div>
 
@@ -47,9 +47,9 @@ const Footer = () => {
             <div>
               <h6 className="uppercase font-bold mb-4">Información legal</h6>
               <ul>
-                <li className="mb-2"><Link href="/privacidad" className="hover:text-gray-800">Política de privacidad</Link></li>
-                <li className="mb-2"><Link href="/terminos" className="hover:text-gray-800">Términos y condiciones</Link></li>
-                <li className="mb-2"><Link href="/cookies" className="hover:text-gray-800">Política de cookies</Link></li>
+                <li className="mb-2"><Link href="#" className="hover:text-gray-800">Política de privacidad</Link></li>
+                <li className="mb-2"><Link href="#" className="hover:text-gray-800">Términos y condiciones</Link></li>
+                <li className="mb-2"><Link href="#" className="hover:text-gray-800">Política de cookies</Link></li>
               </ul>
             </div>
 
