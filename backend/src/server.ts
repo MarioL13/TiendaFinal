@@ -18,7 +18,7 @@ import cookieParser from 'cookie-parser';
 
 const app = express();
 app.use(cookieParser());
-const port = process.env.PORT || 5000;
+const port = 5000;
 
 // Configura CORS para permitir solicitudes desde el frontend
 app.use(cors({
