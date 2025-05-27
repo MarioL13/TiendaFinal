@@ -18,7 +18,7 @@ const port = process.env.PORT || 5000;
 
 // Configura CORS para permitir solicitudes desde el frontend
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: 'rinconfriki-production.up.railway.app',
     credentials: true,
 }));
 
