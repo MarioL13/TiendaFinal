@@ -17,7 +17,7 @@ export const obtenerCarritoCompletoUsuario = (id_usuario: number): Promise<any[]
                        WHEN c.tipo_item = 'producto' THEN JSON_UNQUOTE(JSON_EXTRACT(p.imagenes, '$[0]'))
                        ELSE NULL
                    END AS imagen
-            FROM Carrito c
+            FROM carrito c
                      LEFT JOIN Productos p ON c.tipo_item = 'producto' AND c.id_item = p.id_producto
                      LEFT JOIN cartas ca ON c.tipo_item = 'carta' AND c.id_item = ca.id_carta
             WHERE c.id_usuario = ?
@@ -36,7 +36,7 @@ export const obtenerCarritoCompletoUsuario = (id_usuario: number): Promise<any[]
 export const agregarAlCarrito = (id_usuario: number, tipo_item: 'producto' | 'carta', id_item: number, cantidad: number): Promise<any> => {
     return new Promise((resolve, reject) => {
         const query = `
-            INSERT INTO Carrito (id_usuario, tipo_item, id_item, cantidad)
+            INSERT INTO carrito (id_usuario, tipo_item, id_item, cantidad)
             VALUES (?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE cantidad = cantidad + VALUES(cantidad)
         `;
@@ -119,7 +119,7 @@ export const obtenerTotalItemsCarrito = (id_usuario: number): Promise<number> =>
     return new Promise((resolve, reject) => {
         const query = `
             SELECT SUM(cantidad) AS total
-            FROM Carrito
+            FROM carrito
             WHERE id_usuario = ?
         `;
         db.query(query, [id_usuario], (err: QueryError | null, results: RowDataPacket[]) => {
