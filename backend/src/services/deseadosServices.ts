@@ -22,7 +22,7 @@ export const obtenerDeseados = async (id_usuario: number): Promise<any[]> => {
                        ELSE NULL
                    END AS imagen
             FROM Deseados d
-                     LEFT JOIN Productos p ON d.id_producto = p.id_producto
+                     LEFT JOIN productos p ON d.id_producto = p.id_producto
                      LEFT JOIN cartas ca ON d.id_carta = ca.id_carta
             WHERE d.id_usuario = ?
         `;
