@@ -18,7 +18,7 @@ const port = 5000;
 
 // Configura CORS para permitir solicitudes desde el frontend
 app.use(cors({
-    origin: 'merry-peace.railway.internal',
+    origin: 'https://rinconfriki-production.up.railway.app',
     credentials: true,
 }));
 
