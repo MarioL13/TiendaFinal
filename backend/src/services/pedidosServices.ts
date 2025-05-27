@@ -26,7 +26,7 @@ export const confirmarCompra = (
 
                 // 1) Validamos y preparamos updates de stock
                 for (const item of carrito) {
-                    const tabla = item.tipo_item === 'producto' ? 'Productos' : 'cartas';
+                    const tabla = item.tipo_item === 'producto' ? 'productos' : 'cartas';
                     const idCol  = item.tipo_item === 'producto' ? 'id_producto' : 'id_carta';
 
                     // Obtenemos stock actual
@@ -70,7 +70,7 @@ export const confirmarCompra = (
                             ]
                         );
 
-                    const tabla = item.tipo_item === 'producto' ? 'Productos' : 'cartas';
+                    const tabla = item.tipo_item === 'producto' ? 'productos' : 'cartas';
                     const idCol  = item.tipo_item === 'producto' ? 'id_producto' : 'id_carta';
 
                     await db
