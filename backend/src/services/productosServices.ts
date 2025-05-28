@@ -164,7 +164,7 @@ export const actualizarProducto = async (id: number, nuevosDatos: any): Promise<
     try {
         const productoActual = await obtenerProductoPorId(id);
         if (!productoActual) {
-            throw new Error('Producto no encontrado');
+            return null;
         }
 
         // Combinamos los datos antiguos con los nuevos
@@ -176,8 +176,8 @@ export const actualizarProducto = async (id: number, nuevosDatos: any): Promise<
         // Convertimos las imágenes a JSON string si es un array
         const imagenesJson = JSON.stringify(productoActualizado.imagenes || []);
 
-        // Actualizamos el producto (sin id_categoria porque se gestiona en tabla intermedia)
-        await new Promise((resolve, reject) => {
+        // Ejecutamos la actualización
+        const resultadoUpdate: any = await new Promise((resolve, reject) => {
             db.query(
                 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, idioma = ?, imagenes = ? WHERE id_producto = ?',
                 [
@@ -204,7 +204,7 @@ export const actualizarProducto = async (id: number, nuevosDatos: any): Promise<
             await actualizarCategoriasProducto(id, nuevosDatos.categorias);
         }
 
-        return { message: 'Producto actualizado correctamente' };
+        return resultadoUpdate;
     } catch (error) {
         throw error;
     }

@@ -222,13 +222,12 @@ router.put('/api/products/:id', verificarToken, verificarAdmin, upload.array('im
 
         // Añadir nuevas imágenes a las existentes
         const imagenesFinales = [...imagenesActuales, ...nuevasImagenesUrls];
-
         producto.imagenes = imagenesFinales;
 
         // Actualizar en BD
         const result = await actualizarProducto(id, producto);
 
-        if (result.affectedRows > 0) {
+        if (result && result.affectedRows > 0) {
             res.json({ message: 'Producto actualizado con imágenes nuevas' });
         } else {
             res.status(404).json({ message: 'Producto no encontrado' });
