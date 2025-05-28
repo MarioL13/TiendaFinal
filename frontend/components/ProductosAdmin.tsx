@@ -253,13 +253,12 @@ const Productos: React.FC = () => {
                             key={producto.id_producto}
                             className="max-w-sm w-full bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all flex flex-col justify-between h-full"
                         >
-                            <div className="relative aspect-w-4 aspect-h-3">
+                           <div className="relative aspect-w-4 aspect-h-3">
                                 <div className="img-cuadrada">
                                     <img
                                         src={producto.imagenes[0]}
                                         alt={producto.nombre}
-                                        className="w-full h-full object-contain object-center bg-white"
-                                        style={{ maxHeight: 220, minHeight: 180 }}
+                                        className="w-full h-full object-cover"
                                     />
                                 </div>
                             </div>

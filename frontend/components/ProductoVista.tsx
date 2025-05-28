@@ -124,10 +124,10 @@ const ProductCard = ({ id }: { id: number }) => {
 
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-md overflow-hidden">
-      <div className="flex flex-col items-center md:flex-row md:h-[32rem]">
+      <div className="flex flex-col items-center md:flex-row">
         {/* Product Image Carousel */}
-        <div className="md:w-1/2 w-full p-6 flex flex-col h-full">
-          <div className="flex-1 flex items-center justify-center h-64 md:h-full relative">
+        <div className="md:w-1/2 w-full p-6 flex flex-col">
+          <div className="flex-1 flex items-center justify-center relative">
             <button
               onClick={handlePrev}
               className="absolute left-2 top-1/2 -translate-y-1/2 bg-white shadow-md hover:bg-blue-200 text-blue-600 hover:text-blue-800 border border-blue-300 rounded-full p-2 z-10 transition duration-200 flex items-center justify-center"
