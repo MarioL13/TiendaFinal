@@ -1,11 +1,13 @@
 "use client";
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 export default function BuscarCartasPorNombrePage() {
     const [nombres, setNombres] = useState("");
     const [cartas, setCartas] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const { updateCartTotal } = useCart();
 
     const handleBuscar = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -55,7 +57,9 @@ export default function BuscarCartasPorNombrePage() {
                     cantidad: 1
                 })
             });
-            if (!res.ok) {
+            if (res.ok) {
+                await updateCartTotal();
+            } else {
                 const data = await res.json();
                 alert(data.message || 'Error al añadir al carrito');
             }
