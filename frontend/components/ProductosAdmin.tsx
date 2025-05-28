@@ -258,7 +258,7 @@ const Productos: React.FC = () => {
                                     <img
                                         src={producto.imagenes[0]}
                                         alt={producto.nombre}
-                                        className="w-full h-full object-cover object-center bg-white"
+                                        className="w-full h-full object-contain object-center bg-white"
                                         style={{ maxHeight: 220, minHeight: 180 }}
                                     />
                                 </div>
