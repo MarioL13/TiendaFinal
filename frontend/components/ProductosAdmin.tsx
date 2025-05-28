@@ -1,251 +1,153 @@
-import React, {useState, useEffect} from 'react';
-import '../styles/producto.css';
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 interface Producto {
-    id_producto: number;
+    id: number;
     nombre: string;
-    idioma?: string | null;
-    descripcion?: string | null;
     precio: number;
     stock: number;
-    imagenes: string[];
+    idiomas: string[];
     categorias: string[];
+    imagenes: string[];
 }
 
-interface ApiResponse {
-    productos: Producto[];
-    total: number;
-    page: number;
-    totalPages: number;
-}
-
-const Productos: React.FC = () => {
+export default function ListaProductos() {
     const [productos, setProductos] = useState<Producto[]>([]);
     const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [error, setError] = useState("");
+    const [estado, setEstado] = useState<"cargando" | "autorizado" | "no-autorizado">("cargando");
 
-    // Filtros
-    const [search, setSearch] = useState('');
-    const [category, setCategory] = useState('');
-    const [sort, setSort] = useState<'asc' | 'desc'>('asc');
-    const [idioma, setIdioma] = useState('');
-
-    const fetchProductos = async () => {
-        setLoading(true);
-        try {
-            const queryParams = new URLSearchParams({
-                page: page.toString(),
-                limit: '12',
-                search,
-                category,
-                sort,
-                idioma
-            });
-            console.log(queryParams.toString());
-            const response = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/products?${queryParams.toString()}`);
-            if (!response.ok) throw new Error('Error al obtener productos');
-
-            const data: ApiResponse = await response.json();
-            const productosAdaptados: Producto[] = data.productos.map((item: any) => ({
-                id_producto: item.id_producto,
-                nombre: item.nombre,
-                idioma: item.idioma,
-                descripcion: item.descripcion,
-                precio: parseFloat(item.precio),
-                stock: item.stock,
-                imagenes: JSON.parse(item.imagenes),
-                categorias: item.categorias || [],
-            }));
-            setProductos(productosAdaptados);
-            setTotalPages(data.totalPages);
-        } catch (error) {
-            console.error('Error al obtener productos:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const router = useRouter();
 
     useEffect(() => {
+        const verificarAuth = async () => {
+            try {
+                const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/check-auth", {
+                    method: "GET",
+                    credentials: "include",
+                });
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                if (data.rol === "admin") {
+                    setEstado("autorizado");
+                } else {
+                    setEstado("no-autorizado");
+                }
+            } catch {
+                setEstado("no-autorizado");
+            }
+        };
+
+        verificarAuth();
+    }, []);
+
+    useEffect(() => {
+        if (estado !== "autorizado") return;
+
+        const fetchProductos = async () => {
+            try {
+                const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/products");
+                if (!res.ok) throw new Error("Error al cargar productos");
+                const data = await res.json();
+                setProductos(data);
+            } catch (err: any) {
+                setError(err.message || "Error desconocido");
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchProductos();
-    }, [page, search, category, sort, idioma]);
+    }, [estado]);
 
-    const handlePageChange = (newPage: number) => {
-        if (newPage >= 1 && newPage <= totalPages && newPage !== page) {
-            setPage(newPage);
-        }
-    };
+    const handleDelete = async (id: number) => {
+        if (!window.confirm("¿Estás seguro de que deseas eliminar este producto?")) return;
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPage(1);
-        setSearch(e.target.value);
-    };
-
-    const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPage(1);
-        setCategory(e.target.value);
-    };
-
-    const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setPage(1);
-        setSort(e.target.value as 'asc' | 'desc');
-    };
-
-    const handleIdiomaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setPage(1);
-        setIdioma(e.target.value);
-    };
-
-    const handleEliminar = async (id_producto: number) => {
-        if (!window.confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/products/${id_producto}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
+            const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/products/${id}`, {
+                method: "DELETE",
+                credentials: "include",
             });
-            if (!response.ok) throw new Error('Error al eliminar producto');
-            // Recargar productos tras eliminar
-            fetchProductos();
-        } catch (error) {
-            alert('No se pudo eliminar el producto.');
-            console.error(error);
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.message || "Error al eliminar el producto");
+            }
+
+            setProductos((prev) => prev.filter((p) => p.id !== id));
+        } catch (err: any) {
+            const msg = err.message || "Error desconocido";
+            alert(`No se pudo eliminar el producto:\n${msg}`);
+            if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
+                router.push("/admin");
+            }
         }
     };
+
+    if (estado === "cargando") return <p className="text-center mt-10 text-gray-600">Cargando...</p>;
+    if (estado === "no-autorizado") return notFound();
 
     return (
-        <>
-            <div className="mb-6 flex flex-wrap items-center gap-4">
-                <input
-                    type="text"
-                    placeholder="Buscar producto"
-                    value={search}
-                    onChange={handleSearchChange}
-                    className="border border-gray-300 rounded-md px-3 py-2"
-                />
-                <input
-                    type="text"
-                    placeholder="Filtrar por categoría"
-                    value={category}
-                    onChange={handleCategoryChange}
-                    className="border border-gray-300 rounded-md px-3 py-2"
-                />
-                <select value={sort} onChange={handleSortChange} className="border rounded-md px-3 py-2">
-                    <option value="asc">Precio ↑</option>
-                    <option value="desc">Precio ↓</option>
-                </select>
-                <select value={idioma} onChange={handleIdiomaChange} className="border rounded-md px-3 py-2">
-                    <option value=""></option>
-                    <option value="es">Español</option>
-                    <option value="en">Inglés</option>
-                </select>
+        <div className="container mx-auto px-4 py-8">
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold text-purple-700">Gestión de Productos</h1>
+                <Link
+                    href="/admin/productos/crear"
+                    className="bg-purple-600 text-white px-4 py-2 rounded shadow hover:bg-purple-700 transition"
+                >
+                    + Crear nuevo producto
+                </Link>
             </div>
 
+            {error && <p className="text-red-600 mb-4">{error}</p>}
+
             {loading ? (
-                <p className="text-center text-gray-500">Cargando productos...</p>
+                <p className="text-center">Cargando productos...</p>
+            ) : productos.length === 0 ? (
+                <p className="text-center text-gray-500">No hay productos registrados.</p>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {productos.map((producto) => (
                         <div
-                            key={producto.id_producto}
-                            className="max-w-sm w-full bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all"
+                            key={producto.id}
+                            className="bg-white rounded shadow p-4 border border-gray-200 flex flex-col justify-between"
                         >
-                            <div className="relative aspect-w-4 aspect-h-3">
-                                <div className="img-cuadrada">
+                            <div>
+                                {producto.imagenes?.[0] && (
                                     <img
                                         src={producto.imagenes[0]}
                                         alt={producto.nombre}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-40 object-cover mb-2 rounded"
                                     />
-                                </div>
+                                )}
+                                <h2 className="text-xl font-bold text-purple-700">{producto.nombre}</h2>
+                                <p className="text-gray-700 mt-1">Precio: {producto.precio} €</p>
+                                <p className="text-gray-700">Stock: {producto.stock}</p>
+                                <p className="text-gray-600 text-sm mt-1">Idiomas: {producto.idiomas.join(", ")}</p>
+                                <p className="text-gray-600 text-sm">Categorías: {producto.categorias.join(", ")}</p>
                             </div>
-                            <div className="p-5 space-y-4">
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900">{producto.nombre}</h3>
-                                    <p className="text-gray-500 mt-1 line-clamp-2-custom overflow-hidden">
-                                        {producto.descripcion}
-                                    </p>
-                                </div>
-                                <div>
-                                    {producto.categorias && producto.categorias.length > 0 && (
-                                        <span
-                                            className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-              {producto.categorias.join(', ')}
-            </span>
-                                    )}
-                                </div>
-
-                                {/* Botón de ver producto */}
-                                <button
-                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors"
-                                    onClick={() => window.location.href = `/productos/${producto.id_producto}`}
+                            <div className="mt-4 flex justify-between">
+                                <Link
+                                    href={`/admin/productos/editar/${producto.id}`}
+                                    className="text-blue-600 hover:underline text-sm"
                                 >
-                                    Ver producto
+                                    Editar
+                                </Link>
+                                <button
+                                    onClick={() => handleDelete(producto.id)}
+                                    className="text-red-600 hover:underline text-sm"
+                                >
+                                    Eliminar
                                 </button>
-
-                                {/* Botones nuevos */}
-                                <div className="flex gap-2">
-                                    <button
-                                        className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg"
-                                        onClick={() => window.location.href = `/admin/productos/${producto.id_producto}/editar`}
-                                    >
-                                        Editar
-                                    </button>
-                                    <button
-                                        className="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg"
-                                        onClick={() => handleEliminar(producto.id_producto)}
-                                    >
-                                        Eliminar
-                                    </button>
-                                </div>
                             </div>
-
                         </div>
                     ))}
                 </div>
             )}
-
-            {/* Paginación */}
-            <nav className="flex justify-center mt-8">
-                <ul className="flex">
-                    <li>
-                        <button
-                            onClick={() => handlePageChange(page - 1)}
-                            disabled={page === 1}
-                            className="mx-1 flex h-9 w-9 items-center justify-center rounded-full border text-sm text-gray-500"
-                        >
-                            ←
-                        </button>
-                    </li>
-                    {Array.from({length: totalPages}, (_, i) => (
-                        <li key={i + 1}>
-                            <button
-                                onClick={() => handlePageChange(i + 1)}
-                                className={`mx-1 h-9 w-9 flex items-center justify-center rounded-full text-sm ${
-                                    page === i + 1
-                                        ? 'bg-pink-500 text-white'
-                                        : 'border text-gray-600'
-                                }`}
-                            >
-                                {i + 1}
-                            </button>
-                        </li>
-                    ))}
-                    <li>
-                        <button
-                            onClick={() => handlePageChange(page + 1)}
-                            disabled={page === totalPages}
-                            className="mx-1 flex h-9 w-9 items-center justify-center rounded-full border text-sm text-gray-500"
-                        >
-                            →
-                        </button>
-                    </li>
-                </ul>
-            </nav>
-        </>
+        </div>
     );
-};
-
-export default Productos;
+}
