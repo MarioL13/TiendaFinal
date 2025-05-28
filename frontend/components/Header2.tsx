@@ -44,6 +44,7 @@ const StoreLayout = () => {
         });
         if (res.ok) {
           const data = await res.json();
+          console.log("Datos del usuario:", data); // <-- aquí
           setUserData(data);
           setIsAuthenticated(true);
         } else {
