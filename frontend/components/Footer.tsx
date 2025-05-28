@@ -10,13 +10,13 @@ const Footer = () => {
                     <span>Conéctate con nosotros. No te pierdas ninguna novedad, evento o sorpresa:</span>
                 </div>
                 <div className="flex justify-center space-x-6 mt-4 lg:mt-0">
-                    <a href="#" className="text-[#FBFEF9] hover:text-[#5D008F]">
+                    <a href="#" className="text-[#6e2c91] hover:text-[#5D008F]">
                         <Facebook />
                     </a>
-                    <a href="#" className="text-[#FBFEF9] hover:text-[#5D008F]">
+                    <a href="#" className="text-[#6e2c91] hover:text-[#5D008F]">
                         <Instagram />
                     </a>
-                    <a href="#" className="text-[#FBFEF9] hover:text-[#5D008F]">
+                    <a href="#" className="text-[#6e2c91] hover:text-[#5D008F]">
                         <Linkedin />
                     </a>
                 </div>
