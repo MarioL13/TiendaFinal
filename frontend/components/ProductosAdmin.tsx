@@ -26,7 +26,7 @@ const ConfirmModal: React.FC<{
     onCancel: () => void;
 }> = ({ message, onConfirm, onCancel }) => {
     return (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-10 flex items-center justify-center z-50">
             <div className="p-8 border w-96 shadow-lg rounded-md bg-white">
                 <div className="text-center">
                     <h3 className="text-2xl font-bold text-gray-900">Confirmación</h3>
@@ -42,7 +42,7 @@ const ConfirmModal: React.FC<{
                         </button>
                         <button
                             onClick={onCancel}
-                            className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 transition"
+                            className="px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 transition"
                         >
                             Cancelar
                         </button>
