@@ -163,20 +163,17 @@ export const crearProducto = async (producto: any): Promise<any> => {
 export const actualizarProducto = async (id: number, nuevosDatos: any): Promise<any> => {
     try {
         const productoActual = await obtenerProductoPorId(id);
-        if (!productoActual) {
-            return null;
-        }
+        if (!productoActual) return null;
 
-        // Combinamos los datos antiguos con los nuevos
+        // Combinar los datos antiguos con los nuevos
         const productoActualizado = {
             ...productoActual,
             ...nuevosDatos
         };
 
-        // Convertimos las imágenes a JSON string si es un array
         const imagenesJson = JSON.stringify(productoActualizado.imagenes || []);
 
-        // Ejecutamos la actualización
+        // Actualizar datos del producto
         const resultadoUpdate: any = await new Promise((resolve, reject) => {
             db.query(
                 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, idioma = ?, imagenes = ? WHERE id_producto = ?',
@@ -190,18 +187,22 @@ export const actualizarProducto = async (id: number, nuevosDatos: any): Promise<
                     id
                 ],
                 (err: QueryError | null, results: any) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(results);
-                    }
+                    if (err) reject(err);
+                    else resolve(results);
                 }
             );
         });
 
         // Actualizar categorías si vienen en la petición
         if (Array.isArray(nuevosDatos.categorias)) {
-            await actualizarCategoriasProducto(id, nuevosDatos.categorias);
+            // Convertir nombres de categoría a IDs
+            const idsCategorias: number[] = [];
+            for (const nombreCategoria of nuevosDatos.categorias) {
+                const id = await obtenerIdCategoria(nombreCategoria);
+                if (id) idsCategorias.push(id);
+            }
+
+            await actualizarCategoriasProducto(id, idsCategorias);
         }
 
         return resultadoUpdate;
