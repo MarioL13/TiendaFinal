@@ -50,7 +50,7 @@ export const confirmarCompra = (
                 const [{ insertId: id_pedido }] = await db
                     .promise()
                     .query<OkPacket>(
-                        `INSERT INTO Pedidos (id_usuario, total, estado) VALUES (?, ?, ?)`,
+                        `INSERT INTO pedidos (id_usuario, total, estado) VALUES (?, ?, ?)`,
                         [id_usuario, total, estado]
                     );
 
@@ -122,7 +122,7 @@ export const obtenerPedidosPorUsuario = (id_usuario: number, { page, limit, esta
 
         const sql = `
       SELECT SQL_CALC_FOUND_ROWS *
-      FROM Pedidos
+      FROM pedidos
       ${whereClause}
       ORDER BY fecha_pedido DESC
       LIMIT ? OFFSET ?
@@ -166,7 +166,7 @@ export const obtenerDetallesPedido = (id_pedido: number): Promise<any[]> => {
 export const actualizarEstadoPedido = (id_pedido: number, nuevoEstado: string): Promise<any> => {
     return new Promise((resolve, reject) => {
         db.query(
-            `UPDATE Pedidos SET estado = ? WHERE id_pedido = ?`,
+            `UPDATE pedidos SET estado = ? WHERE id_pedido = ?`,
             [nuevoEstado, id_pedido],
             (err, result) => {
                 if (err) return reject(err);
@@ -202,14 +202,14 @@ export const obtenerPedidos = ({ page, limit, estado, fecha_inicio, fecha_fin}: 
         // Primero obtenemos el total de registros con los filtros
         const countSql = `
             SELECT COUNT(*) as total
-            FROM Pedidos
+            FROM pedidos
             ${whereClause}
         `;
 
         // Luego obtenemos los pedidos paginados
         const sql = `
             SELECT *
-            FROM Pedidos
+            FROM pedidos
             ${whereClause}
             ORDER BY fecha_pedido DESC
             LIMIT ? OFFSET ?
@@ -237,7 +237,7 @@ export const obtenerPedidos = ({ page, limit, estado, fecha_inicio, fecha_fin}: 
 
 export const obtenerUsuarioPedido = async (id_pedido: number): Promise<number> => {
     const [rows] = await db.promise().query<(RowDataPacket & { id_usuario: number })[]>(
-        'SELECT id_usuario FROM Pedidos WHERE id_pedido = ?',
+        'SELECT id_usuario FROM pedidos WHERE id_pedido = ?',
         [id_pedido]
     );
 
