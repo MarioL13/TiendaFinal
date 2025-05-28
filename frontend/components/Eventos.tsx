@@ -23,7 +23,7 @@ const EventosList: React.FC = () => {
   useEffect(() => {
     const fetchEventos = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/eventos");
+        const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/eventos");
         if (!res.ok) throw new Error("Error al cargar eventos");
         const data = await res.json();
         // Si backend devuelve {eventos: [...]} o solo array

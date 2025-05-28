@@ -264,7 +264,7 @@ router.post('/api/login', async (req: Request, res: Response) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: duracion,
-            sameSite: 'strict',
+            sameSite: 'none',
         });
 
         const usuarioFiltrado = {

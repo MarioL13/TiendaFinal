@@ -1,21 +1,22 @@
-// src/services/db.ts
 import mysql from 'mysql2';
+import dotenv from 'dotenv';
 
-// Crear la conexión a la base de datos
+dotenv.config();
+
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'tiendaonline',
-    port: 3306,
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE,
+    port: Number(process.env.MYSQLPORT),
+    multipleStatements: true
 });
 
-// Verificar si la conexión se establece correctamente
-db.connect((err: mysql.QueryError | null) => {
+db.connect((err) => {
     if (err) {
-        console.error('Error al conectar a la base de datos: ', err);
+        console.error('❌ Error al conectar a la base de datos:', err);
     } else {
-        console.log('Conectado a la base de datos');
+        console.log('✅ Conectado a la base de datos');
     }
 });
 

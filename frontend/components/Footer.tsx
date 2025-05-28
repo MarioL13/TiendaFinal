@@ -37,9 +37,15 @@ const Footer = () => {
             <div>
               <h6 className="uppercase font-bold mb-4">Enlaces útiles</h6>
               <ul>
+<<<<<<< HEAD
                 <li className="mb-2"><Link href="/" className="hover:text-[#5D008F]">Inicio</Link></li>
                 <li className="mb-2"><Link href="/tienda" className="hover:text-[#5D008F]">Tienda</Link></li>
                 <li className="mb-2"><Link href="/cartas" className="hover:text-[#5D008F]">Cartas</Link></li>
+=======
+                <li className="mb-2"><Link href="/" className="hover:text-gray-800">Inicio</Link></li>
+                <li className="mb-2"><Link href="/tienda" className="hover:text-gray-800">Tienda</Link></li>
+                <li className="mb-2"><Link href="/Cartas" className="hover:text-gray-800">Cartas</Link></li>
+>>>>>>> 19ac19790130306c258fe5a552d440dfb5b8a617
               </ul>
             </div>
 
@@ -47,9 +53,15 @@ const Footer = () => {
             <div>
               <h6 className="uppercase font-bold mb-4">Información legal</h6>
               <ul>
+<<<<<<< HEAD
                 <li className="mb-2"><Link href="/privacidad" className="hover:text-[#5D008F]">Política de privacidad</Link></li>
                 <li className="mb-2"><Link href="/terminos" className="hover:text-[#5D008F]">Términos y condiciones</Link></li>
                 <li className="mb-2"><Link href="/cookies" className="hover:text-[#5D008F]">Política de cookies</Link></li>
+=======
+                <li className="mb-2"><Link href="#" className="hover:text-gray-800">Política de privacidad</Link></li>
+                <li className="mb-2"><Link href="#" className="hover:text-gray-800">Términos y condiciones</Link></li>
+                <li className="mb-2"><Link href="#" className="hover:text-gray-800">Política de cookies</Link></li>
+>>>>>>> 19ac19790130306c258fe5a552d440dfb5b8a617
               </ul>
             </div>
 

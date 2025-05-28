@@ -12,7 +12,7 @@ const DeseadosPage = () => {
     // Obtener el id del usuario autenticado
     const fetchUserId = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/users/me', { credentials: 'include' });
+        const res = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/users/me', { credentials: 'include' });
         if (!res.ok) throw new Error('No autenticado');
         const data = await res.json();
         setUserId(data.id_usuario || data.id);
@@ -30,7 +30,7 @@ const DeseadosPage = () => {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch('http://localhost:5000/api/wishlist', { credentials: 'include' });
+        const res = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/wishlist', { credentials: 'include' });
         if (!res.ok) throw new Error('No se pudo cargar la lista de deseados');
         const data = await res.json();
         setDeseados(data);
@@ -95,7 +95,7 @@ const DeseadosPage = () => {
                   }}
                   onClick={async () => {
                     try {
-                      const res = await fetch(`http://localhost:5000/api/wishlist/${item.id_deseado}`, {
+                      const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/wishlist/${item.id_deseado}`, {
                         method: 'DELETE',
                         credentials: 'include',
                       });

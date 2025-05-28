@@ -32,22 +32,23 @@ export default function CrearProducto() {
       formData.append("precio", precio);
       formData.append("stock", stock);
       formData.append("idioma", idioma);
-      // Backend espera un array de categorias, lo mandamos como JSON
       formData.append("categorias", JSON.stringify([categoria]));
       if (imagenes) {
         Array.from(imagenes).forEach((img) => {
           formData.append("imagenes", img);
         });
       }
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/products", {
         method: "POST",
         body: formData,
         credentials: "include",
       });
+
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.message || "Error al crear el producto");
       }
+
       setSuccess("Producto creado correctamente");
       setNombre("");
       setDescripcion("");
@@ -58,7 +59,11 @@ export default function CrearProducto() {
       setImagenes(null);
       setTimeout(() => router.push("/admin/productos"), 1500);
     } catch (err: any) {
-      setError(err.message || "Error desconocido");
+      const message = err.message || "Error desconocido";
+      setError(message);
+      if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
+        router.push('/admin');
+      }
     } finally {
       setLoading(false);
     }
@@ -67,7 +72,7 @@ export default function CrearProducto() {
   useEffect(() => {
     const verificarAuth = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/check-auth', {
+        const res = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/check-auth', {
           method: 'GET',
           credentials: 'include',
         })

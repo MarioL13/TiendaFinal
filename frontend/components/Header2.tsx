@@ -22,7 +22,7 @@ const StoreLayout = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/logout', {
+      const response = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/logout', {
         method: 'POST',
         credentials: 'include',
       });
@@ -39,7 +39,7 @@ const StoreLayout = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/users/me", {
+        const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/users/me", {
           credentials: "include",
         });
         if (res.ok) {
@@ -124,7 +124,7 @@ const StoreLayout = () => {
                 {isAuthenticated === null ? null : isAuthenticated ? (
                   <>                    <img
                     alt={userData?.nombre || "Profile"}
-                    src={userData?.FOTO ? userData.FOTO : "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"}
+                    src={userData?.FOTO ? userData.FOTO : "/default-avatar.png"}
                     className="inline-block h-12 w-12 cursor-pointer rounded-full object-cover object-center border-2 border-gray-300"
                     onClick={() => setProfileOpen((v) => !v)}
                   />

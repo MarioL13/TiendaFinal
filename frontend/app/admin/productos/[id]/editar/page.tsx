@@ -16,7 +16,7 @@ export default function EditarProductoPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    fetch(`http://localhost:5000/api/products/${id}`, { credentials: "include" })
+    fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/products/${id}`, { credentials: "include" })
       .then(res => res.json())
       .then(data => {
         setProducto(data);
@@ -61,7 +61,7 @@ export default function EditarProductoPage() {
       });
     }
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/products/${id}`, {
         method: "PUT",
         body: formData,
         credentials: "include",

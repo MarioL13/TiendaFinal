@@ -19,7 +19,11 @@ export default function BuscarCartasPorNombrePage() {
           .filter(n => n.length > 0)
           .join(', ');
 
+<<<<<<< HEAD
       const res = await fetch("http://localhost:5000/api/cartas/buscar-por-nombre", {
+=======
+      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/cartas/buscar-por-nombre", {
+>>>>>>> 19ac19790130306c258fe5a552d440dfb5b8a617
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombres: nombresFormateados }),

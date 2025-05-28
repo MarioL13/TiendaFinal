@@ -20,7 +20,7 @@ const HistorialPedidos: React.FC = () => {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`http://localhost:5000/api/pedidos/mis_pedidos?page=${page}&limit=10`, {
+        const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/pedidos/mis_pedidos?page=${page}&limit=10`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("No se pudo cargar el historial de pedidos");

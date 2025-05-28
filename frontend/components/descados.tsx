@@ -18,7 +18,7 @@ const Destacados: React.FC = () => {
   useEffect(() => {
     const fetchDestacados = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/products/destacados');
+        const response = await axios.get('https://tiendafinal-production-2d5f.up.railway.app/api/products/destacados');
 
         const data = response.data as any[];
         const productosAdaptados: Producto[] = data.map((item: any) => ({

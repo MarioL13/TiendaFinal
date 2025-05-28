@@ -38,7 +38,7 @@ export const obtenerProductos = ({ page, limit, search, category, sort, idioma }
         const sql = `
             SELECT SQL_CALC_FOUND_ROWS p.*
             FROM productos p
-            LEFT JOIN ProductoCategoria pc ON p.id_producto = pc.id_producto
+            LEFT JOIN producto_categoria pc ON p.id_producto = pc.id_producto
             LEFT JOIN categorias c ON pc.id_categoria = c.id_categoria
             ${where}
             GROUP BY p.id_producto
@@ -60,7 +60,7 @@ export const obtenerProductos = ({ page, limit, search, category, sort, idioma }
                     try {
                         const categorias = await new Promise<string[]>((res, rej) =>
                             db.query(
-                                'SELECT c.nombre FROM categorias c JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria WHERE pc.id_producto = ?',
+                                'SELECT c.nombre FROM categorias c JOIN producto_categoria pc ON c.id_categoria = pc.id_categoria WHERE pc.id_producto = ?',
                                 [producto.id_producto],
                                 (err: QueryError | null, categoriaResults: any[]) => {
                                     if (err) return rej(err);
@@ -104,7 +104,7 @@ export const obtenerProductoPorId = (id: number): Promise<any> => {
                 db.query(
                     `SELECT c.nombre
                      FROM categorias c
-                              INNER JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria
+                              INNER JOIN producto_categoria pc ON c.id_categoria = pc.id_categoria
                      WHERE pc.id_producto = ?`,
                     [id],
                     (err: QueryError | null, categoriasResults: any[], fields: FieldPacket[]) => {
@@ -144,7 +144,7 @@ export const crearProducto = async (producto: any): Promise<any> => {
                         const id_categoria = await obtenerIdCategoria(nombre_categoria);
                         await new Promise((resolve, reject) => {
                             db.query(
-                                'INSERT INTO ProductoCategoria (id_producto, id_categoria) VALUES (?, ?)',
+                                'INSERT INTO producto_categoria (id_producto, id_categoria) VALUES (?, ?)',
                                 [id_producto, id_categoria],
                                 (err) => err ? reject(err) : resolve(true),
                             );
@@ -231,7 +231,7 @@ export const obtenerDestacados = (): Promise<any[]> => {
         db.query(
             `SELECT p.*,
                     SUM(dp.cantidad) AS total_vendidos
-             FROM detallepedido dp
+             FROM detalle_pedido dp
                       JOIN productos p ON dp.id_item = p.id_producto
              WHERE dp.tipo_item = 'producto'
              GROUP BY dp.id_item
@@ -261,7 +261,7 @@ export const obtenerDestacados = (): Promise<any[]> => {
                         db.query(
                             `SELECT c.nombre
                FROM categorias c
-                        INNER JOIN ProductoCategoria pc ON c.id_categoria = pc.id_categoria
+                        INNER JOIN producto_categoria pc ON c.id_categoria = pc.id_categoria
                WHERE pc.id_producto = ?`,
                             [producto.id_producto],
                             (err, categoriasResults) => {
@@ -285,7 +285,7 @@ export const obtenerDestacados = (): Promise<any[]> => {
 export const actualizarCategoriasProducto = async (id_producto: number, nuevasCategorias: number[]) => {
     // Elimina las categorías actuales
     await new Promise((resolve, reject) => {
-        db.query('DELETE FROM ProductoCategoria WHERE id_producto = ?', [id_producto], (err) => {
+        db.query('DELETE FROM producto_categoria WHERE id_producto = ?', [id_producto], (err) => {
             if (err) reject(err);
             else resolve(null);
         });
@@ -294,7 +294,7 @@ export const actualizarCategoriasProducto = async (id_producto: number, nuevasCa
     // Inserta las nuevas
     for (const id_categoria of nuevasCategorias) {
         await new Promise((resolve, reject) => {
-            db.query('INSERT INTO ProductoCategoria (id_producto, id_categoria) VALUES (?, ?)', [id_producto, id_categoria], (err) => {
+            db.query('INSERT INTO producto_categoria (id_producto, id_categoria) VALUES (?, ?)', [id_producto, id_categoria], (err) => {
                 if (err) reject(err);
                 else resolve(null);
             });

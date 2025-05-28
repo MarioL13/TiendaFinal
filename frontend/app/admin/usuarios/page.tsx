@@ -25,7 +25,7 @@ export default function UsuariosAdminPage() {
   useEffect(() => {
     const verificarAuth = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/check-auth', {
+        const res = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/check-auth', {
           method: 'GET',
           credentials: 'include',
         })
@@ -47,7 +47,7 @@ export default function UsuariosAdminPage() {
     const fetchUsuarios = async () => {
       setLoading(true);
       try {
-        const res = await fetch("http://localhost:5000/api/users", {
+        const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/users", {
           credentials: "include",
         });
         const data = await res.json();
@@ -65,7 +65,7 @@ export default function UsuariosAdminPage() {
   const handleEliminar = async (id: number) => {
     if (!confirm("¿Seguro que quieres eliminar este usuario?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+      const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/users/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

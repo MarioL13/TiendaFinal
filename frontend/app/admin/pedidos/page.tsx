@@ -23,7 +23,7 @@ export default function GestionPedidosPage() {
   useEffect(() => {
     const verificarAuth = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/check-auth', {
+        const res = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/check-auth', {
           method: 'GET',
           credentials: 'include',
         })
@@ -61,7 +61,7 @@ export default function GestionPedidosPage() {
     setError("");
     try {
       // Primero verificamos si seguimos teniendo permisos
-      const authCheck = await fetch('http://localhost:5000/api/check-auth', {
+      const authCheck = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/check-auth', {
         credentials: 'include'
       });
       const authData = await authCheck.json();
@@ -79,7 +79,7 @@ export default function GestionPedidosPage() {
         ...(fechaFin && { fecha_fin: fechaFin }),
       });
       
-      const res = await fetch(`http://localhost:5000/api/pedidos?${params.toString()}`, {
+      const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/pedidos?${params.toString()}`, {
         credentials: "include",
         headers: {
           'Accept': 'application/json',
@@ -117,7 +117,7 @@ export default function GestionPedidosPage() {
     setActualizando(id_pedido);
     setSuccess("");
     try {
-      const res = await fetch(`http://localhost:5000/api/pedidos/${id_pedido}/estado`, {
+      const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/pedidos/${id_pedido}/estado`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nuevoEstado }),

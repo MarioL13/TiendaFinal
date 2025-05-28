@@ -36,7 +36,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/users/me', {
+        const response = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/users/me', {
           credentials: 'include',
         });
         if (!response.ok) {
@@ -116,7 +116,7 @@ export default function ProfilePage() {
         form.append('FOTO', formData.avatarFile); // <-- campo esperado por multer
       }
 
-      const response = await fetch(`http://localhost:5000/api/users/${formData.id}`, {
+      const response = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/users/${formData.id}`, {
         method: 'PUT',
         credentials: 'include',
         body: form, // no usamos headers Content-Type, el navegador lo define solo
@@ -145,7 +145,7 @@ export default function ProfilePage() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/cambiarpassword", {
+      const response = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/cambiarpassword", {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

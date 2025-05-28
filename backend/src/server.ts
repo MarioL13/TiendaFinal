@@ -1,5 +1,9 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 import usersRouter from './routes/usuarios'; // Importa las rutas
 import productsRouter from './routes/productos';
 import categoriasRouter from './routes/categorias';
@@ -16,14 +20,25 @@ const app = express();
 app.use(cookieParser());
 const port = 5000;
 
-// Configura CORS para permitir solicitudes desde el frontend
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+const allowedOrigins = [
+    'https://rinconfriki-production.up.railway.app',
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Origen no permitido por CORS'));
+        }
+    },
+    credentials: true,
+}));
 
 app.use(express.json());  // Para poder recibir datos JSON en el cuerpo de las solicitudes
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Rutas
-app.use(productsRouter);
 
 // Usar las rutas de usuarios
 app.use(usersRouter);
