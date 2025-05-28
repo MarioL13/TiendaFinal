@@ -3,7 +3,7 @@ import { Facebook, Instagram, Linkedin } from "lucide-react";
 
 const Footer = () => {
     return (
-        <footer className="bg-[#97DF4D] text-[#FBFEF9] text-center lg:text-left">
+        <footer className="bg-[#97DF4D] text-[#6e2c91] text-center lg:text-left">
             {/* Social Section */}
             <div className="flex flex-col lg:flex-row justify-center lg:justify-between items-center p-6 border-b border-[#5D008F]">
                 <div className="hidden lg:block">
