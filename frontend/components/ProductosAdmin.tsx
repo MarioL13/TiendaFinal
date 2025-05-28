@@ -100,7 +100,7 @@ const Productos: React.FC = () => {
         if (!window.confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/products/${id_producto}`, {
+            const response = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/products/${id_producto}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,

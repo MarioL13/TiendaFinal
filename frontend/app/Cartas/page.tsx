@@ -43,7 +43,7 @@ export default function BuscarCartasPorNombrePage() {
 
     const handleAddToCart = async (carta: any) => {
         try {
-            const res = await fetch('http://localhost:5000/api/carrito', {
+            const res = await fetch('https://tiendafinal-production-2d5f.up.railway.app/api/carrito', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
