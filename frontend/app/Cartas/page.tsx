@@ -19,7 +19,7 @@ export default function BuscarCartasPorNombrePage() {
           .filter(n => n.length > 0)
           .join(', ');
 
-      const res = await fetch("http://localhost:5000/api/cartas/buscar-por-nombre", {
+      const res = await fetch("https://rinconfriki-production.up.railway.app/api/cartas/buscar-por-nombre", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombres: nombresFormateados }),
