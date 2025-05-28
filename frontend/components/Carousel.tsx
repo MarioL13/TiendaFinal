@@ -29,10 +29,10 @@ const Slider = () => {
           className="relative w-[300vw] h-full flex transition-all duration-500 ease-in-out peer-checked/slider1:-left-0 peer-checked/slider2:-left-[100vw] peer-checked/slider3:-left-[200vw]"
         >
             <div className="relative w-full h-full flex">
-            <img src="fondo2v2.png" className="relative w-full h-full flex object-cover object-center"/>
+            <img src="imagen_2025-05-28_191223371.jpg" className="relative w-full h-full flex object-cover object-center"/>
             </div>
           <div className="relative w-full h-full flex bg-amber-500">
-            <img src="fondo2.png" className="relative w-full h-full flex object-cover object-center"/>
+            <img src="882eb8b0d9cbcc5b5f5a76e8dddd66bd.jpg" className="relative w-full h-full flex object-cover object-center"/>
           </div>
           <div className="relative w-full h-full flex bg-emerald-500">
             <img src="fondo5.png" className="relative w-full h-full flex object-cover object-center"/>
