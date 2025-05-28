@@ -15,7 +15,7 @@ export const obtenerCarritoCompletoUsuario = (id_usuario: number): Promise<any[]
                        END AS precio,
                    CASE
                        WHEN c.tipo_item = 'producto' THEN JSON_UNQUOTE(JSON_EXTRACT(p.imagenes, '$[0]'))
-                       ELSE ca.imagen
+                       ELSE COALESCE(ca.imagen, '')
                        END AS imagen
             FROM carrito c
                      LEFT JOIN productos p ON c.tipo_item = 'producto' AND c.id_item = p.id_producto
