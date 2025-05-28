@@ -79,7 +79,7 @@ const Carrito: React.FC = () => {
       const id_usuario = getUserId();
       if (!id_usuario) throw new Error("Usuario no autenticado");
       // Confirmar compra
-      const res = await fetch("http://localhost:5000/api/pedidos/confirmar", {
+      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/pedidos/confirmar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -106,7 +106,7 @@ const Carrito: React.FC = () => {
       const id_usuario = getUserId();
       if (!id_usuario) throw new Error("Usuario no autenticado");
       // Confirmar compra con tipoPago 'tienda'
-      const res = await fetch("http://localhost:5000/api/pedidos/confirmar", {
+      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/pedidos/confirmar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

@@ -23,7 +23,7 @@ export default function CrearCartaPage() {
     setSuccess("");
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/cartas", {
+      const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/cartas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

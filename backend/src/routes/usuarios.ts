@@ -128,15 +128,15 @@ router.get('/api/users/:id', verificarToken, verificarAdmin, async (req: Request
  * @apiSuccess (201) {Number} id ID del usuario creado.
  * @apiError 500 Error al crear el usuario.
  */
-router.post('/api/users', upload.single('FOTO'), async (req: Request, res: Response) => {
+router.post('/api/users', upload.single('foto'), async (req: Request, res: Response) => {
     const usuario = req.body;
 
     try {
         if (req.file) {
             const urlImagen = await subirImagen(req.file);
-            usuario.FOTO = urlImagen;
+            usuario.foto = urlImagen;
         } else {
-            usuario.FOTO = null;
+            usuario.foto = null;
         }
 
         const result = await crearUsuario(usuario);
@@ -164,7 +164,7 @@ router.post('/api/users', upload.single('FOTO'), async (req: Request, res: Respo
  * @apiError 403 Sin permisos para editar.
  * @apiError 500 Error al actualizar usuario.
  */
-router.put('/api/users/:id', verificarToken, upload.single('FOTO'), async (req: Request, res: Response) => {
+router.put('/api/users/:id', verificarToken, upload.single('foto'), async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const usuarioLogeado = (req as any).usuario;
 
@@ -177,7 +177,7 @@ router.put('/api/users/:id', verificarToken, upload.single('FOTO'), async (req: 
 
         if (req.file) {
             const urlImagen = await subirImagen(req.file);
-            datosActualizados.FOTO = urlImagen;
+            datosActualizados.foto = urlImagen;
         }
 
         await actualizarUsuario(id, datosActualizados);

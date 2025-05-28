@@ -31,7 +31,7 @@ export default function CrearUsuario() {
       formData.append("telefono", telefono);
       formData.append("direccion", direccion);
       if (foto) {
-        formData.append("FOTO", foto);
+        formData.append("foto", foto);
       }
       const res = await fetch("https://tiendafinal-production-2d5f.up.railway.app/api/users", {
         method: "POST",

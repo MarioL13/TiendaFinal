@@ -55,7 +55,7 @@ export default function ProfilePage() {
           email: data.email || "",
           phone: data.telefono || "",
           address: data.direccion || "",
-          avatar: data.FOTO || "/default-avatar.png",
+          avatar: data.foto || "/default-avatar.png",
         });
       } catch {
         router.push("/Login");
@@ -113,7 +113,7 @@ export default function ProfilePage() {
       form.append('telefono', formData.phone);
       form.append('direccion', formData.address);
       if (formData.avatarFile) {
-        form.append('FOTO', formData.avatarFile); // <-- campo esperado por multer
+        form.append('foto', formData.avatarFile); // <-- campo esperado por multer
       }
 
       const response = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/users/${formData.id}`, {
