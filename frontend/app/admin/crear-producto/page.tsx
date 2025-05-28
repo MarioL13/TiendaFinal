@@ -32,7 +32,6 @@ export default function CrearProducto() {
       formData.append("precio", precio);
       formData.append("stock", stock);
       formData.append("idioma", idioma);
-      // Backend espera un array de categorias, lo mandamos como JSON
       formData.append("categorias", JSON.stringify([categoria]));
       if (imagenes) {
         Array.from(imagenes).forEach((img) => {
@@ -44,10 +43,12 @@ export default function CrearProducto() {
         body: formData,
         credentials: "include",
       });
+
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.message || "Error al crear el producto");
       }
+
       setSuccess("Producto creado correctamente");
       setNombre("");
       setDescripcion("");
@@ -58,7 +59,11 @@ export default function CrearProducto() {
       setImagenes(null);
       setTimeout(() => router.push("/admin/productos"), 1500);
     } catch (err: any) {
-      setError(err.message || "Error desconocido");
+      const message = err.message || "Error desconocido";
+      setError(message);
+      if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
+        router.push('/admin');
+      }
     } finally {
       setLoading(false);
     }
