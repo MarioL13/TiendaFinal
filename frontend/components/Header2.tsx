@@ -18,7 +18,9 @@ const StoreLayout = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [userData, setUserData] = useState<Usuario | null>(null); const { cartTotal } = useCart();
+  const [userData, setUserData] = useState<Usuario | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { cartTotal } = useCart();
 
   const handleLogout = async () => {
     try {
@@ -271,17 +273,84 @@ const StoreLayout = () => {
             </div>
           </div>
 
+          {/* Menú móvil */}
           <div className="md:hidden flex items-center justify-between w-full">
-            <button className="text-gray-700 hover:text-gray-900">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button
+              className="text-gray-700 hover:text-gray-900 focus:outline-none"
+              aria-label="Abrir menú"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
               </svg>
             </button>
             <div className="text-lg font-bold">
-              <a href="/main">Logo</a>
+              <a href="/">
+                <img src="/logo.jpg" alt="Logo" className="w-10 h-10 rounded-lg" />
+              </a>
             </div>
+            <label
+              htmlFor="cartToggle"
+              className="cursor-pointer text-[#6e2c91] hover:text-white relative ml-2"
+              onClick={() => window.location.href = "/Carrito"}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="lucide lucide-shopping-basket-icon lucide-shopping-basket">
+                <path d="m15 11-1 9" />
+                <path d="m19 11-4-7" />
+                <path d="M2 11h20" />
+                <path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4" />
+                <path d="M4.5 15.5h15" />
+                <path d="m5 11 4-7" />
+                <path d="m9 11 1 9" />
+              </svg>
+              {cartTotal > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {cartTotal}
+                </span>
+              )}
+            </label>
           </div>
         </div>
+        {/* Menú lateral móvil */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-40 bg-black bg-opacity-40" onClick={() => setMobileMenuOpen(false)}>
+            <nav
+              className="fixed top-0 left-0 w-64 h-full bg-[#97DF4D] shadow-2xl flex flex-col p-6 gap-4 z-50 animate-slideIn"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                className="self-end mb-4 text-gray-700 hover:text-gray-900"
+                aria-label="Cerrar menú"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <a href="/" className="text-[#6e2c91] font-bold text-xl py-2 hover:text-white">Portada</a>
+              <a href="/tienda" className="text-[#6e2c91] font-bold text-xl py-2 hover:text-white">Tienda</a>
+              <a href="/Cartas" className="text-[#6e2c91] font-bold text-xl py-2 hover:text-white">Cartas</a>
+              <hr className="my-2 border-[#6e2c91]" />
+              {isAuthenticated === null ? null : isAuthenticated ? (
+                <>
+                  <a href="/perfil" className="text-[#334139] font-bold text-lg py-2 hover:text-[#5D008F]">Mi Perfil</a>
+                  <a href="/perfil/editar" className="text-[#334139] font-bold text-lg py-2 hover:text-[#5D008F]">Editar Perfil</a>
+                  <a href="/historial" className="text-[#334139] font-bold text-lg py-2 hover:text-[#5D008F]">Historial</a>
+                  <a href="/deseados" className="text-[#334139] font-bold text-lg py-2 hover:text-[#5D008F]">Deseados</a>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left text-[#334139] font-bold text-lg py-2 hover:text-[#5D008F]"
+                  >Cerrar Sesión</button>
+                </>
+              ) : (
+                <button
+                  onClick={() => { window.location.href = "/Login"; setMobileMenuOpen(false); }}
+                  className="w-full text-left text-[#334139] font-bold text-lg py-2 hover:text-[#5D008F]"
+                >Iniciar sesión</button>
+              )}
+            </nav>
+          </div>
+        )}
       </header>
     </div>
   );
