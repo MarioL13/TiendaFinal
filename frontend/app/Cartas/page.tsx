@@ -55,9 +55,7 @@ export default function BuscarCartasPorNombrePage() {
                     cantidad: 1
                 })
             });
-            if (res.ok) {
-                alert('¡Carta añadida al carrito!');
-            } else {
+            if (!res.ok) {
                 const data = await res.json();
                 alert(data.message || 'Error al añadir al carrito');
             }
