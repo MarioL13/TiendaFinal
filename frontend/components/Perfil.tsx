@@ -37,7 +37,7 @@ export default function ProfileManager() {
           email: data.email || "",
           phone: data.telefono || "",
           address: data.direccion || "",
-          avatar: data.FOTO || "/default-avatar.png",
+          avatar: data.foto || "/default-avatar.png",
         });
       } catch {
         router.push("/Login");

@@ -67,22 +67,22 @@ const validarPassword = (password: string): boolean => {
 
 // Crear un nuevo usuario
 export const crearUsuario = async (usuario: any): Promise<any> => {
-    let { nombre, apellido, FOTO, email, password, direccion, telefono } = usuario;
+    let { nombre, apellido, foto, email, password, direccion, telefono } = usuario;
 
     const error = validarUsuario(usuario);
     if (error) throw new Error(error);
 
     // FOTO debe ser string o null
-    if (!FOTO || FOTO === '') {
-        FOTO = null;
+    if (!foto || foto === '') {
+        foto = null;
     }
 
     const hash = await bcrypt.hash(password, 10);
 
     return new Promise((resolve, reject) => {
         db.query(
-            'INSERT INTO usuarios (nombre, apellido, FOTO, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [nombre, apellido, FOTO, email, hash, direccion, telefono],
+            'INSERT INTO usuarios (nombre, apellido, foto, email, password, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [nombre, apellido, foto, email, hash, direccion, telefono],
             (err: QueryError | null, results: any) => {
                 if (err) {
                     reject(new Error('Error al crear el usuario: ' + err.message));
@@ -107,9 +107,9 @@ export const actualizarUsuario = async (id: number, usuario: any): Promise<any> 
             if (error) return reject(new Error(error));
 
             // Preparar imagen
-            let fotoFinal = usuario.FOTO;
-            if (Array.isArray(usuario.FOTO)) {
-                fotoFinal = JSON.stringify(usuario.FOTO);
+            let fotoFinal = usuario.foto;
+            if (Array.isArray(usuario.foto)) {
+                fotoFinal = JSON.stringify(usuario.foto);
             }
 
             // No permitimos cambiar contraseña desde aquí
@@ -118,16 +118,16 @@ export const actualizarUsuario = async (id: number, usuario: any): Promise<any> 
             const usuarioActualizado = {
                 ...usuarioActual,
                 ...usuario,
-                FOTO: fotoFinal ?? usuarioActual.FOTO,
+                foto: fotoFinal ?? usuarioActual.foto,
                 password: passwordFinal,
             };
 
             db.query(
-                'UPDATE usuarios SET nombre = ?, apellido = ?, FOTO = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?',
+                'UPDATE usuarios SET nombre = ?, apellido = ?, foto = ?, email = ?, password = ?, direccion = ?, telefono = ? WHERE id_usuario = ?',
                 [
                     usuarioActualizado.nombre,
                     usuarioActualizado.apellido,
-                    usuarioActualizado.FOTO,
+                    usuarioActualizado.foto,
                     usuarioActualizado.email,
                     usuarioActualizado.password,
                     usuarioActualizado.direccion,

@@ -11,7 +11,7 @@ interface Usuario {
   email: string;
   telefono?: string;
   direccion?: string;
-  FOTO?: string | null;
+  foto?: string | null;
 }
 
 export default function EditarUsuarioPage() {
@@ -59,7 +59,7 @@ export default function EditarUsuarioPage() {
       formData.append("telefono", usuario.telefono || "");
       formData.append("direccion", usuario.direccion || "");
       if (foto) {
-        formData.append("FOTO", foto);
+        formData.append("foto", foto);
       }
       const res = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/users/${id}`, {
         method: "PUT",
@@ -151,12 +151,12 @@ export default function EditarUsuarioPage() {
                 onChange={e => setFoto(e.target.files ? e.target.files[0] : null)}
                 className="w-full border rounded px-3 py-2 text-black"
             />
-            {(foto || usuario.FOTO) && (
+            {(foto || usuario.foto) && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {foto ? (
                       <span className="text-xs bg-gray-100 px-2 py-1 rounded border border-gray-200 text-black">{foto.name}</span>
-                  ) : usuario.FOTO ? (
-                      <img src={usuario.FOTO} alt="Foto" className="w-12 h-12 rounded-full object-cover" />
+                  ) : usuario.foto ? (
+                      <img src={usuario.foto} alt="Foto" className="w-12 h-12 rounded-full object-cover" />
                   ) : null}
                 </div>
             )}

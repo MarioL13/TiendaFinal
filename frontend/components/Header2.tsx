@@ -5,7 +5,7 @@ import { useCart } from "@/context/CartContext";
 
 interface Usuario {
   id_usuario: number;
-  FOTO: string | null;
+  foto: string | null;
   nombre: string;
   apellido: string;
   email: string;
@@ -125,7 +125,7 @@ const StoreLayout = () => {
                 {isAuthenticated === null ? null : isAuthenticated ? (
                   <>                    <img
                     alt={userData?.nombre || "Profile"}
-                    src={userData?.FOTO ? userData.FOTO : "/default-avatar.png"}
+                    src={userData?.foto ? userData.foto : "/default-avatar.png"}
                     className="inline-block h-12 w-12 cursor-pointer rounded-full object-cover object-center border-2 border-gray-300"
                     onClick={() => setProfileOpen((v) => !v)}
                   />

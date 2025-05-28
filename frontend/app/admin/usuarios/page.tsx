@@ -12,7 +12,7 @@ interface Usuario {
   email: string;
   telefono?: string;
   direccion?: string;
-  FOTO?: string | null;
+  foto?: string | null;
 }
 
 export default function UsuariosAdminPage() {
@@ -109,8 +109,8 @@ export default function UsuariosAdminPage() {
                 {usuarios.map(usuario => (
                   <tr key={usuario.id_usuario} className="border-b hover:bg-purple-50 text-black">
                     <td className="p-2 text-center">
-                      {usuario.FOTO ? (
-                        <img src={usuario.FOTO} alt="Foto" className="w-10 h-10 rounded-full object-cover mx-auto" />
+                      {usuario.foto ? (
+                        <img src={usuario.foto} alt="Foto" className="w-10 h-10 rounded-full object-cover mx-auto" />
                       ) : (
                         <span className="inline-block w-10 h-10 rounded-full bg-gray-200" />
                       )}
