@@ -3,7 +3,7 @@ import React from "react";
 
 const Slider = () => {
   return (
-      <div className="w-full h-[80vh]">
+      <div className="w-full h-[80vh] mt-10 flex justify-center items-center">
         <div className="relative w-full h-[80vh] bg-slate-800 overflow-hidden">
           <input
               className="hidden peer/slider1 checkbox"
