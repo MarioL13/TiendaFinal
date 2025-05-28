@@ -16,6 +16,9 @@ const Carrito: React.FC = () => {
   const [items, setItems] = useState<CarritoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [pagoLoading, setPagoLoading] = useState(false);
+  const [pagoError, setPagoError] = useState("");
+  const [pagoSuccess, setPagoSuccess] = useState("");
   const { updateCartTotal } = useCart();
 
   const fetchCarrito = async () => {
@@ -52,6 +55,73 @@ const Carrito: React.FC = () => {
       fetchCarrito();
     } catch (err) {
       alert("Error al eliminar el producto");
+    }
+  };
+
+  // El id_usuario se obtiene del localStorage (o contexto auth) en vez de pedirlo al backend
+  const getUserId = () => {
+    // Si usas contexto de usuario, reemplaza esto por tu lógica
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        return user.id_usuario || user.id;
+      }
+    } catch {}
+    return null;
+  };
+
+  const handleProcederPago = async () => {
+    setPagoLoading(true);
+    setPagoError("");
+    setPagoSuccess("");
+    try {
+      const id_usuario = getUserId();
+      if (!id_usuario) throw new Error("Usuario no autenticado");
+      // Confirmar compra
+      const res = await fetch("http://localhost:5000/api/pedidos/confirmar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ id_usuario, tipoPago: "online" })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al procesar el pago");
+      setPagoSuccess("¡Compra realizada con éxito!");
+      setItems([]); // Vacía el carrito visualmente
+      await updateCartTotal();
+      window.location.href = "/";
+    } catch (err: any) {
+      setPagoError(err.message || "Error al procesar el pago");
+    } finally {
+      setPagoLoading(false);
+    }
+  };
+
+  const handleRecogerEnTienda = async () => {
+    setPagoLoading(true);
+    setPagoError("");
+    setPagoSuccess("");
+    try {
+      const id_usuario = getUserId();
+      if (!id_usuario) throw new Error("Usuario no autenticado");
+      // Confirmar compra con tipoPago 'tienda'
+      const res = await fetch("http://localhost:5000/api/pedidos/confirmar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ id_usuario, tipoPago: "tienda" })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al procesar el pedido");
+      setPagoSuccess("¡Pedido realizado para recoger en tienda!");
+      setItems([]); // Vacía el carrito visualmente
+      await updateCartTotal();
+      window.location.href = "/";
+    } catch (err: any) {
+      setPagoError(err.message || "Error al procesar el pedido");
+    } finally {
+      setPagoLoading(false);
     }
   };
 
@@ -132,7 +202,8 @@ const Carrito: React.FC = () => {
           <button
             className="w-full mt-6 font-bold py-3 rounded shadow border transition text-lg"
             style={{ background: '#97DF4D', color: '#4E1D63', border: '2px solid #4E1D63' }}
-            disabled={items.length === 0}
+            disabled={items.length === 0 || pagoLoading}
+            onClick={handleProcederPago}
             onMouseEnter={e => {
               e.currentTarget.style.background = '#6E2C91';
               e.currentTarget.style.color = '#97DF4D';
@@ -144,12 +215,15 @@ const Carrito: React.FC = () => {
               e.currentTarget.style.border = '2px solid #4E1D63';
             }}
           >
-            Proceder al pago
+            {pagoLoading ? 'Procesando...' : 'Proceder al pago'}
           </button>
+          {pagoError && <div className="text-red-500 text-center mt-2">{pagoError}</div>}
+          {pagoSuccess && <div className="text-green-600 text-center mt-2">{pagoSuccess}</div>}
           <button
             className="w-full mt-3 font-bold py-3 rounded shadow border transition text-lg"
             style={{ background: '#97DF4D', color: '#4E1D63', border: '2px solid #4E1D63' }}
-            disabled={items.length === 0}
+            disabled={items.length === 0 || pagoLoading}
+            onClick={handleRecogerEnTienda}
             onMouseEnter={e => {
               e.currentTarget.style.background = '#6E2C91';
               e.currentTarget.style.color = '#97DF4D';
@@ -161,7 +235,7 @@ const Carrito: React.FC = () => {
               e.currentTarget.style.border = '2px solid #4E1D63';
             }}
           >
-            Recoger en tienda
+            {pagoLoading ? 'Procesando...' : 'Recoger en tienda'}
           </button>
           <p className="text-xs text-gray-500 mt-3">El envío y los impuestos se calcularán en el siguiente paso.</p>
         </div>

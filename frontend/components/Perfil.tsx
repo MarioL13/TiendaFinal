@@ -75,16 +75,16 @@ export default function ProfileManager() {
               <button
                 onClick={() => router.push("/perfil/editar")}
                 className="mt-4 py-2 font-bold rounded-lg transition-colors border-2 text-lg"
-                style={{ background: '#97DF4D', color: '#4E1D63', border: '2px solid #4E1D63' }}
+                style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = '#6E2C91';
-                  e.currentTarget.style.color = '#97DF4D';
-                  e.currentTarget.style.border = '2px solid #97DF4D';
+                  e.currentTarget.style.background = '#FBFEF9';
+                  e.currentTarget.style.color = '#334139';
+                  e.currentTarget.style.border = '2px solid #5D008F';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = '#97DF4D';
-                  e.currentTarget.style.color = '#4E1D63';
-                  e.currentTarget.style.border = '2px solid #4E1D63';
+                  e.currentTarget.style.background = '#334139';
+                  e.currentTarget.style.color = '#FBFEF9';
+                  e.currentTarget.style.border = '2px solid #334139';
                 }}
               >
                 Editar Perfil

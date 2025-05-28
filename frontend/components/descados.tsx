@@ -96,7 +96,7 @@ const Destacados: React.FC = () => {
             </div>
 
             <button
-              className="w-full font-bold py-3 rounded-lg transition-colors"
+              className="w-full font-bold py-3 rounded-lg transition-colors cursor-pointer"
               style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
               onClick={() => window.location.href = `/productos/${producto.id_producto}`}
               onMouseEnter={e => {

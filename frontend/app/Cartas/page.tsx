@@ -13,22 +13,22 @@ export default function BuscarCartasPorNombrePage() {
     setCartas([]);
     setLoading(true);
     try {
-      // Separa por salto de línea o coma
-      const lista = nombres
-        .split(/\n|,/)
-        .map((n) => n.trim())
-        .filter((n) => n.length > 0);
+      const nombresFormateados = nombres
+          .split(/\n|,/)
+          .map(n => n.trim())
+          .filter(n => n.length > 0)
+          .join(', ');
+
       const res = await fetch("http://localhost:5000/api/cartas/buscar-por-nombre", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombres: lista }),
+        body: JSON.stringify({ nombres: nombresFormateados }),
       });
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.message || "Error al buscar cartas");
       }
       setCartas(data.encontradas || []);
-      // Mostrar mensaje de cartas no encontradas de forma visible pero no como error bloqueante
       if (data.mensaje && data.mensaje.includes('no encontradas')) {
         setError(data.mensaje);
       } else {
@@ -38,6 +38,31 @@ export default function BuscarCartasPorNombrePage() {
       setError(err.message || "Error desconocido");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddToCart = async (carta: any) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/carrito', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          tipo_item: 'carta',
+          id_item: carta.id_carta || carta.id_item || carta.id, 
+          cantidad: 1
+        })
+      });
+      if (res.ok) {
+        alert('¡Carta añadida al carrito!');
+      } else {
+        const data = await res.json();
+        alert(data.message || 'Error al añadir al carrito');
+      }
+    } catch (error) {
+      alert('Error al añadir al carrito');
     }
   };
 
@@ -70,30 +95,37 @@ export default function BuscarCartasPorNombrePage() {
           <ul className="divide-y divide-gray-200">
             {cartas.map((carta, i) => (
               <li key={i} className="py-3 flex items-center gap-4">
-                {/* Imagen o placeholder siempre ocupan el mismo espacio */}
                 <div style={{ width: 88, height: 122, position: 'relative', flexShrink: 0 }}>
-                  {carta.imagen && typeof carta.imagen === 'string' && carta.imagen.startsWith('http') ? (
+                  {carta.imagen ? (
                     <img
-                      src={carta.imagen}
+                      src={carta.imagen.startsWith('http') ? carta.imagen : `/uploads/${carta.imagen}`}
                       alt={carta.nombre}
                       width={88}
                       height={122}
-                      style={{ objectFit: 'cover', borderRadius: 8, border: '1px solid #ccc', background: '#fff', display: 'block' }}
+                      className="object-cover rounded border bg-white"
+                      style={{ display: 'block' }}
                       loading="lazy"
-                      onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement?.querySelector('.placeholder')?.setAttribute('style', 'display:flex;width:88px;height:122px;align-items:center;justify-content:center;background:#e5e7eb;border-radius:8px;border:1px solid #ccc;color:#6b7280;font-size:12px;'); }}
+                      onError={e => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement?.querySelector('.placeholder')?.setAttribute('style', 'display:flex;width:88px;height:122px;align-items:center;justify-content:center;background:#e5e7eb;border-radius:8px;border:1px solid #ccc;color:#6b7280;font-size:12px;');
+                      }}
                     />
-                  ) : null}
-                  <div
-                    className="placeholder flex items-center justify-center bg-gray-200 rounded border text-xs text-gray-500"
-                    style={{ width: 88, height: 122, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: (!carta.imagen || typeof carta.imagen !== 'string' || !carta.imagen.startsWith('http')) ? 'flex' : 'none' }}
-                  >
-                    Sin imagen
-                  </div>
+                  ) : (
+                    <span className="text-gray-400 placeholder flex items-center justify-center bg-gray-200 rounded border text-xs" style={{ width: 88, height: 122 }}>
+                      Sin imagen
+                    </span>
+                  )}
                 </div>
-                <div>
+                <div className="flex-1">
                   <div className="font-bold text-black">{carta.nombre}</div>
                   <div className="text-sm text-gray-700">Set: {carta.set_code} | Stock: {carta.stock} | Precio: €{carta.precio}</div>
                 </div>
+                <button
+                  className="bg-[#334139] text-[#FBFEF9] border-2 border-[#334139] hover:bg-[#FBFEF9] hover:text-[#334139] hover:border-[#5D008F] font-bold py-2 px-4 rounded-lg transition-colors"
+                  onClick={() => handleAddToCart(carta)}
+                >
+                  Comprar
+                </button>
               </li>
             ))}
           </ul>

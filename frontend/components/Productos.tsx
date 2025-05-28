@@ -200,7 +200,7 @@ const Productos: React.FC = () => {
                                     <span className="text-lg font-bold text-gray-900">{producto.precio} €</span>
                                 </div>
                                 <button
-                                    className="w-full font-bold py-3 rounded-lg transition-colors"
+                                    className="w-full font-bold py-3 rounded-lg transition-colors cursor-pointer"
                                     style={{ background: '#334139', color: '#FBFEF9', border: '2px solid #334139' }}
                                     onClick={() => window.location.href = `/productos/${producto.id_producto}`}
                                     onMouseEnter={e => {
@@ -230,7 +230,7 @@ const Productos: React.FC = () => {
                             onClick={() => handlePageChange(page - 1)}
                             disabled={page === 1}
                             className="mx-1 flex h-9 w-9 items-center justify-center rounded-full border text-sm"
-                            style={{ background: '#97DF4D', color: '#6E2C91', borderColor: '#4E1D63' }}
+                            style={{ background: '#97DF4D', color: '#6E2C91', borderColor: '#4E1D63', cursor: 'pointer' }}
                         >
                             ←
                         </button>
@@ -239,7 +239,7 @@ const Productos: React.FC = () => {
                         <li key={i + 1}>
                             <button
                                 onClick={() => handlePageChange(i + 1)}
-                                style={{ background: page === i + 1 ? '#97DF4D' : 'white', color: '#6E2C91', borderColor: '#4E1D63' }}
+                                style={{ background: page === i + 1 ? '#97DF4D' : 'white', color: '#6E2C91', borderColor: '#4E1D63', cursor: 'pointer' }}
                                 className={`mx-1 h-9 w-9 flex items-center justify-center rounded-full text-sm border ${page === i + 1 ? 'font-bold shadow' : ''}`}
                             >
                                 {i + 1}
@@ -251,7 +251,7 @@ const Productos: React.FC = () => {
                             onClick={() => handlePageChange(page + 1)}
                             disabled={page === totalPages}
                             className="mx-1 flex h-9 w-9 items-center justify-center rounded-full border text-sm"
-                            style={{ background: '#97DF4D', color: '#4E1D63', borderColor: '#4E1D63' }}
+                            style={{ background: '#97DF4D', color: '#4E1D63', borderColor: '#4E1D63', cursor: 'pointer' }}
                         >
                             →
                         </button>

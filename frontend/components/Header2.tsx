@@ -98,7 +98,7 @@ const StoreLayout = () => {
               <a href="/tienda" className="text-[#6e2c91] hover:text-white">Tienda</a>
               <a href="/Cartas" className="text-[#6e2c91] hover:text-white">Cartas</a>
             </nav>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4" style={{ background: '#97DF4D' }}>
                 <label
                 htmlFor="cartToggle"
                 className="cursor-pointer text-[#6e2c91] hover:text-white relative"
@@ -120,7 +120,7 @@ const StoreLayout = () => {
                 )}
                 </label>
 
-              <div className="relative" ref={profileRef}>
+              <div className="relative" ref={profileRef} style={{ background: '#97DF4D' }}>
                 {isAuthenticated === null ? null : isAuthenticated ? (
                   <>                    <img
                     alt={userData?.nombre || "Profile"}
@@ -141,7 +141,7 @@ const StoreLayout = () => {
                             onMouseEnter={e => {
                               e.currentTarget.style.background = '#FBFEF9';
                               e.currentTarget.style.color = '#334139';
-                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                              e.currentTarget.style.border = '2px solid #5D008F';
                             }}
                             onMouseLeave={e => {
                               e.currentTarget.style.background = '#334139';
@@ -163,7 +163,7 @@ const StoreLayout = () => {
                             onMouseEnter={e => {
                               e.currentTarget.style.background = '#FBFEF9';
                               e.currentTarget.style.color = '#334139';
-                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                              e.currentTarget.style.border = '2px solid #5D008F';
                             }}
                             onMouseLeave={e => {
                               e.currentTarget.style.background = '#334139';
@@ -185,7 +185,7 @@ const StoreLayout = () => {
                             onMouseEnter={e => {
                               e.currentTarget.style.background = '#FBFEF9';
                               e.currentTarget.style.color = '#334139';
-                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                              e.currentTarget.style.border = '2px solid #5D008F';
                             }}
                             onMouseLeave={e => {
                               e.currentTarget.style.background = '#334139';
@@ -209,7 +209,7 @@ const StoreLayout = () => {
                             onMouseEnter={e => {
                               e.currentTarget.style.background = '#FBFEF9';
                               e.currentTarget.style.color = '#334139';
-                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                              e.currentTarget.style.border = '2px solid #5D008F';
                             }}
                             onMouseLeave={e => {
                               e.currentTarget.style.background = '#334139';
@@ -229,7 +229,7 @@ const StoreLayout = () => {
                             onMouseEnter={e => {
                               e.currentTarget.style.background = '#FBFEF9';
                               e.currentTarget.style.color = '#334139';
-                              e.currentTarget.style.border = '2px solid #FBFEF9';
+                              e.currentTarget.style.border = '2px solid #5D008F';
                             }}
                             onMouseLeave={e => {
                               e.currentTarget.style.background = '#334139';
@@ -256,7 +256,7 @@ const StoreLayout = () => {
                     onMouseEnter={e => {
                       e.currentTarget.style.background = '#FBFEF9';
                       e.currentTarget.style.color = '#334139';
-                      e.currentTarget.style.border = '2px solid #FBFEF9';
+                      e.currentTarget.style.border = '2px solid #5D008F';
                     }}
                     onMouseLeave={e => {
                       e.currentTarget.style.background = '#334139';

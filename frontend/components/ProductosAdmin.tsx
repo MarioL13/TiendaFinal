@@ -96,6 +96,25 @@ const Productos: React.FC = () => {
         setIdioma(e.target.value);
     };
 
+    const handleEliminar = async (id_producto: number) => {
+        if (!window.confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:5000/api/products/${id_producto}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) throw new Error('Error al eliminar producto');
+            // Recargar productos tras eliminar
+            fetchProductos();
+        } catch (error) {
+            alert('No se pudo eliminar el producto.');
+            console.error(error);
+        }
+    };
+
     return (
         <>
             <div className="mb-6 flex flex-wrap items-center gap-4">
@@ -176,7 +195,7 @@ const Productos: React.FC = () => {
                                     </button>
                                     <button
                                         className="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg"
-                                        onClick={() => console.log('Favorito', producto.id_producto)}
+                                        onClick={() => handleEliminar(producto.id_producto)}
                                     >
                                         Eliminar
                                     </button>

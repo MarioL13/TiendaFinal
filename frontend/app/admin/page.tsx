@@ -79,6 +79,26 @@ export default function AdminPage() {
                         </svg>
                         Gestión de usuarios
                     </a>
+                    <a
+                        href="/admin/crear-carta"
+                        className="flex items-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold text-lg shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-200"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+                            <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                        Crear carta
+                    </a>
+                    <a
+                        href="/admin/crear-categoria"
+                        className="flex items-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold text-lg shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-200"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
+                            <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                        Crear categoría
+                    </a>
                 </div>
             </div>
         </div>

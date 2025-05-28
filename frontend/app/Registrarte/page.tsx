@@ -79,13 +79,13 @@ const SignUpComponent = () => {
   };
 
   return (
-    <div className="mt-20 max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md px-8 py-10 flex flex-col items-center">
-      <h1 className="text-xl font-bold text-center text-gray-700 dark:text-gray-200 mb-8">
-        Bienvenido a Mi Empresa
+    <div className="mt-20 max-w-lg mx-auto bg-white rounded-lg shadow-md px-8 py-10 flex flex-col items-center">
+      <h1 className="text-xl font-bold text-center text-black mb-8">
+        Bienvenido a Ricon Del Friki
       </h1>
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
         <div className="flex items-start flex-col justify-start">
-          <label htmlFor="nombre" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
+          <label htmlFor="nombre" className="text-sm text-black mr-2">
             Nombre:
           </label>
           <input
@@ -95,11 +95,11 @@ const SignUpComponent = () => {
             value={formData.nombre}
             onChange={handleChange}
             required
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 text-black bg-white py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <div className="flex items-start flex-col justify-start">
-          <label htmlFor="apellido" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
+          <label htmlFor="apellido" className="text-sm text-black mr-2">
             Apellido:
           </label>
           <input
@@ -109,11 +109,11 @@ const SignUpComponent = () => {
             value={formData.apellido}
             onChange={handleChange}
             required
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 text-black bg-white py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <div className="flex items-start flex-col justify-start">
-          <label htmlFor="email" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
+          <label htmlFor="email" className="text-sm text-black mr-2">
             Correo electrónico:
           </label>
           <input
@@ -123,11 +123,11 @@ const SignUpComponent = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 text-black bg-white py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <div className="flex items-start flex-col justify-start">
-          <label htmlFor="password" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
+          <label htmlFor="password" className="text-sm text-black mr-2">
             Contraseña:
           </label>
           <input
@@ -137,14 +137,14 @@ const SignUpComponent = () => {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 text-black bg-white py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
-          <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <span className="text-xs text-gray-500 mt-1">
             La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y símbolos.
           </span>
         </div>
         <div className="flex items-start flex-col justify-start">
-          <label htmlFor="confirmPassword" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
+          <label htmlFor="confirmPassword" className="text-sm text-black mr-2">
             Confirmar contraseña:
           </label>
           <input
@@ -154,11 +154,11 @@ const SignUpComponent = () => {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 text-black bg-white py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <div className="flex items-start flex-col justify-start">
-          <label htmlFor="direccion" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
+          <label htmlFor="direccion" className="text-sm text-black mr-2">
             Dirección:
           </label>
           <input
@@ -168,11 +168,11 @@ const SignUpComponent = () => {
             value={formData.direccion}
             onChange={handleChange}
             required
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 text-black bg-white py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <div className="flex items-start flex-col justify-start">
-          <label htmlFor="telefono" className="text-sm text-gray-700 dark:text-gray-200 mr-2">
+          <label htmlFor="telefono" className="text-sm text-black mr-2">
             Teléfono:
           </label>
           <input
@@ -182,13 +182,13 @@ const SignUpComponent = () => {
             value={formData.telefono}
             onChange={handleChange}
             required
-            className="w-full px-3 dark:text-gray-200 dark:bg-gray-900 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 text-black bg-white py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md shadow-sm"
+          className="py-2 px-4 font-bold rounded-lg transition-colors border-2 text-lg bg-[#334139] text-[#FBFEF9] border-[#334139] hover:bg-[#FBFEF9] hover:text-[#334139] hover:border-[#5D008F]"
         >
           {loading ? "Registrando..." : "Registrarse"}
         </button>
@@ -196,20 +196,19 @@ const SignUpComponent = () => {
           <p
             className={`mt-2 text-center text-sm ${
               message.startsWith("Error") || message.includes("contraseña")
-                ? "text-red-600 dark:text-red-400"
-                : "text-green-600 dark:text-green-400"
+                ? "text-red-600"
+                : "text-green-600"
             }`}
           >
             {message}
           </p>
         )}
       </form>
-
       <div className="mt-4 text-center">
-        <span className="text-sm text-gray-500 dark:text-gray-300">
+        <span className="text-sm text-gray-500">
           ¿Ya tienes una cuenta?{" "}
         </span>
-        <a href="/Login" className="text-blue-500 hover:text-blue-600">
+        <a href="/Login" className="text-black hover:text-gray-700">
           Iniciar sesión
         </a>
       </div>
