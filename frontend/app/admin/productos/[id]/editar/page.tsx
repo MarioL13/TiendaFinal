@@ -80,7 +80,7 @@ export default function EditarProductoPage() {
   if (!producto) return <div className="p-8 text-center">Producto no encontrado</div>;
 
   return (
-    <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-lg p-8 mt-30 border border-gray-200">
+    <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
       <h2 className="text-3xl font-extrabold mb-6 text-center" style={{ color: 'black', letterSpacing: '1px' }}>Editar producto</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
