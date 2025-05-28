@@ -13,7 +13,7 @@ interface Pedido {
   fecha_pedido: string;
 }
 
-const estados = ["Pendiente", "Pagado", "Entregado", "Cancelado"];
+const estados = ["pendiente", "pagado", "entregado", "cancelado"];
 
 export default function GestionPedidosPage() {
   const router = useRouter();
@@ -150,7 +150,9 @@ export default function GestionPedidosPage() {
               <label className="block text-xs font-semibold mb-1 text-gray-800">Estado</label>
               <select value={estadoFiltro} onChange={e => setEstadoFiltro(e.target.value)} className="border rounded px-2 py-1 text-gray-800">
                 <option value="">Todos</option>
-                {estados.map(e => <option key={e} value={e}>{e}</option>)}
+                {estados.map(e => (
+                    <option key={e} value={e}>{e.charAt(0).toUpperCase() + e.slice(1)}</option>
+                ))}
               </select>
             </div>
             <div>
