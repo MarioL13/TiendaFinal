@@ -11,7 +11,6 @@ export default function CrearProducto() {
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [precio, setPrecio] = useState("");
-  const [categoria, setCategoria] = useState("");
   const [stock, setStock] = useState("");
   const [imagenes, setImagenes] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
@@ -19,6 +18,8 @@ export default function CrearProducto() {
   const [success, setSuccess] = useState("");
   const [idioma, setIdioma] = useState("");
   const [estado, setEstado] = useState<'cargando' | 'autorizado' | 'no-autorizado'>('cargando')
+  const [categoriasDisponibles, setCategoriasDisponibles] = useState<any[]>([]);
+  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +33,7 @@ export default function CrearProducto() {
       formData.append("precio", precio);
       formData.append("stock", stock);
       formData.append("idioma", idioma);
-      formData.append("categorias", JSON.stringify([categoria]));
+      formData.append("categorias", JSON.stringify(categoriasSeleccionadas));
       if (imagenes) {
         Array.from(imagenes).forEach((img) => {
           formData.append("imagenes", img);
@@ -53,10 +54,10 @@ export default function CrearProducto() {
       setNombre("");
       setDescripcion("");
       setPrecio("");
-      setCategoria("");
       setStock("");
       setIdioma("");
       setImagenes(null);
+      setCategoriasSeleccionadas([]);
       setTimeout(() => router.push("/admin/productos"), 1500);
     } catch (err: any) {
       const message = err.message || "Error desconocido";
@@ -89,6 +90,14 @@ export default function CrearProducto() {
     }
     verificarAuth()
   }, [])
+
+  useEffect(() => {
+    // Obtener categorías disponibles
+    fetch("https://tiendafinal-production-2d5f.up.railway.app/api/categorias")
+      .then(res => res.json())
+      .then(data => setCategoriasDisponibles(data))
+      .catch(() => setCategoriasDisponibles([]));
+  }, []);
 
   if (estado === 'cargando') return <p>Cargando...</p>
   if (estado === 'no-autorizado') return notFound()
@@ -150,15 +159,21 @@ export default function CrearProducto() {
           </div>
         </div>
         <div className="space-y-2">
-          <label className="block font-semibold text-black">Categoría</label>
-          <input
-            type="text"
-            value={categoria}
-            onChange={e => setCategoria(e.target.value)}
-            required
+          <label className="block font-semibold text-black">Categorías</label>
+          <select
+            multiple
+            value={categoriasSeleccionadas}
+            onChange={e => {
+              const options = Array.from(e.target.selectedOptions).map(opt => opt.value);
+              setCategoriasSeleccionadas(options);
+            }}
             className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 text-black"
-            placeholder="Ej: Cartas, Accesorios, Sobres..."
-          />
+          >
+            {categoriasDisponibles.map((cat: any) => (
+              <option key={cat.id_categoria || cat.id} value={cat.nombre}>{cat.nombre}</option>
+            ))}
+          </select>
+          <div className="text-xs text-gray-500">Mantén pulsado Ctrl (Windows) o Cmd (Mac) para seleccionar varias.</div>
         </div>
         <div className="space-y-2">
           <label className="block font-semibold text-black">Idioma</label>
