@@ -24,7 +24,24 @@ const allowedOrigins = [
     'https://rinconfriki-production.up.railway.app',
 ];
 
+app.use((req, res, next) => {
+    console.log('Origen de la petición:', req.headers.origin);
+    next();
+});
+
 app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Origen no permitido por CORS'));
+        }
+    },
+    credentials: true,
+}));
+
+// Responder OPTIONS (preflight) con CORS para todas las rutas
+app.options('*', cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
