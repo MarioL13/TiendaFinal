@@ -251,18 +251,19 @@ const Productos: React.FC = () => {
                     {productos.map((producto) => (
                         <div
                             key={producto.id_producto}
-                            className="max-w-sm w-full bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all"
+                            className="max-w-sm w-full bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all flex flex-col justify-between h-full"
                         >
                             <div className="relative aspect-w-4 aspect-h-3">
                                 <div className="img-cuadrada">
                                     <img
                                         src={producto.imagenes[0]}
                                         alt={producto.nombre}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-contain bg-white"
+                                        style={{ maxHeight: 220, minHeight: 180 }}
                                     />
                                 </div>
                             </div>
-                            <div className="p-5 space-y-4">
+                            <div className="p-5 space-y-4 flex flex-col flex-1 justify-between">
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900">
                                         {producto.nombre}
@@ -278,7 +279,6 @@ const Productos: React.FC = () => {
                     </span>
                                     )}
                                 </div>
-
                                 <button
                                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors"
                                     onClick={() =>
@@ -287,8 +287,7 @@ const Productos: React.FC = () => {
                                 >
                                     Ver producto
                                 </button>
-
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 mt-2">
                                     <button
                                         className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg"
                                         onClick={() =>
