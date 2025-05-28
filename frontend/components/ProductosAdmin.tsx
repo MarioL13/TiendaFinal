@@ -26,7 +26,7 @@ const ConfirmModal: React.FC<{
     onCancel: () => void;
 }> = ({ message, onConfirm, onCancel }) => {
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-10 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-opacity-10 flex items-center justify-center z-50">
             <div className="p-8 border w-96 shadow-lg rounded-md bg-white">
                 <div className="text-center">
                     <h3 className="text-2xl font-bold text-gray-900">Confirmación</h3>
