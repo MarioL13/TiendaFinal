@@ -166,7 +166,7 @@ const Carrito: React.FC = () => {
                       </div>
                       <button
                         onClick={() => handleRemove(item.tipo_item, item.id_item)}
-                        className="mt-4 md:mt-0 font-semibold px-4 py-2 rounded shadow border transition text-white"
+                        className="ml-5 mt-4 md:mt-0 font-semibold px-4 py-2 rounded shadow border transition text-white"
                         style={{ background: '#F87171', border: '2px solid #B91C1C' }}
                         onMouseEnter={e => {
                           e.currentTarget.style.background = '#B91C1C';
