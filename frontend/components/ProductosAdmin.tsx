@@ -19,22 +19,32 @@ interface ApiResponse {
     totalPages: number;
 }
 
-// Modal client-side básico
-const Modal: React.FC<{ message: string; onClose: () => void }> = ({ message, onClose }) => {
+// Componente modal simple para confirmación
+const ConfirmModal: React.FC<{
+    message: string;
+    onConfirm: () => void;
+    onCancel: () => void;
+}> = ({ message, onConfirm, onCancel }) => {
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
             <div className="p-8 border w-96 shadow-lg rounded-md bg-white">
                 <div className="text-center">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Error</h3>
-                    <div className="mt-2 px-7 py-3">
-                        <p className="text-lg text-gray-500">{message}</p>
+                    <h3 className="text-2xl font-bold text-gray-900">Confirmación</h3>
+                    <div className="mt-4 px-7 py-3">
+                        <p className="text-lg text-gray-700">{message}</p>
                     </div>
-                    <div className="flex justify-center mt-4">
+                    <div className="flex justify-center gap-4 mt-6">
                         <button
-                            onClick={onClose}
-                            className="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            onClick={onConfirm}
+                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
                         >
-                            Cerrar
+                            Sí, eliminar
+                        </button>
+                        <button
+                            onClick={onCancel}
+                            className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 transition"
+                        >
+                            Cancelar
                         </button>
                     </div>
                 </div>
@@ -55,8 +65,9 @@ const Productos: React.FC = () => {
     const [sort, setSort] = useState<'asc' | 'desc'>('asc');
     const [idioma, setIdioma] = useState('');
 
-    // Estado para controlar el modal y mensaje de error
-    const [modalMessage, setModalMessage] = useState<string | null>(null);
+    // Estado para modal de confirmación
+    const [modalOpen, setModalOpen] = useState(false);
+    const [productoAEliminar, setProductoAEliminar] = useState<number | null>(null);
 
     const fetchProductos = async () => {
         setLoading(true);
@@ -67,9 +78,11 @@ const Productos: React.FC = () => {
                 search,
                 category,
                 sort,
-                idioma
+                idioma,
             });
-            const response = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/products?${queryParams.toString()}`);
+            const response = await fetch(
+                `https://tiendafinal-production-2d5f.up.railway.app/api/products?${queryParams.toString()}`
+            );
             if (!response.ok) throw new Error('Error al obtener productos');
 
             const data: ApiResponse = await response.json();
@@ -122,22 +135,34 @@ const Productos: React.FC = () => {
         setIdioma(e.target.value);
     };
 
-    const handleEliminar = async (id_producto: number) => {
-        if (!window.confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
+    // Abrir modal confirmación para eliminar producto
+    const confirmarEliminar = (id_producto: number) => {
+        setProductoAEliminar(id_producto);
+        setModalOpen(true);
+    };
+
+    // Ejecutar eliminación después de confirmar
+    const handleEliminar = async () => {
+        if (productoAEliminar === null) return;
+        setModalOpen(false);
         try {
-            const response = await fetch(`https://tiendafinal-production-2d5f.up.railway.app/api/products/${id_producto}`, {
-                method: 'DELETE',
-                credentials: 'include',
-            });
+            const response = await fetch(
+                `https://tiendafinal-production-2d5f.up.railway.app/api/products/${productoAEliminar}`,
+                {
+                    method: 'DELETE',
+                    credentials: 'include',
+                }
+            );
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Error al eliminar producto');
             }
-            // Recargar productos tras eliminar
             fetchProductos();
-        } catch (error: any) {
-            setModalMessage(error.message || 'No se pudo eliminar el producto.');
+        } catch (error) {
+            alert('No se pudo eliminar el producto.');
             console.error(error);
+        } finally {
+            setProductoAEliminar(null);
         }
     };
 
@@ -158,11 +183,19 @@ const Productos: React.FC = () => {
                     onChange={handleCategoryChange}
                     className="border border-gray-300 rounded-md px-3 py-2"
                 />
-                <select value={sort} onChange={handleSortChange} className="border rounded-md px-3 py-2">
+                <select
+                    value={sort}
+                    onChange={handleSortChange}
+                    className="border rounded-md px-3 py-2"
+                >
                     <option value="asc">Precio ↑</option>
                     <option value="desc">Precio ↓</option>
                 </select>
-                <select value={idioma} onChange={handleIdiomaChange} className="border rounded-md px-3 py-2">
+                <select
+                    value={idioma}
+                    onChange={handleIdiomaChange}
+                    className="border rounded-md px-3 py-2"
+                >
                     <option value=""></option>
                     <option value="es">Español</option>
                     <option value="en">Inglés</option>
@@ -189,51 +222,52 @@ const Productos: React.FC = () => {
                             </div>
                             <div className="p-5 space-y-4">
                                 <div>
-                                    <h3 className="text-xl font-bold text-gray-900">{producto.nombre}</h3>
+                                    <h3 className="text-xl font-bold text-gray-900">
+                                        {producto.nombre}
+                                    </h3>
                                     <p className="text-gray-500 mt-1 line-clamp-2-custom overflow-hidden">
                                         {producto.descripcion}
                                     </p>
                                 </div>
                                 <div>
                                     {producto.categorias && producto.categorias.length > 0 && (
-                                        <span
-                                            className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                                            {producto.categorias.join(', ')}
-                                        </span>
+                                        <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      {producto.categorias.join(', ')}
+                    </span>
                                     )}
                                 </div>
 
-                                {/* Botón de ver producto */}
                                 <button
                                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors"
-                                    onClick={() => window.location.href = `/productos/${producto.id_producto}`}
+                                    onClick={() =>
+                                        (window.location.href = `/productos/${producto.id_producto}`)
+                                    }
                                 >
                                     Ver producto
                                 </button>
 
-                                {/* Botones nuevos */}
                                 <div className="flex gap-2">
                                     <button
                                         className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg"
-                                        onClick={() => window.location.href = `/admin/productos/${producto.id_producto}/editar`}
+                                        onClick={() =>
+                                            (window.location.href = `/admin/productos/${producto.id_producto}/editar`)
+                                        }
                                     >
                                         Editar
                                     </button>
                                     <button
                                         className="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg"
-                                        onClick={() => handleEliminar(producto.id_producto)}
+                                        onClick={() => confirmarEliminar(producto.id_producto)}
                                     >
                                         Eliminar
                                     </button>
                                 </div>
                             </div>
-
                         </div>
                     ))}
                 </div>
             )}
 
-            {/* Paginación */}
             <nav className="flex justify-center mt-8">
                 <ul className="flex">
                     <li>
@@ -271,8 +305,14 @@ const Productos: React.FC = () => {
                 </ul>
             </nav>
 
-            {/* Modal de error */}
-            {modalMessage && <Modal message={modalMessage} onClose={() => setModalMessage(null)} />}
+            {/* Modal de confirmación */}
+            {modalOpen && (
+                <ConfirmModal
+                    message="¿Estás seguro de que deseas eliminar este producto?"
+                    onConfirm={handleEliminar}
+                    onCancel={() => setModalOpen(false)}
+                />
+            )}
         </>
     );
 };
